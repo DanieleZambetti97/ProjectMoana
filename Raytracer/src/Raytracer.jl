@@ -3,7 +3,7 @@ module Raytracer
 import ColorTypes
 import Base.:+, Base.:*, Base.:≈
 
-greet(name) = print("Hello $(name)! Moana welcomes you!")
+greet(name) = println("Hello $(name)! Moana welcomes you!")
 
 # Definition of the sum of two colors 
 
