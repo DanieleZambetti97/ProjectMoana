@@ -16,7 +16,6 @@ function main(ARGS)
     Raytracer.greet(name)
     println("This is the difference of the colors: $(c1 - c2)")
     println("This is the mult*scalar: $(c1*s)")
-    
 
 end
 
