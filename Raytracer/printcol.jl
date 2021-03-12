@@ -10,11 +10,13 @@ using ColorTypes
 using Crayons
 
 function main(ARGS)
-    a = (parse(Float32, ARGS[1]), parse(Float32, ARGS[2]), parse(Float32, ARGS[3]))
-    b = round.(Int, a .* 255)
-
-    Raytracer.printcol(b)
-
+    if length(ARGS)==3 && parse(Float32, ARGS[1])<=1 && parse(Float32, ARGS[2])<=1 && parse(Float32, ARGS[3])<=1
+        a = (parse(Float32, ARGS[1]), parse(Float32, ARGS[2]), parse(Float32, ARGS[3]))
+        b = round.(Int, a .* 255)
+        Raytracer.printcol(b)
+    else
+        println("Pass me a RGB color \ne.g. 1.0 0.4 0.6")
+    end
 end
 
 main(ARGS)
