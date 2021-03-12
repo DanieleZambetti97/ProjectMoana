@@ -10,9 +10,7 @@ using Crayons
 
 function main(ARGS)
 
-    name = ARGS[1]
-
-    Raytracer.greet(name)    
+    isempty(ARGS)== true ? Raytracer.greet() : Raytracer.greet(ARGS[1])
     
 end
 
