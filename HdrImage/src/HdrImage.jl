@@ -8,10 +8,13 @@ greet() = print("Hello World!")
 struct HdrImage 
     heigth
     width
-    pixels
 end
 
-#method for save a HdrImage on a file in PFM format
+# Check if the coordinates pass are valid
+valid_coordinates(HdrImage(), x, y)
+    return ((x >= 0) && (x < HdrImage.width) && (y >= 0) && (y < HdrImage.height)) 
+
+# Save an HdrImage on a file in PFM format
 write_pfm()
 
 end # module
