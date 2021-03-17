@@ -3,17 +3,16 @@
 using Pkg
 Pkg.activate(normpath(@__DIR__))
 
-using ColorTypes
-using HdrImages
+import ColorTypes
+import HdrImages
 
 function main(ARGS)
     w = parse(Int, ARGS[1])
     h = parse(Int, ARGS[2])
 
-    img = HdrImages.HdrImage(w,h)
-    println("$(img.pixels)")
+    img = HdrImages.HdrImage(w,h,[ColorTypes.RGB(.0,.0,.01*i) for i in 1:h*w])
+    println("L'immagine che hai creato ha:\n  - $(img.width) di colonne\n  - $(img.height) di righe")
 
-    println( HdrImages.valid_coordinates(img, 1, 2) )
+    println(img.pixels)
 end
-
 main(ARGS)
