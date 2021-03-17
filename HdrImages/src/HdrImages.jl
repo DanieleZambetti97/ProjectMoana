@@ -18,7 +18,7 @@ end
 valid_coordinates(img::HdrImage, x, y) = return((x >= 0) && (x < img.width) && (y >= 0) && (y < img.height))
 
 # Check that the (x,y) pixel of the image is in the right place in the linear array pixels of the struct
-pixel_offset(img::HdrImage, x, y) = (y-1) * img.height + x
+pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 
 # Save an HdrImage on a file in PFM format
 #write_pfm()
