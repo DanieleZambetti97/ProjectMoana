@@ -1,0 +1,4 @@
+name = "HdrImage"
+uuid = "395f61c3-833e-4623-987d-6f055d0a78e0"
+authors = ["Giacomo Rivolta <giacomo.rivolta@studenti.unimi.it>"]
+version = "0.1.0"
