@@ -11,7 +11,7 @@ function main(ARGS)
     h = parse(Int, ARGS[2])
 
     img = HdrImages.HdrImage(w,h,[ColorTypes.RGB(.0,.0,.01*i) for i in 1:h*w])
-    println("L'immagine che hai creato ha:\n  - $(img.width) di colonne\n  - $(img.height) di righe")
+    println("This image has:\n  - $(img.width) columns\n  - $(img.height) rows")
     
     for i in 1:h
         for j in 1:w
