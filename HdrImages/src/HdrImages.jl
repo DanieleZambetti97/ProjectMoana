@@ -14,11 +14,20 @@ mutable struct HdrImage
     HdrImage(w, h, array) = new(w, h, array)                      #costruttore di default quindi devi rimplementarlo te
 end
 
+
 # Check if the coordinates pass are valid
-valid_coordinates(img::HdrImage, x, y) = return((x >= 0) && (x < img.width) && (y >= 0) && (y < img.height))
+valid_coordinates(img::HdrImage, x, y) = return((x > 0) && (x <= img.width) && (y >= 0) && (y <= img.height))
+
 
 # Check that the (x,y) pixel of the image is in the right place in the linear array pixels of the struct
 pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
+
+
+# Get and set methods
+get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && return(HdrImages.pixel_offset(img, x, y)) 
+
+set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
+
 
 # Save an HdrImage on a file in PFM format
 #write_pfm()
