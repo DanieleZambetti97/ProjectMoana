@@ -10,7 +10,7 @@ function main(ARGS)
     w = parse(Int, ARGS[1])
     h = parse(Int, ARGS[2])
 
-    img = HdrImages.HdrImage(w,h,[ColorTypes.RGB(.0,.0,.01*i) for i in 1:h*w])
+    img = HdrImages.HdrImage(w,h,[ColorTypes.RGB(.0,.0,.01) for i in 1:h*w])
     println("This image has:\n  - $(img.width) columns\n  - $(img.height) rows")
     
     for i in 1:h
@@ -19,9 +19,11 @@ function main(ARGS)
         end
     println()
     end
-
-    io = IOBuffer()
+    
+    io = IOBuffer();
     write(io, img)
+    println(String(take!(io)))
+
 end
 
 main(ARGS)

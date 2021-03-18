@@ -30,12 +30,19 @@ set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coor
 
 
 # Save an HdrImage on a file in PFM format
-
 function Base.write(io::IO, img::HdrImage)
     header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n") #la mia macchina è little endian, controlla la tua
     open("out.pfm", "w") do io
         write(io, header)
+
+#=    for y in img.height:1
+        for x in 1:img.width
+            color = img.get_pixel(x, y)
+            write(io, reinterpret(UInt32, color.r))
+            write(io, reinterpret(UInt32, color.g))
+            write(io, reinterpret(UInt32, color.b))
+        end
     end
-end
+ =#end
 
 end # module
