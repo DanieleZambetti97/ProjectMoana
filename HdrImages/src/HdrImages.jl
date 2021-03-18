@@ -30,6 +30,21 @@ set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coor
 
 
 # Save an HdrImage on a file in PFM format
-#write_pfm()
+const little_endian = ENDIAN_BOM
+function write_pfm(io::IO, img:: HdrImage)
+    write(io, transcode(UInt8, "PF\n$(img.width) $(img.height)\n-1.0\n"))
+#=     # Write the image (bottom-to-up, left-to-right)
+    for y in img.height:1
+        for x in 1:img.width
+            color = img.get_pixel(x, y)
+            write(io, reinterpret(UInt32, color.r))
+            write(io, reinterpret(UInt32, color.g))
+            write(io, reinterpret(UInt32, color.b))
+        end
+    end
+ =#end
+
+Base.:write(io::IO , img::HdrImage) = write(io, transcode(UInt8, "PF\n$(img.width) $(img.height)\n$little_endian\n"))
+
 
 end # module

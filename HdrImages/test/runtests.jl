@@ -24,4 +24,20 @@ HdrImages.set_pixel(img, 3, 2, new_col)
     @test img.pixels[1] == new_col
     @test img.pixels[8] == new_col
 
-end
+#= img = HdrImage(3, 2)
+
+HdrImages.set_pixel(img, 0, 0, Color(1.0e1, 2.0e1, 3.0e1)) # Each component is
+HdrImages.set_pixel(img, 1, 0, Color(4.0e1, 5.0e1, 6.0e1)) # different from any
+HdrImages.set_pixel(img, 2, 0, Color(7.0e1, 8.0e1, 9.0e1)) # other: important in
+HdrImages.set_pixel(img, 0, 1, Color(1.0e2, 2.0e2, 3.0e2)) # tests!
+HdrImages.set_pixel(img, 1, 1, Color(4.0e2, 5.0e2, 6.0e2))
+HdrImages.set_pixel(img, 2, 1, Color(7.0e2, 8.0e2, 9.0e2))
+
+open("reference_le.pfm", "wb") do f
+    write(reference_bytes,
+
+buf = BytesIO()
+write(buf, img)
+    @test buf == reference_bytes
+ =#
+ end
