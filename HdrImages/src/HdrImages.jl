@@ -32,7 +32,7 @@ set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coor
 # Save an HdrImage on a file in PFM format
 
 function Base.write(io::IO, img::HdrImage)
-    header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(1.0)\n") #endianness a caso!
+    header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n") #la mia macchina è little endian, controlla la tua
     open("out.pfm", "w") do io
         write(io, header)
     end
