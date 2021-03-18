@@ -22,7 +22,7 @@ function main(ARGS)
 
     io = IOBuffer();
     write(io, img)
-    #println(String(take!(io)))
+
 
 end
 
