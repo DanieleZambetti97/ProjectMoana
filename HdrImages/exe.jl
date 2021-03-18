@@ -19,6 +19,9 @@ function main(ARGS)
         end
     println()
     end
+
+    io = IOBuffer()
+    write(io, img)
 end
 
 main(ARGS)
