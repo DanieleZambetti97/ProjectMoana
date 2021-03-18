@@ -35,14 +35,17 @@ function Base.write(io::IO, img::HdrImage)
     open("out.pfm", "w") do io
         write(io, header)
 
-#=    for y in img.height:1
-        for x in 1:img.width
-            color = img.get_pixel(x, y)
-            write(io, reinterpret(UInt32, color.r))
-            write(io, reinterpret(UInt32, color.g))
-            write(io, reinterpret(UInt32, color.b))
+        for y in img.height:-1:1
+            for x in 1:img.width
+                color = img.pixels[HdrImages.get_pixel(img, x, y)]
+                             
+                write(io, "$(color.r) ")
+                write(io, "$(color.g) ")
+                write(io, "$(color.b)\n")
+                
+            end
         end
     end
- =#end
+end
 
 end # module
