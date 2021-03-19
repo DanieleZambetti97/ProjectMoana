@@ -37,10 +37,10 @@ function Base.write(io::IO, img::HdrImage)
     for y in img.height:-1:1
         for x in 1:img.width
             color = img.pixels[HdrImages.get_pixel(img, x, y)]
-                 
-            write(io, reinterpret(UInt32, [color.r]))
-            write(io, reinterpret(UInt32, [color.g]))
-            write(io, reinterpret(UInt32, [color.b]))
+            println(HdrImages.get_pixel(img, x, y))
+            write(io, reinterpret(UInt8, [convert(Float32, color.r)]))
+            write(io, reinterpret(UInt8, [convert(Float32, color.g)]))
+            write(io, reinterpret(UInt8, [convert(Float32, color.b)]))
     
         end
     end
