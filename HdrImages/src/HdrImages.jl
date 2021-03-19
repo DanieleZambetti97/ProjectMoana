@@ -47,11 +47,6 @@ function Base.write(io::IO, img::HdrImage)
 end
 
 
-
-
-
-
-
 function Base.write(file_output::String, img::HdrImage)
     header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n") 
     open(file_output, "w") do io
@@ -59,11 +54,15 @@ function Base.write(file_output::String, img::HdrImage)
 
         for y in img.height:-1:1
             for x in 1:img.width
-                color = img.pixels[HdrImages.get_pixel(img, x, y)]
+                color = img.pixels[HdrImages.get_pixel(img, x, y)]                             
                 
+                write(io, color.r)
+                write(io, color.g)
+                write(io, color.b)
                 
             end
         end
     end
 end
+
 end # module

@@ -10,6 +10,29 @@ new_col = ColorTypes.RGB(.0, .0, 999.9)
 HdrImages.set_pixel(img, 1, 1, new_col)
 HdrImages.set_pixel(img, 3, 2, new_col)
 
+img2 = HdrImages.HdrImage(3, 2)
+
+HdrImages.set_pixel(img2, 1, 1, ColorTypes.RGB(10., 20., 30.)) # Each component is
+HdrImages.set_pixel(img2, 2, 1, ColorTypes.RGB(40., 50., 60.)) # different from any
+HdrImages.set_pixel(img2, 3, 1, ColorTypes.RGB(70., 80., 90.)) # other: important in
+HdrImages.set_pixel(img2, 1, 2, ColorTypes.RGB(100., 200., 300.)) # tests!
+HdrImages.set_pixel(img2, 2, 2, ColorTypes.RGB(400., 500., 600.))
+HdrImages.set_pixel(img2, 3, 2, ColorTypes.RGB(700., 800., 900.))
+
+# This is the content of "reference_le.pfm" (little-endian file)
+reference_bytes = [
+        0x50, 0x46, 0x0a, 0x33, 0x20, 0x32, 0x0a, 0x2d, 0x31, 0x2e, 0x30, 0x0a,
+        0x00, 0x00, 0xc8, 0x42, 0x00, 0x00, 0x48, 0x43, 0x00, 0x00, 0x96, 0x43,
+        0x00, 0x00, 0xc8, 0x43, 0x00, 0x00, 0xfa, 0x43, 0x00, 0x00, 0x16, 0x44,
+        0x00, 0x00, 0x2f, 0x44, 0x00, 0x00, 0x48, 0x44, 0x00, 0x00, 0x61, 0x44,
+        0x00, 0x00, 0x20, 0x41, 0x00, 0x00, 0xa0, 0x41, 0x00, 0x00, 0xf0, 0x41,
+        0x00, 0x00, 0x20, 0x42, 0x00, 0x00, 0x48, 0x42, 0x00, 0x00, 0x70, 0x42,
+        0x00, 0x00, 0xc8, 0x42, 0x00, 0x00, 0x48, 0x43, 0x00, 0x00, 0x96, 0x43
+    ]
+
+buf = IOBuffer()
+write(buf, img2)
+
 @testset "HdrImage" begin
     @test img.width == 5
     @test img.height == 2
@@ -23,6 +46,13 @@ HdrImages.set_pixel(img, 3, 2, new_col)
     @test HdrImages.get_pixel(img, 5, 2) == 10 
     @test img.pixels[1] == new_col
     @test img.pixels[8] == new_col
+<<<<<<< HEAD
+    @test take!(buf) == reference_bytes
+    
+end
+
+
+=======
 end
 =#
 img2 = HdrImages.HdrImage(3, 2)
@@ -69,3 +99,4 @@ println()
 end
 
 end
+>>>>>>> c357ee2a872922c32cfb9c3782caf34519f5ed00

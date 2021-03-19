@@ -23,6 +23,7 @@ function main(ARGS)
     buf = IOBuffer()
     write(buf, img)
     println("$(take!(buf))")
+
 end
 
 main(ARGS)
