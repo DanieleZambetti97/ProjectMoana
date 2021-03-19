@@ -46,13 +46,11 @@ write(buf, img2)
     @test HdrImages.get_pixel(img, 5, 2) == 10 
     @test img.pixels[1] == new_col
     @test img.pixels[8] == new_col
-<<<<<<< HEAD
     @test take!(buf) == reference_bytes
     
 end
 
 
-=======
 end
 =#
 img2 = HdrImages.HdrImage(3, 2)
@@ -99,4 +97,3 @@ println()
 end
 
 end
->>>>>>> c357ee2a872922c32cfb9c3782caf34519f5ed00
