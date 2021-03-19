@@ -10,8 +10,8 @@ mutable struct HdrImage
     width::Int
     height::Int
     pixels::Array{ColorTypes.RGB, 1}
-    HdrImage(w, h) = new(w, h, [ColorTypes.RGB() for i in 1:h*w]) #incredibile, se implementi un costruttore interno julia rimuove il suo 
-    HdrImage(w, h, array) = new(w, h, array)                      #costruttore di default quindi devi rimplementarlo te
+    HdrImage(w, h) = new(w, h, [ColorTypes.RGB() for i in 1:h*w])
+    HdrImage(w, h, array) = new(w, h, array)
 end
 
 
@@ -29,19 +29,17 @@ get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && retur
 set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
 
 
-# Save an HdrImage on a file in PFM format using a stream and a output file
+# Save an HdrImage on a stream or an output file in PFM format
 function Base.write(io::IO, img::HdrImage)
     header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n")
     write(io, header)
 
     for y in img.height:-1:1
         for x in 1:img.width
-            color = img.pixels[HdrImages.get_pixel(img, x, y)]
-            
-            write(io, convert(Float32, color.r))
-            write(io, convert(Float32, color.g))
-            write(io, convert(Float32, color.b))
-    
+
+            color = img.pixels[HdrImages.get_pixel(img, x, y)]            
+            write(io, convert(Vector{Float32}, [color.r,color.g,color.b] ) )
+
         end
     end
 end
@@ -53,11 +51,9 @@ function Base.write(file_output::String, img::HdrImage)
 
         for y in img.height:-1:1
             for x in 1:img.width
-                color = img.pixels[HdrImages.get_pixel(img, x, y)]                             
-                
-                write(io, convert(Float32, color.r))
-                write(io, convert(Float32, color.g))
-                write(io, convert(Float32, color.b))
+
+                color = img.pixels[HdrImages.get_pixel(img, x, y)]                                         
+                write(io, convert(Vector{Float32}, [color.r,color.g,color.b] ) )
                 
             end
         end

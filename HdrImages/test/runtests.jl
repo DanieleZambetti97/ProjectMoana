@@ -2,40 +2,40 @@ import HdrImages
 using Test
 using ColorTypes
 
-img = HdrImages.HdrImage(5,2)
-w = img.width
-h = img.height
-img = HdrImages.HdrImage(w,h,[ColorTypes.RGB(.0,.0,1.0*i) for i in 1:h*w])
-new_col = ColorTypes.RGB(.0, .0, 999.9)
+# TESTING THE BASIC METHODS FOR HdrImages 
+
+img = HdrImages.HdrImage(3, 2)
+
+@testset "HdrImage Basic Methods" begin
+    @test img.width == 3
+    @test img.height == 2
+    @test HdrImages.valid_coordinates(img, 2, 1) == true
+    @test HdrImages.valid_coordinates(img, 3, 2) == true #the last element of the matrix has to be (3,2) and not (2,1) as in C++
+    @test HdrImages.valid_coordinates(img,-1, 4) == false
+    @test HdrImages.valid_coordinates(img, 0, 4) == false
+    @test HdrImages.pixel_offset(img,1,1) == 1
+    @test HdrImages.pixel_offset(img,2,2) == 5
+    @test HdrImages.get_pixel(img, 1, 2) == 4
+    @test HdrImages.get_pixel(img, 3, 1) == 3 
+
+new_col = ColorTypes.RGB(.012, 34, 999.9)
 HdrImages.set_pixel(img, 1, 1, new_col)
 HdrImages.set_pixel(img, 3, 2, new_col)
 
-@testset "HdrImage_BasicMethods" begin
-    @test img.width == 5
-    @test img.height == 2
-    @test HdrImages.valid_coordinates(img, 4, 1) == true
-    @test HdrImages.valid_coordinates(img, 5, 2) == true #the last element of the matrix has to be (5,2) and not (4,1) as in C++
-    @test HdrImages.valid_coordinates(img,-1, 4) == false
-    @test HdrImages.valid_coordinates(img, 0,-4) == false
-    @test HdrImages.pixel_offset(img,1,1) == 1
-    @test HdrImages.pixel_offset(img,3,2) == 8
-    @test HdrImages.get_pixel(img, 1, 2) == 6
-    @test HdrImages.get_pixel(img, 5, 2) == 10 
     @test img.pixels[1] == new_col
-    @test img.pixels[8] == new_col
+    @test img.pixels[HdrImages.get_pixel(img, 3, 2)] == new_col
     
 end
 
 # TESTING THE WRITING/READING METHODS FOR HdrImages 
 
-img2 = HdrImages.HdrImage(3, 2)
-
-HdrImages.set_pixel(img2,0+1, 0+1, ColorTypes.RGB(1.0e1, 2.0e1, 3.0e1))
-HdrImages.set_pixel(img2,1+1, 0+1, ColorTypes.RGB(4.0e1, 5.0e1, 6.0e1))
-HdrImages.set_pixel(img2,2+1, 0+1, ColorTypes.RGB(7.0e1, 8.0e1, 9.0e1))
-HdrImages.set_pixel(img2,0+1, 1+1, ColorTypes.RGB(1.0e2, 2.0e2, 3.0e2))
-HdrImages.set_pixel(img2,1+1, 1+1, ColorTypes.RGB(4.0e2, 5.0e2, 6.0e2))
-HdrImages.set_pixel(img2,2+1, 1+1, ColorTypes.RGB(7.0e2, 8.0e2, 9.0e2))
+# Set pixels colors like the "reference_le.pfm" file
+HdrImages.set_pixel(img,0+1, 0+1, ColorTypes.RGB(1.0e1, 2.0e1, 3.0e1))
+HdrImages.set_pixel(img,1+1, 0+1, ColorTypes.RGB(4.0e1, 5.0e1, 6.0e1))
+HdrImages.set_pixel(img,2+1, 0+1, ColorTypes.RGB(7.0e1, 8.0e1, 9.0e1))
+HdrImages.set_pixel(img,0+1, 1+1, ColorTypes.RGB(1.0e2, 2.0e2, 3.0e2))
+HdrImages.set_pixel(img,1+1, 1+1, ColorTypes.RGB(4.0e2, 5.0e2, 6.0e2))
+HdrImages.set_pixel(img,2+1, 1+1, ColorTypes.RGB(7.0e2, 8.0e2, 9.0e2))
 
 # This is the content of "reference_le.pfm" (little-endian file)
 reference_bytes = [
@@ -49,8 +49,8 @@ reference_bytes = [
 ]
 
 buf = IOBuffer()
-write(buf,img2)
+write(buf,img)
 
-@testset "HdrImage_SaveMethod" begin
+@testset "HdrImage Save Method" begin
     @test take!(buf) == reference_bytes
 end
