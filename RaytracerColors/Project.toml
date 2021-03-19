@@ -1,6 +1,6 @@
-name = "Raytracer"
-uuid = "bc7054d9-9383-4cb6-92ac-834b4ade0e5d"
-authors = ["Giacomo Rivolta <giacomo.rivolta@studenti.unimi.it>"]
+name = "RaytracerColors"
+uuid = "1e64f23b-64ce-46cd-893b-dabaf9841f94"
+authors = ["Daniele Zambetti <zambettidaniele97@gmail.com>"]
 version = "0.1.0"
 
 [deps]

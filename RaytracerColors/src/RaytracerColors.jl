@@ -1,4 +1,4 @@
-module Raytracer
+module RaytracerColors
 
 import ColorTypes
 import Base.:+, Base.:*, Base.:≈
@@ -26,5 +26,6 @@ Base.:isapprox(c1::ColorTypes.RGB{T}, c2::ColorTypes.RGB{T}) where {T} = Base.is
 
 # Printing a color on the terminal
 printcol(color) = println(Crayons.Crayon(foreground = color, bold = true), "Nice color!")
+
 
 end # module
