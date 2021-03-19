@@ -20,9 +20,9 @@ function main(ARGS)
     println()
     end
 
-    io = IOBuffer();
+    io = IOBuffer()
     write(io, img)
-
+    println(String(take!(io)))
 
 end
 
