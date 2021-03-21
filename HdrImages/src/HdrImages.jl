@@ -1,7 +1,9 @@
 module HdrImages
 
+using ImportMacros
+
 import Colors
-import ColorTypes
+@import ColorTypes as CT
 import Base
 
 greet() = print("Hello World!")
@@ -9,8 +11,8 @@ greet() = print("Hello World!")
 mutable struct HdrImage
     width::Int
     height::Int
-    pixels::Array{ColorTypes.RGB, 1}
-    HdrImage(w, h) = new(w, h, [ColorTypes.RGB() for i in 1:h*w])
+    pixels::Array{CT.RGB, 1}
+    HdrImage(w, h) = new(w, h, [CT.RGB() for i in 1:h*w])
     HdrImage(w, h, array) = new(w, h, array)
 end
 
@@ -26,7 +28,7 @@ pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 # Get and set methods
 get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && return(HdrImages.pixel_offset(img, x, y)) 
 
-set_pixel(img::HdrImage, x, y, new_color::ColorTypes.RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
+set_pixel(img::HdrImage, x, y, new_color::CT.RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
 
 
 # Save an HdrImage on a stream or an output file in PFM format

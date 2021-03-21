@@ -25,6 +25,11 @@ git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.4"
 
+[[ImportMacros]]
+git-tree-sha1 = "eff7860136dd9e88a67f34eb07e990bbb7a3788a"
+uuid = "92a963f6-6b1d-11e9-1d6c-8d25856e017b"
+version = "1.0.0"
+
 [[InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
