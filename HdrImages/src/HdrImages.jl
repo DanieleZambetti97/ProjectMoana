@@ -1,8 +1,7 @@
 module HdrImages
 
-using ImportMacros
-import Colors
-import Base
+using Colors
+using Base
 using ColorTypes
 
 
@@ -10,7 +9,6 @@ greet() = print("Hello World!")
 
 ###################################################################################################################
 # creating HdrImage 
-
 mutable struct HdrImage
     width::Int
     height::Int
@@ -68,8 +66,8 @@ end
 
 ######################################################################################################
 # Read an HdrImage in PMF format from a file
-# new error message InvalidPfmFileFormat
 
+# new error message InvalidPfmFileFormat
 struct InvalidPfmFileFormat <: Exception
     msg::String
     
@@ -79,7 +77,6 @@ struct InvalidPfmFileFormat <: Exception
 end
 
 # Support function for read_pfm_image
-
 function _read_line(stream::IO)
     result = ""
     while true

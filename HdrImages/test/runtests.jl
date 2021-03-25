@@ -63,7 +63,7 @@ line = IOBuffer(b"Hello\nWorld!")
 
 @testset "HdrImages Reading Method" begin
 
-    # read_line
+    #1
     @test Hdr.read_line(line) == "Hello"
     @test Hdr.read_line(line) == "World!"
     @test Hdr.read_line(line) == ""    
