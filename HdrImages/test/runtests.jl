@@ -52,7 +52,7 @@ LE_REFERENCE_BYTES = [
 
 # Test the write function
 buf = IOBuffer()
-write(buf,img)
+write(buf, img)
 
 @testset "HdrImages Writing Method" begin
     @test take!(buf) == LE_REFERENCE_BYTES
