@@ -1,13 +1,15 @@
 module HdrImages
 
 using ImportMacros
-using StringEncodings
 import Colors
 import Base
 using ColorTypes
 
 
 greet() = print("Hello World!")
+
+###################################################################################################################
+# creating HdrImage 
 
 mutable struct HdrImage
     width::Int
@@ -32,6 +34,7 @@ get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && retur
 set_pixel(img::HdrImage, x, y, new_color::RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
 
 
+################################################################################################################
 # Save an HdrImage on a stream or an output file in PFM format
 function Base.write(io::IO, img::HdrImage)
     header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n")
@@ -63,7 +66,7 @@ function Base.write(file_output::String, img::HdrImage)
     end
 end
 
-
+######################################################################################################
 # Read an HdrImage in PMF format from a file
 # new error message InvalidPfmFileFormat
 
@@ -76,7 +79,8 @@ struct InvalidPfmFileFormat <: Exception
 end
 
 # Support function for read_pfm_image
-function read_line(stream::IO)
+
+function _read_line(stream::IO)
     result = ""
     while true
         cur_byte = read(stream, 1)
@@ -87,7 +91,7 @@ function read_line(stream::IO)
     end
 end
 
-function read_float(io::IO, endianness::String)
+function _read_float(io::IO, endianness::String)
     if endianness == "LE"
         return transcode(String, ltoh(read(io, 4)))
     else
@@ -127,6 +131,37 @@ function _parse_endianness(line::String)
     else
         throw(InvalidPfmFileFormat("invalid endianness specification"))
     end
+end
+
+# finally, the real READING method:
+function Base.read(io::IO)
+   
+    magic = HdrImages._read_line(fname)
+    if magic != "PF"
+    throw(InvalidPfmFileFormat("invalid magic in PFM file"))
+    end
+
+    img_size = HdrImages._read_line(fname)
+    (width, height) = HdrImages._parse_img_size(img_size)
+
+    endianness_line = HdrImages._read_line(fname)
+    endianness = HdrImages._parse_endianness(endianness_line)
+
+    result = HdrImage(width, height)
+    for y in height:-1:1
+        for x in 1:width                
+            (r, g, b) = [HdrImages._read_float(fname, endianness) for i in 1:3]
+            result.set_pixel(x, y, Color(r, g, b))
+        end
+    end
+
+    return result
+
+end
+
+function Base.read(filein::String)
+    io = open(filein, "r")
+    read(io)
 end
 
 
