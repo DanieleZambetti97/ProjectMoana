@@ -73,10 +73,10 @@ BE_REFERENCE_BYTES = [
 
 @testset "HdrImages Reading Method" begin
 
-    # read_line
-    @test Hdr._read_line(line) == "Hello"
-    @test Hdr._read_line(line) == "World!"
-    @test Hdr._read_line(line) == ""    
+    #1
+    @test Hdr.read_line(line) == "Hello"
+    @test Hdr.read_line(line) == "World!"
+    @test Hdr.read_line(line) == ""    
     
     #3
     @test Hdr._parse_img_size("3 2") == (3, 2)

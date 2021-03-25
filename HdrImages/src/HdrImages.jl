@@ -1,7 +1,7 @@
 module HdrImages
 
-import Colors
-import Base
+using Colors
+using Base
 using ColorTypes
 
 
@@ -9,7 +9,6 @@ greet() = print("Hello World!")
 
 ###################################################################################################################
 # creating HdrImage 
-
 mutable struct HdrImage
     width::Int
     height::Int
@@ -56,8 +55,8 @@ end
 
 ######################################################################################################
 # Read an HdrImage in PMF format from a file
-# new error message InvalidPfmFileFormat
 
+# new error message InvalidPfmFileFormat
 struct InvalidPfmFileFormat <: Exception
     msg::String
     
@@ -130,6 +129,8 @@ end
 
 # finally, the real READING method:
 function Base.read(io::IO, fmt::Int, bho::String)
+function read_pfm_image(io::IO)
+
     magic = HdrImages._read_line(io)
     if magic != "PF"
     throw(InvalidPfmFileFormat("invalid magic in PFM file"))
@@ -140,7 +141,7 @@ function Base.read(io::IO, fmt::Int, bho::String)
 
     endianness_line = HdrImages._read_line(io)
     endianness = HdrImages._parse_endianness(endianness_line)
-    println("aaaaaaa")
+   
     result = HdrImages.HdrImage(width, height)
     println("$(typeof(result))")
     println("aaaaaaa")
@@ -156,9 +157,9 @@ function Base.read(io::IO, fmt::Int, bho::String)
 
 end
 
-function Base.read(filein::String)
+function read_pfm_image(filein::String)
     io = open(filein, "r")
-    read(io)
+    read_pfm_image(io)
 end
 
 
