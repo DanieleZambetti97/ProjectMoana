@@ -1,18 +1,17 @@
 module HdrImages
 
-using ImportMacros
-
 import Colors
-@import ColorTypes as CT
 import Base
+using ColorTypes
+
 
 greet() = print("Hello World!")
 
 mutable struct HdrImage
     width::Int
     height::Int
-    pixels::Array{CT.RGB, 1}
-    HdrImage(w, h) = new(w, h, [CT.RGB() for i in 1:h*w])
+    pixels::Array{RGB, 1}
+    HdrImage(w, h) = new(w, h, [RGB() for i in 1:h*w])
     HdrImage(w, h, array) = new(w, h, array)
 end
 
@@ -28,7 +27,7 @@ pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 # Get and set methods
 get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && return(HdrImages.pixel_offset(img, x, y)) 
 
-set_pixel(img::HdrImage, x, y, new_color::CT.RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
+set_pixel(img::HdrImage, x, y, new_color::RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
 
 
 # Save an HdrImage on a stream or an output file in PFM format
@@ -61,5 +60,37 @@ function Base.write(file_output::String, img::HdrImage)
         end
     end
 end
+
+# new error message InvalidPfmFileFormat
+
+struct InvalidPfmFileFormat <: Exception
+    msg::String
+    
+    function InvalidPfmFileFormat(msg::String)
+        new(msg)
+    end
+end
+
+# lettura delle dimensioni dell’immagini da una stringa (_parse_img_size)
+
+function _parse_img_size(line::String)
+    elements = split(line, " ")
+    if length(elements) != 2
+        throw(InvalidPfmFileFormat("invalid image size specification!"))
+    end
+
+    (width, height) = (parse(Int, elements[1]), parse(Int, elements[2]))
+
+                
+    if (width < 0) || (height < 0)
+        throw(InvalidPfmFileFormat("invalid width/size!"))
+    end
+
+return (width, height)
+
+end
+
+
+# decodifica del tipo di endianness da una stringa (_parse_endianness)
 
 end # module
