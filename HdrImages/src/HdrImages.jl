@@ -49,19 +49,8 @@ function Base.write(io::IO, img::HdrImage)
 end
 
 function Base.write(file_output::String, img::HdrImage)
-    header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n") 
-    open(file_output, "w") do io
-        write(io, header)
-
-        for y in img.height:-1:1
-            for x in 1:img.width
-
-                color = img.pixels[HdrImages.get_pixel(img, x, y)]                                         
-                write(io, convert(Vector{Float32}, [color.r,color.g,color.b] ) )
-                
-            end
-        end
-    end
+    io = open(file_output, "w")
+    write(io, img)
 end
 
 ######################################################################################################
@@ -90,9 +79,18 @@ end
 
 function _read_float(io::IO, endianness::String)
     if endianness == "LE"
-        return transcode(String, ltoh(read(io, 4)))
+        try 
+            convert(Vector{Float32}, [color.r,color.g,color.b]
+            return transcode(Float32, ltoh(read(io, 4)))
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
     else
-        return transcode(String, ntoh(read(io, 4)))
+        try 
+            return transcode(Float32, ntoh(read(io, 4)))
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
     end
 end
 
@@ -131,24 +129,25 @@ function _parse_endianness(line::String)
 end
 
 # finally, the real READING method:
-function Base.read(io::IO)
-   
-    magic = HdrImages._read_line(fname)
+function Base.read(io::IO, fmt::Int, bho::String)
+
+    magic = HdrImages._read_line(io)
     if magic != "PF"
     throw(InvalidPfmFileFormat("invalid magic in PFM file"))
     end
 
-    img_size = HdrImages._read_line(fname)
+    img_size = HdrImages._read_line(io)
     (width, height) = HdrImages._parse_img_size(img_size)
 
-    endianness_line = HdrImages._read_line(fname)
+    endianness_line = HdrImages._read_line(io)
     endianness = HdrImages._parse_endianness(endianness_line)
-
-    result = HdrImage(width, height)
+    println("aaaaaaa")
+    result = HdrImages.HdrImage(width, height)
+    println("aaaaaaa")
     for y in height:-1:1
         for x in 1:width                
-            (r, g, b) = [HdrImages._read_float(fname, endianness) for i in 1:3]
-            result.set_pixel(x, y, Color(r, g, b))
+            (r, g, b) = [HdrImages._read_float(io, endianness) for i in 1:3]
+            set_pixel(result, x, y, ColorTypes.RGB(r, g, b))
         end
     end
 
