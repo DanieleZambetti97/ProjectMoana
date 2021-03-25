@@ -71,7 +71,8 @@ struct InvalidPfmFileFormat <: Exception
     end
 end
 
-# lettura delle dimensioni dell’immagini da una stringa (_parse_img_size)
+
+# reading the image dimension from a string 
 
 function _parse_img_size(line::String)
     elements = split(line, " ")
@@ -91,6 +92,25 @@ return (width, height)
 end
 
 
-# decodifica del tipo di endianness da una stringa (_parse_endianness)
+# reading the endianness type of the PFM file
+
+function _parse_endianness(line::String)
+    value = 0
+    try
+        value = parse(Float32, line)
+    catch e
+        throw(InvalidPfmFileFormat("missing endianness specification"))
+    end
+
+    if value == 1.0
+        return "BE"
+    elseif value == -1.0
+        return "LE"
+    else
+        throw(InvalidPfmFileFormat("invalid endianness specification"))
+    end
+end
+
+
 
 end # module
