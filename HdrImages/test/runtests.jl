@@ -76,12 +76,10 @@ line = IOBuffer(b"Hello\nWorld!")
     @test Hdr._read_line(line) == "World!"
     @test Hdr._read_line(line) == ""    
     
-    #3
     @test Hdr._parse_img_size("3 2") == (3, 2)
     @test_throws Hdr.InvalidPfmFileFormat Hdr._parse_img_size("-1 3")
     @test_throws Hdr.InvalidPfmFileFormat Hdr._parse_img_size("1 2 3") 
 
-    #4
     @test Hdr._parse_endianness("1.0") == "BE"
     @test Hdr._parse_endianness("-1.0") == "LE"
     @test_throws Hdr.InvalidPfmFileFormat Hdr._parse_endianness("abc")
