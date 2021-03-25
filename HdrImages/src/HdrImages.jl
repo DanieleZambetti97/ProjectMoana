@@ -80,16 +80,17 @@ end
 function _read_float(io::IO, endianness::String)
     if endianness == "LE"
         try 
-            return reinterpret(Float32, read(io, 4))[1]
-       catch e
-           throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
-       end
-   else
-       try 
-           return reinterpret(Float32, ntoh(read(io, 4)))[1]
-       catch e
-           throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
-       end
+            return ltoh(reinterpret(Float32, read(io, 4))[1])
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
+    else
+        a = read(io,4)
+        try 
+            return ntoh(reinterpret(Float32, a)[1])     
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
     end
 end
 
@@ -128,7 +129,6 @@ function _parse_endianness(line::String)
 end
 
 # finally, the real READING method:
-function Base.read(io::IO, fmt::Int, bho::String)
 function read_pfm_image(io::IO)
 
     magic = HdrImages._read_line(io)
@@ -143,15 +143,12 @@ function read_pfm_image(io::IO)
     endianness = HdrImages._parse_endianness(endianness_line)
    
     result = HdrImages.HdrImage(width, height)
-    println("$(typeof(result))")
-    println("aaaaaaa")
     for y in height:-1:1
         for x in 1:width                
             (r, g, b) = [HdrImages._read_float(io, endianness) for i in 1:3]
             set_pixel(result, x, y, ColorTypes.RGB(r, g, b))
         end
     end
-    println("aaaaaaa")
 
     return result
 
