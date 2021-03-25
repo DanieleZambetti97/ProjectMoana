@@ -48,19 +48,8 @@ function Base.write(io::IO, img::HdrImage)
 end
 
 function Base.write(file_output::String, img::HdrImage)
-    header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n") 
-    open(file_output, "w") do io
-        write(io, header)
-
-        for y in img.height:-1:1
-            for x in 1:img.width
-
-                color = img.pixels[HdrImages.get_pixel(img, x, y)]                                         
-                write(io, convert(Vector{Float32}, [color.r,color.g,color.b] ) )
-                
-            end
-        end
-    end
+    io = open(file_output, "w")
+    write(io, img)
 end
 
 
@@ -76,7 +65,7 @@ struct InvalidPfmFileFormat <: Exception
 end
 
 # Support function for read_pfm_image
-function read_line(stream::IO)
+function _read_line(stream::IO)
     result = ""
     while true
         cur_byte = read(stream, 1)
@@ -87,11 +76,19 @@ function read_line(stream::IO)
     end
 end
 
-function read_float(io::IO, endianness::String)
+function _read_float(io::IO, endianness::String)
     if endianness == "LE"
-        return transcode(String, ltoh(read(io, 4)))
+        try 
+            return transcode(String, ltoh(read(io, 4)))
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
     else
-        return transcode(String, ntoh(read(io, 4)))
+        try 
+            return transcode(String, ntoh(read(io, 4)))
+        catch e
+            throw(InvalidPfmFileFormat("impossible to read binary data from the file"))
+        end
     end
 end
 
