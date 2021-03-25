@@ -1,6 +1,7 @@
 module HdrImages
 
 using ImportMacros
+using StringEncodings
 
 import Colors
 @import ColorTypes as CT
@@ -59,6 +60,26 @@ function Base.write(file_output::String, img::HdrImage)
                 
             end
         end
+    end
+end
+
+
+function read_line(stream::IO)
+    result = ""
+    while true
+        cur_byte = read(stream, 1)
+        if cur_byte == transcode(UInt8, "") || cur_byte == transcode(UInt8, "\n")
+            return result
+        end
+        result *= transcode(String, cur_byte)
+    end
+end
+
+function read_float(io::IO, endianness::String)
+    if endianness == "LE"
+        return transcode(String, ltoh(read(io, 4)))
+    else
+        return transcode(String, ntoh(read(io, 4)))
     end
 end
 
