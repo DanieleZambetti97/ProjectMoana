@@ -1,0 +1,7 @@
+name = "ProjectMoana"
+uuid = "df097b7b-2c73-4e5f-8760-4d0ab4be36d3"
+authors = ["Giacomo Rivolta <giacomo.rivolta@studenti.unimi.it>"]
+version = "0.1.0"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
