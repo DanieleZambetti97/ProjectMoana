@@ -60,7 +60,7 @@ Hdr.set_pixel(img,3, 2, CT.RGB(7.0e2, 8.0e2, 9.0e2))
 
 # Test the write function
 buf = IOBuffer()
-write(buf,img)
+write(buf, img)
 
 @testset "HdrImages Writing Method" begin
     @test take!(buf) == LE_REFERENCE_BYTES
