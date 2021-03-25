@@ -8,26 +8,26 @@ using Test
 
 img = Hdr.HdrImage(3, 2)
 
-@testset "HdrImage Basic Methods" begin
-    @test img.width == 3
-    @test img.height == 2
-    @test Hdr.valid_coordinates(img, 2, 1) == true
-    @test Hdr.valid_coordinates(img, 3, 2) == true #the last element of the matrix has to be (3,2) and not (2,1) as in C++
-    @test Hdr.valid_coordinates(img,-1, 4) == false
-    @test Hdr.valid_coordinates(img, 0, 4) == false
-    @test Hdr.pixel_offset(img,1,1) == 1
-    @test Hdr.pixel_offset(img,2,2) == 5
-    @test Hdr.get_pixel(img, 1, 2) == 4
-    @test Hdr.get_pixel(img, 3, 1) == 3 
+# @testset "HdrImage Basic Methods" begin
+#     @test img.width == 3
+#     @test img.height == 2
+#     @test Hdr.valid_coordinates(img, 2, 1) == true
+#     @test Hdr.valid_coordinates(img, 3, 2) == true #the last element of the matrix has to be (3,2) and not (2,1) as in C++
+#     @test Hdr.valid_coordinates(img,-1, 4) == false
+#     @test Hdr.valid_coordinates(img, 0, 4) == false
+#     @test Hdr.pixel_offset(img,1,1) == 1
+#     @test Hdr.pixel_offset(img,2,2) == 5
+#     @test Hdr.get_pixel(img, 1, 2) == 4
+#     @test Hdr.get_pixel(img, 3, 1) == 3 
 
-new_col = CT.RGB(.012, 34, 999.9)
-Hdr.set_pixel(img, 1, 1, new_col)
-Hdr.set_pixel(img, 3, 2, new_col)
+# new_col = CT.RGB(.012, 34, 999.9)
+# Hdr.set_pixel(img, 1, 1, new_col)
+# Hdr.set_pixel(img, 3, 2, new_col)
 
-    @test img.pixels[1] == new_col
-    @test img.pixels[Hdr.get_pixel(img, 3, 2)] == new_col
+#     @test img.pixels[1] == new_col
+#     @test img.pixels[Hdr.get_pixel(img, 3, 2)] == new_col
     
-end
+# end
 
 # TESTING THE WRITING/READING METHODS FOR HdrImages 
 
@@ -50,9 +50,19 @@ reference_bytes = [
     0x00, 0x00, 0x8c, 0x42, 0x00, 0x00, 0xa0, 0x42, 0x00, 0x00, 0xb4, 0x42
 ]
 
+# Test the write function
 buf = IOBuffer()
 write(buf,img)
 
-@testset "HdrImages Save Method" begin
-    @test take!(buf) == reference_bytes
+# @testset "HdrImages Write Method" begin
+#     @test take!(buf) == reference_bytes
+# end
+
+# Test the read function
+line = IOBuffer(b"Hello\nWorld!")
+@testset "HdrImages Read Method" begin
+    @test Hdr.read_line(line) == "Hello"
+    @test Hdr.read_line(line) == "World!"
+    @test Hdr.read_line(line) == ""
+
 end
