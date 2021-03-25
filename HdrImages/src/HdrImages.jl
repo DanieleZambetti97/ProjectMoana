@@ -129,7 +129,7 @@ function _parse_endianness(line::String)
 end
 
 # finally, the real READING method:
-function Base.read(io::IO, fmt::Int, bho::String)
+function read_pfm_image(io::IO)
 
     magic = HdrImages._read_line(io)
     if magic != "PF"
@@ -141,9 +141,9 @@ function Base.read(io::IO, fmt::Int, bho::String)
 
     endianness_line = HdrImages._read_line(io)
     endianness = HdrImages._parse_endianness(endianness_line)
-    println("aaaaaaa")
+   
     result = HdrImages.HdrImage(width, height)
-    println("aaaaaaa")
+    
     for y in height:-1:1
         for x in 1:width                
             (r, g, b) = [HdrImages._read_float(io, endianness) for i in 1:3]
@@ -155,9 +155,9 @@ function Base.read(io::IO, fmt::Int, bho::String)
 
 end
 
-function Base.read(filein::String)
+function read_pfm_image(filein::String)
     io = open(filein, "r")
-    read(io)
+    read_pfm_image(io)
 end
 
 
