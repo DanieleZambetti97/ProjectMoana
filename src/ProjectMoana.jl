@@ -1,7 +1,9 @@
 module ProjectMoana
-using Test
 
+include("HdrImages.jl")
+include("RaytracerColors.jl")
 
-greet() = print("Hello World!")
+greet(name) = println("Hello $(name)! Moana welcomes you!")
+greet() = println("Hello World! Moana welcomes you!")
 
 end # module

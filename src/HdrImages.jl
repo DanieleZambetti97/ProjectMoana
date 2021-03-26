@@ -1,11 +1,8 @@
 module HdrImages
 
-using Colors
-using Base
 using ColorTypes
 
-
-greet() = print("Hello World!")
+import Base.:write
 
 ###################################################################################################################
 # creating HdrImage 
@@ -146,7 +143,7 @@ function read_pfm_image(io::IO)
     for y in height:-1:1
         for x in 1:width                
             (r, g, b) = [HdrImages._read_float(io, endianness) for i in 1:3]
-            set_pixel(result, x, y, ColorTypes.RGB(r, g, b))
+            set_pixel(result, x, y, RGB(r, g, b))
         end
     end
 
