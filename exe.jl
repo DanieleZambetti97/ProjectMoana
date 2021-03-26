@@ -1,4 +1,4 @@
-#!/usr/bin/env julia
+#absolutly not important! Temporary file
 
 import Pkg
 Pkg.activate(normpath(@__DIR__))
