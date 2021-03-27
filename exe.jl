@@ -1,32 +1,30 @@
-#absolutly not important! Temporary file
+# #absolutly not important! Temporary file
 
 import Pkg
 Pkg.activate(normpath(@__DIR__))
 
+import ColorTypes: RGB
+import ProjectMoana: HdrImage
+import ProjectMoana: _read_line
+import ProjectMoana: _read_float
+import ProjectMoana: read_pfm_image
 
-# using ImportMacros
-
-# @import ColorTypes as CT
-# @import ProjectMoana.HdrImages as Hdr
-
-# function main(ARGS)
-#     if length(ARGS)==2 &&  parse(Float32, ARGS[1])>0 && parse(Float32, ARGS[2])>0
-#         w, h = parse(Int, ARGS[1]), parse(Int, ARGS[2])
-#         img = Hdr.HdrImage(w,h,[CT.RGB(1,13,.01*i) for i in 1:h*w])
-#         println("This image has:\n  - $(img.width) columns\n  - $(img.height) rows")
-#     else
-#         println("Pass me a HdrImage(w,h,pixels) or HdrImages(w,h)\ne.g. julia exe.jl 3 15")
-#     end
+function main(ARGS)
+    if length(ARGS)==2 &&  parse(Float32, ARGS[1])>0 && parse(Float32, ARGS[2])>0
+        w, h = parse(Int, ARGS[1]), parse(Int, ARGS[2])
+        img = HdrImage(w,h,[RGB(1,13,.01*i) for i in 1:h*w])
+        println("This image has:\n  - $(img.width) columns\n  - $(img.height) rows")
+    else
+        println("Pass me a HdrImage(w,h,pixels) or HdrImages(w,h)\ne.g. julia exe.jl 3 15")
+    end
 #     write("out.pfm", img)
 #     open("out.pfm", "r") do f
-#         line = Hdr._read_line(f)
+#         line = _read_line(f)
 #         println("$line")
 #         println("$(typeof(line))")
 #     end
 #     io = IOBuffer()
 #     write(io, htol(34.5))
-#     println("$(io.data)")
-#     println("$(Hdr._read_float(io,"LE"))")
 #     LE_REFERENCE_BYTES = [ 
 #     0x50, 0x46, 0x0a, 0x33, 0x20, 0x32, 0x0a, 0x2d, 0x31, 0x2e, 0x30, 0x0a,
 #     0x00, 0x00, 0xc8, 0x42, 0x00, 0x00, 0x48, 0x43, 0x00, 0x00, 0x96, 0x43,
@@ -36,8 +34,8 @@ Pkg.activate(normpath(@__DIR__))
 #     0x00, 0x00, 0x20, 0x42, 0x00, 0x00, 0x48, 0x42, 0x00, 0x00, 0x70, 0x42,
 #     0x00, 0x00, 0x8c, 0x42, 0x00, 0x00, 0xa0, 0x42, 0x00, 0x00, 0xb4, 0x42
 # ]
-#    img = read(IOBuffer(LE_REFERENCE_BYTES), 0, "aaaa")
-#    img2 = Hdr.HdrImage(3,2)
+#    img = read_pfm_image(IOBuffer(LE_REFERENCE_BYTES))
+#    img2 = HdrImage(3,2)
 #    println(typeof(img))
 #    println(typeof(img2))
 #     LE_REFERENCE_BYTES = [ 
@@ -49,7 +47,7 @@ Pkg.activate(normpath(@__DIR__))
 #     0x00, 0x00, 0x8c, 0x42, 0x00, 0x00, 0xa0, 0x42, 0x00, 0x00, 0xb4, 0x42
 # ]
 
-#    a = Hdr._read_float(IOBuffer(LE_REFERENCE_BYTES), "LE")
+#    a = _read_float(IOBuffer(LE_REFERENCE_BYTES), "LE")
 #    println("$a, $(typeof(a))")
 end
 

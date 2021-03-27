@@ -1,6 +1,5 @@
-using RaytracerColors
-using Colors
-using Test
+using ProjectMoana
+using ColorTypes
 
 
 @testset "Colors basic operation" begin

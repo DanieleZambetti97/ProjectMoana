@@ -1,11 +1,12 @@
-module HdrImages
-
 using ColorTypes
 
 import Base.:write
 
+export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
+       _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat
 ###################################################################################################################
-# creating HdrImage 
+
+# creating HdrImage struct
 mutable struct HdrImage
     width::Int
     height::Int
@@ -24,9 +25,9 @@ pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 
 
 # Get and set methods
-get_pixel(img::HdrImage, x, y) = HdrImages.valid_coordinates(img, x, y) && return(HdrImages.pixel_offset(img, x, y)) 
+get_pixel(img::HdrImage, x, y) =  valid_coordinates(img, x, y) && return( pixel_offset(img, x, y)) 
 
-set_pixel(img::HdrImage, x, y, new_color::RGB) = HdrImages.valid_coordinates(img, x, y) && (img.pixels[HdrImages.get_pixel(img, x, y)] = new_color)
+set_pixel(img::HdrImage, x, y, new_color::RGB) =  valid_coordinates(img, x, y) && (img.pixels[ get_pixel(img, x, y)] = new_color)
 
 
 ################################################################################################################
@@ -38,7 +39,7 @@ function Base.write(io::IO, img::HdrImage)
     for y in img.height:-1:1
         for x in 1:img.width
 
-            color = img.pixels[HdrImages.get_pixel(img, x, y)]            
+            color = img.pixels[ get_pixel(img, x, y)]            
             write(io, convert(Vector{Float32}, [color.r,color.g,color.b] ) )
 
         end
@@ -99,13 +100,11 @@ function _parse_img_size(line::String)
 
     (width, height) = (parse(Int, elements[1]), parse(Int, elements[2]))
 
-                
     if (width < 0) || (height < 0)
         throw(InvalidPfmFileFormat("invalid width/size!"))
     end
 
-return (width, height)
-
+    return (width, height)
 end
 
 function _parse_endianness(line::String)
@@ -128,33 +127,29 @@ end
 # finally, the real READING method:
 function read_pfm_image(io::IO)
 
-    magic = HdrImages._read_line(io)
+    magic =  _read_line(io)
     if magic != "PF"
     throw(InvalidPfmFileFormat("invalid magic in PFM file"))
     end
 
-    img_size = HdrImages._read_line(io)
-    (width, height) = HdrImages._parse_img_size(img_size)
+    img_size =  _read_line(io)
+    (width, height) =  _parse_img_size(img_size)
 
-    endianness_line = HdrImages._read_line(io)
-    endianness = HdrImages._parse_endianness(endianness_line)
+    endianness_line =  _read_line(io)
+    endianness =  _parse_endianness(endianness_line)
    
-    result = HdrImages.HdrImage(width, height)
+    result =  HdrImage(width, height)
     for y in height:-1:1
         for x in 1:width                
-            (r, g, b) = [HdrImages._read_float(io, endianness) for i in 1:3]
+            (r, g, b) = [ _read_float(io, endianness) for i in 1:3]
             set_pixel(result, x, y, RGB(r, g, b))
         end
     end
 
     return result
-
 end
 
 function read_pfm_image(filein::String)
     io = open(filein, "r")
     read_pfm_image(io)
 end
-
-
-end # module
