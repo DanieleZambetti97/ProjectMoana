@@ -50,3 +50,5 @@ ___________________#")
 # Calculating the luminosity of a pixel
 
 luminosity(pixel::RGB) = (max(pixel.r, pixel.g, pixel.b) + min(pixel.r, pixel.g, pixel.b))/2
+
+

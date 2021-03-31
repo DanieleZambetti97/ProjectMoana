@@ -97,6 +97,7 @@ using ProjectMoana
 #     @test_throws InvalidPfmFileFormat read_pfm_image(buf)
 # end
 
+
 # TESTING THE SAVING METHODS FOR LdrImages ############################################################################
 
 img3 = HdrImage(2,1)
@@ -104,10 +105,13 @@ img3 = HdrImage(2,1)
 set_pixel(img3, 1, 1, RGB(5.0, 10.0, 15.0))  # Luminosity: 10.0
 set_pixel(img3, 2, 1, RGB(500.0, 1000.0, 1500.0))  # Luminosity: 1000.0
 
-normalize_image(img3, a_factor = 1000.0, luminosity = 100.0)
-
 @testset "LdrImages Saving Methods" begin
     @test 100 ≈ average_luminosity(img3, 0.0)
+    normalize_image(img3, 1000.0, 100.0)
     @test isapprox(img3.pixels[get_pixel(img3, 1, 1)], RGB(0.5e2, 1.0e2, 1.5e2))
     @test isapprox(img3.pixels[get_pixel(img3, 2, 1)], RGB(0.5e4, 1.0e4, 1.5e4))
-end
+end    
+
+
+
+   
