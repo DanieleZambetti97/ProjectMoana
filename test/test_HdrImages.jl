@@ -107,4 +107,11 @@ set_pixel(img3, 2, 1, RGB(500.0, 1000.0, 1500.0))  # Luminosity: 1000.0
 println(average_luminosity(img3, 0.0))
 @testset "LdrImages Saving Methods" begin
     @test 100 ≈ average_luminosity(img3, 0.0)
-end    
+
+    clamp_image(img3)
+    for cur_pixel in img3.pixels
+        @test (cur_pixel.r >= 0) && (cur_pixel.r <= 1)
+        @test (cur_pixel.g >= 0) && (cur_pixel.g <= 1)
+        @test (cur_pixel.b >= 0) && (cur_pixel.b <= 1)
+    end
+end

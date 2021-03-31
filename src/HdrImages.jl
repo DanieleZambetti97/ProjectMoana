@@ -4,7 +4,7 @@ import Base.:write
 
 export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
        _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity
+       average_luminosity, clamp_image
 ###################################################################################################################
 
 # creating HdrImage struct
@@ -168,4 +168,15 @@ end
 
 function average_luminosity(img::HdrImage)
     return average_luminosity(img, 10^(-10))
+end
+
+function _clamp(x)
+    return x/(x+1)
+end
+
+function clamp_image(img)
+    for i in 1:length(img.pixels)
+        (r, g, b) = (_clamp(img.pixels[i].r), _clamp(img.pixels[i].g) , _clamp(img.pixels[i].b) )
+        img.pixels[i] = RGB(r, g, b)
+    end
 end
