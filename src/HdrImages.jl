@@ -157,7 +157,6 @@ end
 
 ################################################################################################################
 # Save an LdrImage on an output file
-
 function average_luminosity(img::HdrImage, delta)
     sum = 0.0
     for pixel in img.pixels
@@ -171,7 +170,6 @@ function average_luminosity(img::HdrImage)
 end
 
 # Normalizing the luminosity of a image
-
 function normalize_image(img::HdrImage, a_factor, luminosity)
    
     for i in 1:length(img.pixels)
@@ -188,7 +186,6 @@ function normalize_image(img::HdrImage, a_factor)
 end
 
 # clamping method
-
 function _clamp(x)
     return x/(x+1)
 end
