@@ -158,12 +158,16 @@ end
 ################################################################################################################
 # Save an LdrImage on an output file
 
-function average_luminosity(img::HdrImage, delta=1^-10)
+function average_luminosity(img::HdrImage, delta)
     sum = 0.0
     for pixel in img.pixels
         sum += log10(delta + luminosity(pixel))
     end
     return 10^(sum/length(img.pixels))
+end
+
+function average_luminosity(img::HdrImage)
+    return average_luminosity(img, 10^(-10))
 end
 
 # Normalizing the luminosity of a image
@@ -182,3 +186,6 @@ function normalize_image(img::HdrImage, a_factor)
     normalize_image(img, a_factor, lum)
 
 end
+
+
+
