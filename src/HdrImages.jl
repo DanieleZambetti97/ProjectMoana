@@ -4,7 +4,7 @@ import Base.:write
 
 export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
        _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity, normalize_image, clamp_image
+       average_luminosity, clamp_image
 ###################################################################################################################
 
 # creating HdrImage struct
@@ -15,7 +15,6 @@ mutable struct HdrImage
     HdrImage(w, h) = new(w, h, [RGB() for i in 1:h*w])
     HdrImage(w, h, array) = new(w, h, array)
 end
-
 
 # Check if the coordinates pass are valid
 valid_coordinates(img::HdrImage, x, y) = return((x > 0) && (x <= img.width) && (y >= 0) && (y <= img.height))
@@ -169,25 +168,6 @@ end
 function average_luminosity(img::HdrImage)
     return average_luminosity(img, 10^(-10))
 end
-
-# Normalizing the luminosity of a image
-
-function normalize_image(img::HdrImage, a_factor, luminosity)
-   
-    for i in 1:length(img.pixels)
-        img.pixels[i] = img.pixels[i] * (a_factor/luminosity)
-    end
-
-end
-
-function normalize_image(img::HdrImage, a_factor)
-   
-    lum = average_luminosity(img)
-    normalize_image(img, a_factor, lum)
-
-end
-
-# clamping method
 
 function _clamp(x)
     return x/(x+1)
