@@ -4,7 +4,7 @@ import Base.:write
 
 export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
        _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity
+       average_luminosity, normalize_image
 ###################################################################################################################
 
 # creating HdrImage struct
@@ -162,5 +162,23 @@ function average_luminosity(img::HdrImage, delta=1^-10)
     sum = 0.0
     for pixel in img.pixels
         sum += log10(delta + luminosity(pixel))
+    end
     return 10^(sum/length(img.pixels))
+end
+
+# Normalizing the luminosity of a image
+
+function normalize_image(img::HdrImage, a_factor, luminosity)
+   
+    for i in 1:length(img.pixels)
+        img.pixels[i] = img.pixels[i] * (a_factor/luminosity)
+    end
+
+end
+
+function normalize_image(img::HdrImage, a_factor)
+   
+    lum = average_luminosity(img)
+    normalize_image(img, a_factor, lum)
+
 end
