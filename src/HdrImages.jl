@@ -4,7 +4,7 @@ import Base.:write
 
 export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
        _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity, normalize_image, clamp_image
+       average_luminosity, clamp_image
 ###################################################################################################################
 
 # creating HdrImage struct
@@ -15,7 +15,6 @@ mutable struct HdrImage
     HdrImage(w, h) = new(w, h, [RGB() for i in 1:h*w])
     HdrImage(w, h, array) = new(w, h, array)
 end
-
 
 # Check if the coordinates pass are valid
 valid_coordinates(img::HdrImage, x, y) = return((x > 0) && (x <= img.width) && (y >= 0) && (y <= img.height))
