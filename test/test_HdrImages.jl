@@ -110,8 +110,11 @@ set_pixel(img3, 2, 1, RGB(500.0, 1000.0, 1500.0))  # Luminosity: 1000.0
     normalize_image(img3, 1000.0, 100.0)
     @test isapprox(img3.pixels[get_pixel(img3, 1, 1)], RGB(0.5e2, 1.0e2, 1.5e2))
     @test isapprox(img3.pixels[get_pixel(img3, 2, 1)], RGB(0.5e4, 1.0e4, 1.5e4))
-end    
 
-
-
-   
+    clamp_image(img3)
+    for cur_pixel in img3.pixels
+        @test (cur_pixel.r >= 0) && (cur_pixel.r <= 1)
+        @test (cur_pixel.g >= 0) && (cur_pixel.g <= 1)
+        @test (cur_pixel.b >= 0) && (cur_pixel.b <= 1)
+    end
+end
