@@ -8,26 +8,21 @@ import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image
 function parse_commandline()
     s = ArgParseSettings()
 
-    input_pfm_file_name: str = ""
-    factor:float = 0.2
-    gamma:float = 1.0
-    output_png_file_name: str = ""
-
     @add_arg_table s begin
-        "in_file"
+        "IN_FILE"
             help = "input PFM file name"
             required = true
-        "a_factor"
+        "A_FACTOR"
             help = "a_factor"
             required = true
             default = 0.18
             arg_type = Float64
-        "gamma"
+        "GAMMA"
             help = "gamma factor"
             required = true
             default = 1.0
             arg_type = Float64
-        "out_file"
+        "OUT_FILE"
             help = "output PNG file name"
             required = true
             default = "out.png"
@@ -42,18 +37,18 @@ function main()
 
 # firtsly, open the input file
     img = HdrImage(1, 1)
-    open(params["in_file"], "r") do inpf
+    open(params["IN_FILE"], "r") do inpf
         img = read_pfm_image(inpf)
     end
     
-    println("File $(params["in_file"]) has been read correctly from disk.") # check
+    println("File $(params["IN_FILE"]) has been read correctly from disk.") # check
 
 # normalizing and clamping
 
-    normalize_image(img, params["a_factor"])
+    normalize_image(img, params["A_FACTOR"])
     clamp_image(img)
 
-    # open(params["out_file"], "w") do outf
+    # open(params["OUT_FILE"], "w") do outf
     #     write_ldr_image(img, stream=outf, format="PNG", gamma=parameters.gamma)
     # end
 
