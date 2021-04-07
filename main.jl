@@ -50,9 +50,9 @@ function main()
     normalize_image(img, params["A_FACTOR"])
     clamp_image(img)
   
-    image = reshape(img.pixels, (img.height,img.width))
+    image = reshape(img.pixels, (img.width,img.height))
     
-    Images.save("$(params["OUT_FILE"])",image)
+    save("$(params["OUT_FILE"])",image)
 
     println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
