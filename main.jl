@@ -1,16 +1,9 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
 
-import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image
-import ProjectMoana: greet
+import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, greet
 using ArgParse
 using Images
-
-image = [RGB(0.0, 0.0, 1.0) RGB(1.0, 0.0, 0.0);
-         RGB(0.0, 1.0, 0.0) RGB(1.0, 1.0, 1.0)]
-
-Images.save("test.png", image)
-println("aaaaaaaa")
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
@@ -54,15 +47,38 @@ function main()
 # then normalizing and clamping
 
     normalize_image(img, params["A_FACTOR"])
-    clamp_image(img)
-    println(img.pixels)
-    Images.save("{params["OUT_FILE"]}",img)
+    clamp_image(img)  
+  
+    # image = [RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
+    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0)]
+    image = reshape(img.pixels, (img.height,img.width))
+    
+    Images.save("$(params["OUT_FILE"])",image)
 
     # open(params["OUT_FILE"], "w") do outf
     #     write_ldr_image(img, stream=outf, format="PNG", γ = params["γ"])
     # end
 
-    printLN("File {params["OUT_FILE"]} has been written correctly to disk.") # check
+    println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
 end
 

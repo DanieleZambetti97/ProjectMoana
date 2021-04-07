@@ -4,7 +4,7 @@ import Base.:write
 
 export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
        _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity, clamp_image
+       average_luminosity, clamp_image, normalize_image
 ###################################################################################################################
 
 # creating HdrImage struct
@@ -172,10 +172,11 @@ end
 function normalize_image(img::HdrImage, a_factor, luminosity)
    
     for i in 1:length(img.pixels)
-        img.pixels[i] = img.pixels[i] * (a_factor/luminosity)
+        img.pixels[i] = img.pixels[i]::RGB * (a_factor/luminosity)::Float64
     end
 
 end
+
 
 function normalize_image(img::HdrImage, a_factor)
    
