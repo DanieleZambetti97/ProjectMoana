@@ -13,10 +13,10 @@ Base.:+(c1::RGB{T}, c2::RGB{T}) where {T} = RGB((c1.r + c2.r), (c1.g + c2.g), (c
 Base.:-(c1::RGB{T}, c2::RGB{T}) where {T} = RGB((c1.r - c2.r), (c1.g - c2.g), (c1.b - c2.b))
 
 # Product "scalar * color"
-Base.:*(c::RGB{T}, scalar) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
+# Base.:*(c::RGB{T}, scalar) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
 
 # Product "color * scalar"
-Base.:*(scalar, c::RGB{T}) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
+# Base.:*(scalar, c::RGB{T}) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
 
 # Aprroxmation for two color
 Base.:isapprox(c1::RGB{T}, c2::RGB{T}) where {T} = Base.isapprox(c1.r,c2.r) && Base.isapprox(c1.g,c2.g) && Base.isapprox(c1.b,c2.b) 

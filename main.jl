@@ -6,12 +6,6 @@ import ProjectMoana: greet
 using ArgParse
 using Images
 
-image = [RGB(0.0, 0.0, 1.0) RGB(1.0, 0.0, 0.0);
-         RGB(0.0, 1.0, 0.0) RGB(1.0, 1.0, 1.0)]
-
-Images.save("test.png", image)
-println("aaaaaaaa")
-
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
                                usage = "usage: [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]",
@@ -34,7 +28,7 @@ function parse_commandline()
         "OUT_FILE"
             help = "output PNG file name"
             required = false
-            default = "out.png"
+            default = "out.jpeg"
     end
 
     return parse_args(s)
@@ -56,14 +50,11 @@ function main()
 
     normalize_image(img, params["A_FACTOR"])
     clamp_image(img)
-    println(img.pixels)
-    Images.save("{params["OUT_FILE"]}",img)
+   
+    save("$(params["OUT_FILE"])", img.pixels)
+    
 
-    # open(params["OUT_FILE"], "w") do outf
-    #     write_ldr_image(img, stream=outf, format="PNG", γ = params["γ"])
-    # end
-
-    printLN("File {params["OUT_FILE"]} has been written correctly to disk.") # check
+    println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
 end
 
