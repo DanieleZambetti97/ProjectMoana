@@ -49,10 +49,12 @@ function main()
 
     normalize_image(img, params["A_FACTOR"])
     clamp_image(img)
-  
+
+# saving the image in the output format using Images method
+
     image = reshape(img.pixels, (img.width,img.height))
     
-    save("$(params["OUT_FILE"])",image)
+    save("$(params["OUT_FILE"])",image')
 
     println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
