@@ -1,8 +1,7 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
 
-import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image
-import ProjectMoana: greet
+import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, greet
 using ArgParse
 using Images
 
@@ -50,9 +49,10 @@ function main()
 
     normalize_image(img, params["A_FACTOR"])
     clamp_image(img)
-   
-    save("$(params["OUT_FILE"])", img.pixels)
+  
+    image = reshape(img.pixels, (img.height,img.width))
     
+    Images.save("$(params["OUT_FILE"])",image)
 
     println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
