@@ -47,36 +47,13 @@ function main()
 # then normalizing and clamping
 
     normalize_image(img, params["A_FACTOR"])
-    clamp_image(img)  
-  
-    # image = [RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0);
-    #          RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0) RGB(1.0,0.0,0.0)]
-    image = reshape(img.pixels, (img.height,img.width))
-    
-    Images.save("$(params["OUT_FILE"])",image)
+    clamp_image(img)
 
-    # open(params["OUT_FILE"], "w") do outf
-    #     write_ldr_image(img, stream=outf, format="PNG", γ = params["γ"])
-    # end
+# saving the image in the output format using Images method
+
+    image = reshape(img.pixels, (img.width,img.height))
+    
+    save("$(params["OUT_FILE"])",image')
 
     println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
     
