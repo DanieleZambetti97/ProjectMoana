@@ -7,7 +7,8 @@ using Images
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]")
+                               usage = "usage: [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]",
+                              epilog = "Let's try again!")
 
     @add_arg_table s begin
         "IN_FILE"
@@ -26,7 +27,7 @@ function parse_commandline()
         "OUT_FILE"
             help = "output PNG file name"
             required = false
-            default = "out.png"
+            default = "out.jpeg"
     end
 
     return parse_args(s)
