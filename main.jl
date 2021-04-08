@@ -2,8 +2,9 @@ import Pkg
 Pkg.activate(normpath(@__DIR__))
 
 import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, greet
+import Images: save
 using ArgParse
-using Images
+
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
