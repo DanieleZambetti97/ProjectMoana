@@ -1,11 +1,14 @@
 using ProjectMoana
 using Test
 
-#@testset "RaytracerColors" begin
+@testset "RaytracerColors" begin
     include("test_Raytracer.jl")
-#end
+end
 
-#@testset "HdrImages" begin
+@testset "HdrImages" begin
     include("test_HdrImages.jl")
-#end
+end
 
+@testset "Geometry" begin
+    include("test_Geometry.jl")
+end
