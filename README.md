@@ -3,9 +3,8 @@
 PorjectMoana is a Julia program for converting PFM images into HDR images such as JPEG and PNG formats.
 
 ## Requirements
-Running this program requires an installed version of Julia Language (v1.5 or later, download [here](https://julialang.org/downloads/)).
-
-1) 
+1. Running this program requires an installed version of Julia Language (v1.5 or later, download [here](https://julialang.org/downloads/)).
+2. This program needs a 
 
 ```bash
 pip install foobar
@@ -29,6 +28,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4MjM4NDI0NjcsLTczMzAzMTczMCwtMT
-k3NjkwNTM3MywyMDIwODExNjAyXX0=
+eyJoaXN0b3J5IjpbMTUwODAxOTQ0NCwtNzMzMDMxNzMwLC0xOT
+c2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
