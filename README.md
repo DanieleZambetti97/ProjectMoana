@@ -1,8 +1,6 @@
 # ProjectMoana
 
-# Foobar
-
-Foobar is a Python library for dealing with word pluralization.
+PorjectMoana is a Julia program for converting .
 
 ## Installation
 
@@ -30,5 +28,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
+eyJoaXN0b3J5IjpbLTczMzAzMTczMCwtMTk3NjkwNTM3MywyMD
+IwODExNjAyXX0=
 -->
