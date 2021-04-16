@@ -7,7 +7,9 @@ PorjectMoana is a Julia program for converting PFM images into HDR images such a
 2. This program needs command-line inputs to run, then can only works on Linux/MacOS machines. If you are using a Windows machine we recommend to install a [WSL](https://docs.microsoft.com/it-it/windows/wsl/install-win10).
 
 ## Installation
-1. Download the latest version tar.gz file from the ProjectMoana GitHub repository[ 
+1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v0.1.0);
+2. Exctract the file in the directory you want to use the program in;
+3. 
 
 ```bash
 pip install foobar
@@ -31,6 +33,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExMzMzMTEwODksLTczMzAzMTczMCwtMT
-k3NjkwNTM3MywyMDIwODExNjAyXX0=
+eyJoaXN0b3J5IjpbMTczNzMxNTUxNywtNzMzMDMxNzMwLC0xOT
+c2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
