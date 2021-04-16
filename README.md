@@ -27,20 +27,14 @@ julia> using Pkg 		 # press ] enter the package manager
 julia> Pkg.instantiate() # this command will download and update the dependencies needed (it might take a while...)
 julia> exit()			 # exiting the REPL
 ```
-4. Now just type:
+
+## Usage
+
+Now just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-and the program will show the correct syntax.
-## Usage
-
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
-```
+where the $a$ and $\gamma$ factors 
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -50,6 +44,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODI2Nzk2NiwxNzM3MzE1NTE3LC03MzMwMz
-E3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
+eyJoaXN0b3J5IjpbLTExNzQwNDQ5NDAsMTczNzMxNTUxNywtNz
+MzMDMxNzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
