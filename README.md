@@ -34,7 +34,8 @@ Now just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-where the $a$ and $\gamma$ factors 
+where the $a$ is the tone mapping parameter and $\gamma$ is the monitor-response parameter. They both are set to a default value but the can be changed. 
+Just type `enter code here`
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -44,6 +45,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNzQwNDQ5NDAsMTczNzMxNTUxNywtNz
-MzMDMxNzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
+eyJoaXN0b3J5IjpbMTU2NDU4NzkzMywxNzM3MzE1NTE3LC03Mz
+MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
