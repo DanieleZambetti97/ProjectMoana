@@ -10,9 +10,9 @@ PorjectMoana is a Julia program for converting PFM images into HDR images such a
 1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v0.1.0) or from the terminal:
 ```bash
 wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.tar.gz
-```;
-3. Exctract the file in the directory you want to use the program in;
-4. 
+```
+2. Exctract the file in the directory you want to use the program in;
+3. 
 
 ```bash
 pip install foobar
@@ -36,6 +36,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwMjU5ODUzNiwxNzM3MzE1NTE3LC03Mz
+eyJoaXN0b3J5IjpbLTkxOTQzODI2OSwxNzM3MzE1NTE3LC03Mz
 MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
