@@ -21,8 +21,10 @@ tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 3. From the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
 ```bash
 ~$ julia
-julia> using Pkg 		# press ] enter the package manager
-(@v1.5) pkg> activate . # t
+julia> using Pkg 		 # press ] enter the package manager
+(@v1.5) pkg> activate .
+(ProjectMoana) pkg>      # press backspace to exit
+julia> Pkg.instantiate() # this command will download and update the 
 
 ```
 
@@ -44,6 +46,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE0MDM0MzUxMiwxNzM3MzE1NTE3LC03Mz
+eyJoaXN0b3J5IjpbMTA3MDQ0ODAxNiwxNzM3MzE1NTE3LC03Mz
 MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
