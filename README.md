@@ -1,10 +1,10 @@
 # ProjectMoana
 
-PorjectMoana is a Julia program for converting .
+PorjectMoana is a Julia program for converting PFM images into HDR images such as JPEG and PNG formats.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+1) 
 
 ```bash
 pip install foobar
@@ -28,6 +28,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTczMzAzMTczMCwtMTk3NjkwNTM3MywyMD
-IwODExNjAyXX0=
+eyJoaXN0b3J5IjpbLTE5NzcwOTY1NywtNzMzMDMxNzMwLC0xOT
+c2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
