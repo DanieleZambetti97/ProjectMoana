@@ -34,17 +34,15 @@ Now just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-where the $a$ is the tone mapping parameter and $\gamma$ is the monitor-response parameter. They both are set to a default value but the can be changed. 
+where $a$ is the tone mapping parameter and $\gamma$ is the monitor-response parameter. They both are set to a default value but the can be changed. 
 Just type `julia main.jl --help` for more detailed usage information.
 
 ## Contributing
-Pull requests and contributing are welcome. 
-
-Please make sure to update tests as appropriate.
+[Pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTM0NjM4MzQ2NSwxNzM3MzE1NTE3LC03Mz
-MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
+eyJoaXN0b3J5IjpbMzUzNTgxNzQ0LDE3MzczMTU1MTcsLTczMz
+AzMTczMCwtMTk3NjkwNTM3MywyMDIwODExNjAyXX0=
 -->
