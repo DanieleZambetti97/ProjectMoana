@@ -18,7 +18,10 @@ wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.
 ```bash
 tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 ```
-3. 
+3. Run Julia in the directory where you extracted ProjectMoana with th:
+```bash
+~$ julia
+```
 ## Usage
 
 ```python
@@ -37,6 +40,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTM2NTEwODA1OCwxNzM3MzE1NTE3LC03Mz
+eyJoaXN0b3J5IjpbMTA4MDAzMDY5NSwxNzM3MzE1NTE3LC03Mz
 MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
