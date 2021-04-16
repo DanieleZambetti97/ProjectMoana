@@ -18,10 +18,12 @@ wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.
 ```bash
 tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 ```
-3. Run Julia in the directory where you extracted ProjectMoana with th:
+3. From the Julia REPL import Pkg and activate the ProjectMoana package:
 ```bash
 ~$ julia
+julia> using Pkg
 ```
+
 ## Usage
 
 ```python
@@ -40,6 +42,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA4MDAzMDY5NSwxNzM3MzE1NTE3LC03Mz
+eyJoaXN0b3J5IjpbMTY1MzUwNTg1MiwxNzM3MzE1NTE3LC03Mz
 MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
