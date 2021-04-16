@@ -29,9 +29,9 @@ julia> exit()			 # exiting the REPL
 ```
 4. Now just type:
 ```bash
-
+~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-
+and the program will show the correct syntax.
 ## Usage
 
 ```python
@@ -50,6 +50,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NDcxOTEwMSwxNzM3MzE1NTE3LC03Mz
-MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
+eyJoaXN0b3J5IjpbODI2Nzk2NiwxNzM3MzE1NTE3LC03MzMwMz
+E3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
