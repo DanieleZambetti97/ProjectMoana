@@ -44,6 +44,7 @@ The converted HDR image will be saved in the current directory.
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MzY4Njk2MjQsMTczNzMxNTUxNywtNz
-MzMDMxNzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
+eyJoaXN0b3J5IjpbODMxMjkzNjQwLC0xNjM2ODY5NjI0LDE3Mz
+czMTU1MTcsLTczMzAzMTczMCwtMTk3NjkwNTM3MywyMDIwODEx
+NjAyXX0=
 -->
