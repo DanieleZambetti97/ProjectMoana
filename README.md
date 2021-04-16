@@ -24,7 +24,11 @@ tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 julia> using Pkg 		 # press ] enter the package manager
 (@v1.5) pkg> activate .
 (ProjectMoana) pkg>      # press backspace to exit
-julia> Pkg.instantiate() # this command will download and update the 
+julia> Pkg.instantiate() # this command will download and update the dependencies needed (it might take a while...)
+julia> exit()			 # exiting the REPL
+```
+4. Now just type:
+```bash
 
 ```
 
@@ -46,6 +50,6 @@ Please make sure to update tests as appropriate.
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA3MDQ0ODAxNiwxNzM3MzE1NTE3LC03Mz
+eyJoaXN0b3J5IjpbLTE5NDcxOTEwMSwxNzM3MzE1NTE3LC03Mz
 MwMzE3MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
 -->
