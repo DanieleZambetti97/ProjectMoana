@@ -4,10 +4,12 @@ ProjectMoana is a Julia program for converting PFM images into HDR images, such 
 The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program. 
 
 ## Requirements
+
 1. Running this program requires an installed version of Julia Language (v1.5 or higher, download [here](https://julialang.org/downloads/));
 2. This program needs command-line inputs to run, then can only works on Linux/MacOS machines. If you are using a Windows machine we recommend you to install a [WSL](https://docs.microsoft.com/it-it/windows/wsl/install-win10).
 
 ## Installation
+
 1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v0.1.0) or from the terminal:
 ```bash
 ~$ wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.tar.gz
@@ -31,7 +33,7 @@ julia> exit() # exiting the REPL.
 
 ## Usage
 
-Now just type:
+Just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
@@ -45,7 +47,7 @@ The converted HDR image will be saved in the current directory.
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwNjYyNDA1MjIsODMxMjkzNjQwLC0xNj
-M2ODY5NjI0LDE3MzczMTU1MTcsLTczMzAzMTczMCwtMTk3Njkw
-NTM3MywyMDIwODExNjAyXX0=
+eyJoaXN0b3J5IjpbMTUyMjUyNjQwMCwtMTA2NjI0MDUyMiw4Mz
+EyOTM2NDAsLTE2MzY4Njk2MjQsMTczNzMxNTUxNywtNzMzMDMx
+NzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
