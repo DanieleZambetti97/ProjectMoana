@@ -1,7 +1,6 @@
 # ProjectMoana
 
-> “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”     
-Moana of Motunui
+> “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  
 
 ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
 The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program. 
@@ -51,7 +50,7 @@ The converted HDR image will be saved in the current directory.
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjgyMTgyMzgyLC0xMDY2MjQwNTIyLDgzMT
-I5MzY0MCwtMTYzNjg2OTYyNCwxNzM3MzE1NTE3LC03MzMwMzE3
-MzAsLTE5NzY5MDUzNzMsMjAyMDgxMTYwMl19
+eyJoaXN0b3J5IjpbLTExNDQ0NDI0NjAsLTEwNjYyNDA1MjIsOD
+MxMjkzNjQwLC0xNjM2ODY5NjI0LDE3MzczMTU1MTcsLTczMzAz
+MTczMCwtMTk3NjkwNTM3MywyMDIwODExNjAyXX0=
 -->
