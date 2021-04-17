@@ -39,7 +39,7 @@ Just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-where $a$ is the tone mapping parameter and $\gamma$ is the monitor-response parameter. They both are set to a default value but can be changed. 
+where a is the tone mapping parameter and \gamma is the monitor-response parameter. They both are set to a default value but can be changed. 
 Just type `julia main.jl --help` for more detailed usage information.
 The converted HDR image will be saved in the current directory.
 
