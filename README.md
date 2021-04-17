@@ -41,13 +41,17 @@ where $a$ is the tone mapping parameter and $\gamma$ is the monitor-response par
 Just type `julia main.jl --help` for more detailed usage information.
 The converted HDR image will be saved in the current directory.
 
+## Tips
+
+Since the convertion might take a while, you can boost the process by using the Julia system_image
+
 ## Contributing
 [Pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTUyMjUyNjQwMCwtMTA2NjI0MDUyMiw4Mz
-EyOTM2NDAsLTE2MzY4Njk2MjQsMTczNzMxNTUxNywtNzMzMDMx
-NzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
+eyJoaXN0b3J5IjpbLTEzOTc2NDEzMzYsLTEwNjYyNDA1MjIsOD
+MxMjkzNjQwLC0xNjM2ODY5NjI0LDE3MzczMTU1MTcsLTczMzAz
+MTczMCwtMTk3NjkwNTM3MywyMDIwODExNjAyXX0=
 -->
