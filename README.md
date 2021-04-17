@@ -39,18 +39,18 @@ Just type:
 ```bash
 ~$ julia main.jl [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]
 ```
-where *a* is the tone mapping parameter and *gamma* is the monitor-response parameter. They both are set to a default value but can be changed. 
+where *a* is the tone mapping parameter and *gamma$ is the monitor-response parameter. They both are set to a default value but can be changed. 
 Just type `julia main.jl --help` for more detailed usage information.
 The converted HDR image will be saved in the current directory.
 
 
 ## Contributing
-[Pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Since this is a WIP project [pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNDQ0NDI0NjAsLTEwNjYyNDA1MjIsOD
-MxMjkzNjQwLC0xNjM2ODY5NjI0LDE3MzczMTU1MTcsLTczMzAz
-MTczMCwtMTk3NjkwNTM3MywyMDIwODExNjAyXX0=
+eyJoaXN0b3J5IjpbMTM5NTU2NDIxNiwtMTA2NjI0MDUyMiw4Mz
+EyOTM2NDAsLTE2MzY4Njk2MjQsMTczNzMxNTUxNywtNzMzMDMx
+NzMwLC0xOTc2OTA1MzczLDIwMjA4MTE2MDJdfQ==
 -->
