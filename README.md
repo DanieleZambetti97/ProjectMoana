@@ -28,7 +28,7 @@ The current version is v0.1.0: this is a WIP project and we aim to build a fully
 ~$ julia
 julia> using Pkg  # press ] to enter the package manager;
 (@v1.5) pkg> activate .
-(ProjectMoana) pkg>  # press backspace to exit;
+(ProjectMoana) pkg> # press backspace to exit;
 julia> Pkg.instantiate()  # this command will download and update the dependencies needed (it might take a while...);
 julia> exit() # exiting the REPL.
 ```
