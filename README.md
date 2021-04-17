@@ -21,11 +21,11 @@ tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 3. From the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
 ```bash
 ~$ julia
-julia> using Pkg          # press ] to enter the package manager;
+julia> using Pkg  # press ] to enter the package manager;
 (@v1.5) pkg> activate .
-(ProjectMoana) pkg>       # press backspace to exit;
+(ProjectMoana) pkg>  # press backspace to exit;
 julia> Pkg.instantiate()  # this command will download and update the dependencies needed (it might take a while...);
-julia> exit()             # exiting the REPL.
+julia> exit() # exiting the REPL.
 ```
 
 ## Usage
@@ -44,7 +44,7 @@ The converted HDR image will be saved in the current directory.
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODMxMjkzNjQwLC0xNjM2ODY5NjI0LDE3Mz
-czMTU1MTcsLTczMzAzMTczMCwtMTk3NjkwNTM3MywyMDIwODEx
-NjAyXX0=
+eyJoaXN0b3J5IjpbMTExMTA3MTE0Miw4MzEyOTM2NDAsLTE2Mz
+Y4Njk2MjQsMTczNzMxNTUxNywtNzMzMDMxNzMwLC0xOTc2OTA1
+MzczLDIwMjA4MTE2MDJdfQ==
 -->
