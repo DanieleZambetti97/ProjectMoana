@@ -5,7 +5,6 @@ import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, gre
 import Images: save
 using ArgParse
 
-
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
                                usage = "usage: [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]",
