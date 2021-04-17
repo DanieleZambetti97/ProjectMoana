@@ -1,6 +1,7 @@
 # ProjectMoana
 
-PorjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats.
+ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
+The current version is v0.1.0: this is a WIP project 
 
 ## Requirements
 1. Running this program requires an installed version of Julia Language (v1.5 or later, download [here](https://julialang.org/downloads/));
@@ -9,14 +10,14 @@ PorjectMoana is a Julia program for converting PFM images into HDR images, such 
 ## Installation
 1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v0.1.0) or from the terminal:
 ```bash
-wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.tar.gz
+~$ wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v0.1.0.tar.gz
 ```
 
 > Note: check for the latest version on the repo and change to the current one in the above command.
 
 2. Exctract the file in the directory you want to use the program:
 ```bash
-tar -xf v0.1.0.tar.gz -C /path/to/your/directory
+~$ tar -xf v0.1.0.tar.gz -C /path/to/your/directory
 ```
 3. From the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
 ```bash
@@ -44,7 +45,7 @@ The converted HDR image will be saved in the current directory.
 ## License
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExMTA3MTE0Miw4MzEyOTM2NDAsLTE2Mz
-Y4Njk2MjQsMTczNzMxNTUxNywtNzMzMDMxNzMwLC0xOTc2OTA1
-MzczLDIwMjA4MTE2MDJdfQ==
+eyJoaXN0b3J5IjpbNTI2MjM1NjExLDgzMTI5MzY0MCwtMTYzNj
+g2OTYyNCwxNzM3MzE1NTE3LC03MzMwMzE3MzAsLTE5NzY5MDUz
+NzMsMjAyMDgxMTYwMl19
 -->
