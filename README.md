@@ -1,4 +1,4 @@
-<img title="Moana" src="file:///C:/Users/lucar/OneDrive%20-%20Università%20degli%20Studi%20di%20Milano/Documenti/Scuola/2020-2021%20(II_mag%20Fisica)/II%20semestre/Fotorealistiche/PM_logo-removebg-preview.png" alt="Moana" data-align="inline" width="205">
+<img title="" src="file:///C:/Users/lucar/OneDrive%20-%20Università%20degli%20Studi%20di%20Milano/Documenti/Scuola/2020-2021%20(II_mag%20Fisica)/II%20semestre/Fotorealistiche/PM_logo-removebg-preview.png" alt="" data-align="left" width="204">
 
 # ProjectMoana
 
