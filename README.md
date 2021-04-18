@@ -6,13 +6,19 @@
 
 > “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  
 
+
+
 ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
 The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program.
+
+
 
 ## Requirements
 
 1. Running this program requires an installed version of Julia Language (v1.5 or higher, download [here](https://julialang.org/downloads/));
 2. This program needs command-line inputs to run, then can only works on Linux/MacOS machines. If you are using a Windows machine we recommend you to install a [WSL](https://docs.microsoft.com/it-it/windows/wsl/install-win10).
+
+
 
 ## Installation
 
@@ -43,6 +49,8 @@ The current version is v0.1.0: this is a WIP project and we aim to build a fully
    julia> exit()             # exiting the REPL.
    ```
 
+
+
 ## Usage
 
 Just type:
@@ -55,9 +63,13 @@ where *a* is the tone mapping parameter and $\gamma$ is the monitor-response pa
 Just type `julia main.jl --help` for more detailed usage information.
 The converted HDR image will be saved in the current directory.
 
+
+
 ## Contributing
 
 Since this is a WIP project [pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+
 
 ## License
 
