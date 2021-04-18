@@ -1,4 +1,4 @@
-<img align="right" width="204" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_2.jpg">
+<img align="right" width="204" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_1.jpg">
 
 # ProjectMoana :ocean::ocean:
 > “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  
