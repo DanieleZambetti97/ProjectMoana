@@ -1,4 +1,4 @@
-<img title="" src="file:///C:/Users/lucar/OneDrive%20-%20Università%20degli%20Studi%20di%20Milano/Documenti/Scuola/2020-2021%20(II_mag%20Fisica)/II%20semestre/Fotorealistiche/PM_logo-removebg-preview.png" alt="" data-align="inline" width="205">
+<img title="Moana" src="file:///C:/Users/lucar/OneDrive%20-%20Università%20degli%20Studi%20di%20Milano/Documenti/Scuola/2020-2021%20(II_mag%20Fisica)/II%20semestre/Fotorealistiche/PM_logo-removebg-preview.png" alt="Moana" data-align="inline" width="205">
 
 # ProjectMoana
 
@@ -7,7 +7,7 @@
 > “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  
 
 ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
-The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program. 
+The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program.
 
 ## Requirements
 
