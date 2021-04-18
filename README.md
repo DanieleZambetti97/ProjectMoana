@@ -1,6 +1,6 @@
 <img title="" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_wbg.png" alt="" data-align="left" width="204">
 
-# ProjectMoana
+# ProjectMoana :ocean::ocean:
 
 
 
@@ -9,18 +9,18 @@
 
 
 ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
-The current version is v0.1.0: this is a WIP project and we aim to build a fully operative ray tracing program.
+The current version is v0.1.0: this is a WIP:construction: project and we aim to build a fully operative ray tracing program.
 
 
 
-## Requirements
+## Requirements :heavy_exclamation_mark:
 
-1. Running this program requires an installed version of Julia Language (v1.5 or higher, download [here](https://julialang.org/downloads/));
-2. This program needs command-line inputs to run, then can only works on Linux/MacOS machines. If you are using a Windows machine we recommend you to install a [WSL](https://docs.microsoft.com/it-it/windows/wsl/install-win10).
+1. Running this program requires an installed version of Julia Language (v1.5 or higher, download [here](https://julialang.org/downloads/)); :heavy_check_mark:
+2. This program needs command-line inputs to run, then can only works on Linux/MacOS machines. If you are using a Windows machine we recommend you to install a [WSL](https://docs.microsoft.com/it-it/windows/wsl/install-win10). :heavy_check_mark:
 
 
 
-## Installation
+## Installation :top:
 
 1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v0.1.0) or from the terminal
    
@@ -51,7 +51,7 @@ The current version is v0.1.0: this is a WIP project and we aim to build a fully
 
 
 
-## Usage
+## Usage :keyboard:
 
 Just type:
 
@@ -65,13 +65,13 @@ The converted HDR image will be saved in the current directory.
 
 
 
-## Contributing
+## Contributing :recycle:
 
 Since this is a WIP project [pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 
 
-## License
+## License :registered::copyright:
 
 This program is under a [MIT](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/LICENSE) license.
 
