@@ -1,4 +1,4 @@
-<img title="" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo.jpeg" alt="" data-align="left" width="204">
+<img title="" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_wbg.png" alt="" data-align="left" width="204">
 
 # ProjectMoana
 
