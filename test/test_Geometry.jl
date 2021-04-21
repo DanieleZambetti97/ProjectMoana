@@ -28,6 +28,8 @@ end
 
 
 ## TESTING TRANSFORMATION METHODS ###############################################
+@testset "Geometry Transofrmation tests" begin
+
 m = [[1.0, 2.0, 3.0, 4.0],
      [5.0, 6.0, 7.0, 8.0],
      [9.0, 9.0, 8.0, 7.0],
@@ -90,7 +92,6 @@ expected_v = Vec(14.0, 38.0, 51.0)
 expected_p = Point(18.0, 46.0, 58.0)
 expected_n = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry Transofrmation tests" begin
     @test is_consistent(m1)
     @test isapprox(m1, m2)
     @test isapprox(m1, m3) == false
@@ -100,7 +101,10 @@ expected_n = Normal(-8.75, 7.75, -3.0)
     @test isapprox(expected, m1*m5)
     @test isapprox(expected_v, m1*Vec(1.0, 2.0, 3.0))
     @test isapprox(expected_p, m1*Point(1.0, 2.0, 3.0))
-    # @test isapprox(expected_n, m1*Normal(3.0, 2.0, 4.0))
+
+    m_wrong= m1*Normal(3.,2.,4.)
+    println(m_wrong)
+    @test isapprox(expected_n, m1*Normal(3.0, 2.0, 4.0))
     
 
 
