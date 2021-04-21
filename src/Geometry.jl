@@ -24,9 +24,9 @@ struct Normal
 end
 
 # Implementation of new type Transformation
-struct Transformation
-    m
-    invm
+mutable struct Transformation
+    m::Array{Array{Float64}}
+    invm::Array{Array{Float64}}
     Transformation(m, invm) = new(m, invm)
     Transformation() = new(ID4x4, ID4x4)
     
