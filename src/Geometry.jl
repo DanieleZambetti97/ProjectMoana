@@ -2,6 +2,7 @@ import Base.:+, Base.:*, Base.:≈, Base.:-
 
 export Vec, Point, cross, squared_norm, norm, normalize
 
+# Implementation of new type Vec
 struct Vec
     vx::Float64
     vy::Float64
@@ -9,13 +10,14 @@ struct Vec
 
 end
 
-
 # Implementation of new type Point
 struct Point
     x::Float64
     y::Float64
     z::Float64
 end
+
+# Basic operations:
 
 Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx) && Base.isapprox(V1.vy,V2.vy) && Base.isapprox(V1.vz,V2.vz)
 
@@ -29,10 +31,10 @@ Base.:*(scalar::Real, V1::Vec )   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.vx*V2.vx)+(V1.vy*V2.vy)+(V1.vz*V2.vz)
 
-# Operations:
-
+# Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.vy * V2.vz - V1.vz * V2.vy), (V1.vz * V2.vx - V1.vx * V2.vz), (V1.vx * V2.vy - V1.vy * V2.vx) )
 
+# Norm
 squared_norm(V1::Vec) = V1*V1
 
 norm(V1::Vec) = sqrt(squared_norm(V1))
