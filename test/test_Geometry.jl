@@ -101,7 +101,7 @@ expected_n = Normal(-8.75, 7.75, -3.0)
     @test isapprox(expected, m1*m5)
     @test isapprox(expected_v, m1*Vec(1.0, 2.0, 3.0))
     @test isapprox(expected_p, m1*Point(1.0, 2.0, 3.0))
-    println(m1)
+    println(m1.m)
     @test isapprox(expected_n, m1*Normal(3.0, 2.0, 4.0))
     
 end
