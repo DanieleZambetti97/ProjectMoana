@@ -27,8 +27,7 @@ b = Point(4.0, 6.0, 8.0)
 end
 
 
-## TESTING TRANSFORMATION METHODS #######################################
-
+## TESTING TRANSFORMATION METHODS ###############################################
 m = [[1.0, 2.0, 3.0, 4.0],
      [5.0, 6.0, 7.0, 8.0],
      [9.0, 9.0, 8.0, 7.0],
@@ -91,7 +90,7 @@ expected_v = Vec(14.0, 38.0, 51.0)
 expected_p = Point(18.0, 46.0, 58.0)
 expected_n = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry Transformation tests" begin
+@testset "Geometry Transofrmation tests" begin
     @test is_consistent(m1)
     @test isapprox(m1, m2)
     @test isapprox(m1, m3) == false
@@ -103,4 +102,49 @@ expected_n = Normal(-8.75, 7.75, -3.0)
     @test isapprox(expected_p, m1*Point(1.0, 2.0, 3.0))
     # @test isapprox(expected_n, m1*Normal(3.0, 2.0, 4.0))
     
+
+
+m1 = Transformation( [[1.0, 2.0, 3.0, 4.0],
+                     [5.0, 6.0, 7.0, 8.0],
+                     [9.0, 9.0, 8.0, 7.0],
+                     [6.0, 5.0, 4.0, 1.0]]
+                   , [[-3.75, 2.75, -1, 0],
+                     [4.375, -3.875, 2.0, -0.5],
+                     [0.5, 0.5, -1.0, 1.0],
+                     [-1.375, 0.875, 0.0, -0.5]] )
+
+    m2 = inverse(m1)
+    @test is_consistent(m2)
+    prod = m1 * m2
+    @test is_consistent(prod)
+    @test isapprox(prod, Transformation() )
+
+    tr1 = translation(Vec(1.0, 2.0, 3.0))
+    @test is_consistent(tr1)
+    tr2 = translation(Vec(4.0, 6.0, 8.0))
+    @test is_consistent(tr2)
+    prod = tr1 * tr2
+    @test is_consistent(prod)
+    expected = translation(Vec(5.0, 8.0, 11.0))
+    @test isapprox(expected, prod)
+
+    @test is_consistent(rotation_x(0.1))
+    @test is_consistent(rotation_y(0.1))
+    @test is_consistent(rotation_z(0.1))
+    
+    @test isapprox(Vec(0.0, 1.0*10^-17,0.0), Vec(0.0,0.0,0.0))
+
+    @test isapprox( (rotation_x( pi/2 ) * Vec(0.0, 1.0, 0.0)) , (Vec(0.0, 0.0, 1.0)) )
+    @test isapprox( (rotation_y( pi/2 ) * Vec(0.0, 0.0, 1.0)) , (Vec(1.0, 0.0, 0.0)) )
+    @test isapprox( (rotation_z( pi/2 ) * Vec(1.0, 0.0, 0.0)) , (Vec(0.0, 1.0, 0.0)) )
+   
+    tr1 = scaling(Vec(2.0, 5.0, 10.0))
+    @test is_consistent(tr1)
+
+    tr2 = scaling(Vec(3.0, 2.0, 4.0))
+    @test is_consistent(tr2)
+
+    expected = scaling(Vec(6.0, 10.0, 40.0))
+    @test isapprox(tr1 * tr2, expected)
+
 end
