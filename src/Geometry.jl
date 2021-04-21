@@ -29,6 +29,12 @@ struct Transformation
     invm
     Transformation(m, invm) = new(m, invm)
     Transformation() = new(ID4x4, ID4x4)
+    
+end
+
+function is_consistent(trans)
+    prod = _matr_prod(trans.m, trans.invm)
+    return isapprox(prod, ID4x4)
 end
 
 # Supporting methods for Transformation
@@ -57,6 +63,8 @@ ID4x4 = [[1.0, 0.0, 0.0, 0.0],
 
 # Basic operations:
 Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx, atol = 10^-15) && Base.isapprox(V1.vy,V2.vy, atol = 10^-15) && Base.isapprox(V1.vz,V2.vz, atol = 10^-15)
+
+Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x) && Base.isapprox(n1.y,n2.y) && Base.isapprox(n1.z,n2.z)
 
 Base.:+(V1::Vec , V2::Vec )  = Vec((V1.vx+V2.vx), (V1.vy+V2.vy), (V1.vz+V2.vz))
 
@@ -118,18 +126,24 @@ end
 Base.:*(M1::Transformation, M2::Transformation) = Transformation(_matr_prod(M1.m, M2.m), _matr_prod(M2.invm, M1.invm))
 
 function Base.:*(M::Transformation, P::Point)
-    a = Point(P.x * M.m[1][0+1] + P.y * M.m[1][1+1] + P.z * M.m[1][2+1] + M.m[1][3+1], P.x * M.m[2][0+1] + P.y * M.m[2][1+1] + P.z * M.m[2][2+1] + M.m[2][3+1], P.x * M.m[3][0+1] + P.y * M.m[3][1+1] + P.z * M.m[3][2+1] + M.m[3][3+1] )
-    norm = P.x * M.m[3][0+1] + P.y * M.m[3][1+1] + P.z * M.m[3][2+1] + M.m[3][3+1]
-    if norm == 1.0
-        return a
-    else
-        return Point(a.x / norm, a.y / nomr, a.z / norm)
-    end
+    a = Point(P.x * M.m[1][1] + P.y * M.m[1][2] + P.z * M.m[1][3] + M.m[1][4], 
+              P.x * M.m[2][1] + P.y * M.m[2][2] + P.z * M.m[2][3] + M.m[2][4], 
+              P.x * M.m[3][1] + P.y * M.m[3][2] + P.z * M.m[3][3] + M.m[3][4] )
+    # norm = P.x * M.m[4][1] + P.y * M.m[4][2] + P.z * M.m[4][3] + M.m[4][4]
+    # if norm == 1.0
+    #     return a
+    # else
+    #     return Point(a.x / norm, a.y / norm, a.z / norm)
+    # end
 end
 
-Base.:*(M::Transformation, V::Vec) = Vec( V.vx * M.m[0+1][0+1] + V.vy * M.m[0+1][1+1] + V.vz * M.m[0+1][2+1], V.vx * M.m[1+1][0+1] + V.vy * M.m[1+1][1+1] + V.vz * M.m[1+1][2+1], V.vx * M.m[2+1][0+1] + V.vy * M.m[2+1][1+1] + V.vz * M.m[2+1][2+1])
+Base.:*(M::Transformation, V::Vec) = Vec( V.vx * M.m[1][1] + V.vy * M.m[1][2] + V.vz * M.m[1][3], 
+                                          V.vx * M.m[2][1] + V.vy * M.m[2][2] + V.vz * M.m[2][3], 
+                                          V.vx * M.m[3][1] + V.vy * M.m[3][2] + V.vz * M.m[3][3])
 
-Base.:*(M::Transformation, N::Normal) = Normal(N.x * M.m[0+1][0+1] + N.y * M.m[1+1][0+1] + N.z * M.m[2+1][0+1], N.x * M.m[0+1][1+1] + N.y * M.m[1+1][1+1] + N.z * M.m[2+1][1+1], N.x * M.m[0+1][2+1] + N.y * M.m[1+1][2+1] + N.z * M.m[2+1][2+1])
+Base.:*(M::Transformation, N::Normal) = Normal(N.x * M.invm[1][1] + N.y * M.invm[2][1] + N.z * M.invm[3][1], 
+                                               N.x * M.invm[1][2] + N.y * M.invm[2][2] + N.z * M.invm[3][2], 
+                                               N.x * M.invm[1][3] + N.y * M.invm[2][3] + N.z * M.invm[3][3])
 
 function inverse(M::Transformation)
     return Transformation(M.invm, M.m)
