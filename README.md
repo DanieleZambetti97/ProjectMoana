@@ -1,6 +1,7 @@
 <img align="right" width="300" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_2.png">
 
 # ProjectMoana :ocean::ocean:
+[![Unit tests](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml/badge.svg)](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml)
 > “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  [💬](https://www.youtube.com/watch?v=fZ3QhwgVOTU)
 
 ProjectMoana is a Julia program for converting PFM images into HDR images, such as JPEG and PNG formats. 
