@@ -58,3 +58,33 @@ Base.:-(P::Point, V::Vec) = Point(P.x - V.Vx, P.y - V.Vy, P.z - V.Vz)
 
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
+
+# Transformation methods
+function Base.isapprox(M1::Transformation, M2::Transformation)
+    for i in 1:4 j in 1:4
+        if isapprox(M1.m[i][j], M2.m[i][j]) == false 
+            return false
+        end
+    end
+
+    return true
+end
+
+Base.:*(M1::Transformation, M2::Transformation) = Transformation(_matr_prod(M1.m, M2.m), _matr_prod(M2.invm, M1.invm))
+
+function Base.:*(M::Transformation, P::Point)
+    a = Point(P.x * M.m[1][0] + P.y * M.m[1][1] + P.z * M.m[1][2] + M.m[1][3], P.x * M.m[2][0] + P.y * M.m[2][1] + P.z * M.m[2][2] + M.m[2][3], P.x * M.m[3][0] + P.y * M.m[3][1] + P.z * M.m[3][2] + M.m[3][3] )
+    norm = P.x * M.m[3][0] + P.y * M.m[3][1] + P.z * M.m[3][2] + M.m[3][3]
+    if norm == 1.0:
+        return a
+    else:
+        return Point(a.x / norm, a.y / nomr, a.z / norm)
+end
+
+Base.:*(M::Transformation, V::Vec) = Vec( V.x * M.m[0][0] + V.y * M.m[0][1] + V.z * M.m[0][2], V.x * M.m[1][0] + V.y * M.m[1][1] + V.z * M.m[1][2], V.x * M.m[2][0] + V.y * M.m[2][1] + V.z * M.m[2][2])
+
+Base.:*(M::Transformation, N::Normal) = Normal(N.x * M.m[0][0] + N.y * M.m[1][0] + N.z * M.m[2][0], N.x * M.m[0][1] + N.y * M.m[1][1] + N.z * M.m[2][1], N.x * M.m[0][2] + N.y * M.m[1][2] + N.z * M.m[2][2])
+
+function inverse(M::Transformation):
+    return Transformation(M.invm, M.m)
+end
