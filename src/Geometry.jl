@@ -56,7 +56,7 @@ ID4x4 = [[1.0, 0.0, 0.0, 0.0],
 
 
 # Basic operations:
-Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx) && Base.isapprox(V1.vy,V2.vy) && Base.isapprox(V1.vz,V2.vz)
+Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx, atol = 10^-15) && Base.isapprox(V1.vy,V2.vy, atol = 10^-15) && Base.isapprox(V1.vz,V2.vz, atol = 10^-15)
 
 Base.:+(V1::Vec , V2::Vec )  = Vec((V1.vx+V2.vx), (V1.vy+V2.vy), (V1.vz+V2.vz))
 
@@ -105,10 +105,8 @@ function _are_matr_close(m1, m2)
         for j in 1:4
             b = isapprox(m1[i][j], m2[i][j])
             a = a*b
-            println(a)
         end
     end
-    println(a)
     return a
 end
 
