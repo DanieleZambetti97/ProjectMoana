@@ -94,8 +94,8 @@ N_expected = Normal(-8.75, 7.75, -3.0)
    
     translation_1 = scaling(Vec(2.0, 5.0, 10.0))
     translation_2 = scaling(Vec(3.0, 2.0, 4.0))
-    expected = scaling(Vec(16.0, 10.0, 40.0)) #ho messo 16 che è sbagliato per verificare che segnali il test non passato
-
+    expected = scaling(Vec(6.0, 10.0, 40.0))
+    
     @test is_consistent(translation_2)
     @test is_consistent(translation_1)
     @test isapprox(translation_1 * translation_2, expected)
