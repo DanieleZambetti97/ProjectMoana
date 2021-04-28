@@ -1,26 +1,42 @@
-import Geometry
+import Base.:≈
 
-export Camera, OrthogonalCamera, PerspectiveCamera
+export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray
 
-struct Camera
+struct Ray
+    origin::Point 
+    dir::Vec
+    tmin::Float64
+    tmax::Float64 
+    depth::Int16
+    
+    Ray(origin, dir) = new(origin, dir, 1e-5, Inf, 0)
+    Ray(origin, dir, tmin) = new(origin, dir, tmin, Inf, 0)
+    Ray(origin, dir, tmin, tmax) = new(origin, dir, tmin, tmax, 0)
+    Ray(origin, dir, tmin, tmax, depth) = new(origin, dir, tmin, tmax, depth)
+
 end
 
-struct OrthogonalCamera
+Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
+
+abstract type Camera
+end
+
+struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
 
     OrthogonalCamera(a, T) = new(a, T)
-    OrthogonalCamera(a) = new(a, Transformation() )
-    OrthogonalCamera() = new( 1.0, 1.0, Transformation() )
-
-    function fire_ray( u, v)
-        Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0), 1.0 )
-        return transformation * Ray_StandardFrame
-    end
+    OrthogonalCamera(a::Float64) = new(a, Transformation() )
+    OrthogonalCamera(T::Transformation) = new(1.0, T )
+    OrthogonalCamera() = new( 1.0, Transformation() )
 
 end
+function fire_ray( camera::OrthogonalCamera, u, v)
+    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0), 1.0 )
+    return camera.transformation * Ray_StandardFrame
+end
 
-struct PerspectiveCamera
+struct PerspectiveCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
     distance::Float64
@@ -31,8 +47,14 @@ struct PerspectiveCamera
     PerspectiveCamera() = new(1.0, Transformation(), 1.0 )  
 end
 
+function fire_ray(camera::PerspectiveCamera, u, v)
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0 )
+    return camera.transformation * Ray_StandardFrame
+end
 
-# function fire_ray(camera, u, v)
-#     Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0 )
-#     return camera.transformation * Ray_StandardFrame
-# end
+
+# at method
+at(ray::Ray, t::Float64) = ray.origin + ray.dir*t
+
+# approx method for testing Ray
+Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)

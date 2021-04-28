@@ -1,4 +1,4 @@
-import Base.:+, Base.:*, Base.:≈, Base.:-, RaytracerObjects:Ray
+import Base.:+, Base.:*, Base.:≈, Base.:-
 
 export Vec, Point, Transformation, Normal, cross, squared_norm, norm, normalize, translation, scaling, rotation_x, rotation_y, rotation_z,
        inverse, is_consistent
@@ -88,7 +88,7 @@ normalize(V1::Vec) = Vec( (V1.vx/norm(V1)), (V1.vy/norm(V1)), (V1.vz/norm(V1)) )
 Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x) && Base.isapprox(P1.y,P2.y) && Base.isapprox(P1.z,P2.z) 
 
 # Sum Point + Vector returning a Point
-Base.:+(P::Point, V::Vec) = Point(P.x + V.Vx, P.y + V.Vy, P.z + V.Vz)
+Base.:+(P::Point, V::Vec) = Point(P.x + V.vx, P.y + V.vy, P.z + V.vz)
 
 # Sum Point + Point returning a Point
 Base.:+(P1::Point, P2::Point) = Point(P1.x + P2.x, P1.y + P2.y, P1.z + P2.z)
@@ -97,7 +97,7 @@ Base.:+(P1::Point, P2::Point) = Point(P1.x + P2.x, P1.y + P2.y, P1.z + P2.z)
 Base.:-(P1::Point, P2::Point) = Vec(P1.x - P2.x, P1.y - P2.y, P1.z - P2.z)
 
 # Difference Point - Vector returning a Point
-Base.:-(P::Point, V::Vec) = Point(P.x - V.Vx, P.y - V.Vy, P.z - V.Vz)
+Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
 
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
@@ -133,7 +133,6 @@ Base.:*(M::Transformation, N::Normal) = Normal( N.x * M.invm[1][1] + N.y * M.inv
                                                 N.x * M.invm[1][2] + N.y * M.invm[2][2] + N.z * M.invm[3][2], 
                                                 N.x * M.invm[1][3] + N.y * M.invm[2][3] + N.z * M.invm[3][3] )
 
-Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
 
 function inverse(M::Transformation)
     return Transformation(M.invm, M.m)
