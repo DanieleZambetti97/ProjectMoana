@@ -1,4 +1,4 @@
-import Base.:+, Base.:*, Base.:≈, Base.:-
+import Base.:+, Base.:*, Base.:≈, Base.:-, RaytracerObjects:Ray
 
 export Vec, Point, Transformation, Normal, cross, squared_norm, norm, normalize, translation, scaling, rotation_x, rotation_y, rotation_z,
        inverse, is_consistent
@@ -133,6 +133,8 @@ Base.:*(M::Transformation, N::Normal) = Normal( N.x * M.invm[1][1] + N.y * M.inv
                                                 N.x * M.invm[1][2] + N.y * M.invm[2][2] + N.z * M.invm[3][2], 
                                                 N.x * M.invm[1][3] + N.y * M.invm[2][3] + N.z * M.invm[3][3] )
 
+Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
+
 function inverse(M::Transformation)
     return Transformation(M.invm, M.m)
 end
@@ -210,3 +212,4 @@ function rotation_z(angle_rad::Float64)
     
     return Transformation(m, invm)
 end
+
