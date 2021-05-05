@@ -1,4 +1,4 @@
-    using ProjectMoana
+using ProjectMoana
 using ColorTypes
 ## TESTING RAY METHODS ###############################################
 
@@ -40,7 +40,7 @@ end
     @test isapprox( at(ray3,1.0), Point(0.0, 2.0, 1.0) )
     @test isapprox( at(ray4,1.0), Point(0.0, -2.0, 1.0 ))
 
-    cam = OrthogonalCamera( translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0) )
+    cam = OrthogonalCamera(translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0))
     ray = fire_ray(cam, 0.5, 0.5)
 
     @test isapprox( at(ray, 1.0), Point(0.0, -2.0, 0.0))
@@ -48,17 +48,17 @@ end
 
 ## TESTING ImageTracer METHODS ###############################################
 
-image = HdrImage(4, 2)
+image  = HdrImage(4, 2)
 camera = PerspectiveCamera(2)
 tracer = ImageTracer(image, camera)
 
 ray1 = fire_ray(tracer, 0, 0, 2.5, 1.5)
 ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
-fire_all_rays(tracer, ray -> Color(1.0, 2.0, 3.0))
+fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0))
 
 top_left_ray = fire_ray(tracer, 0, 0, 0.0, 0.0)
-bottom_right_ray = fire_ray(tracer, 3, 1, u_pixel=1.0, v_pixel=1.0)
+bottom_right_ray = fire_ray(tracer, 3, 1, 1.0, 1.0)
 
 @testset "ImageTracer tests" begin
     # uv submapping
@@ -71,7 +71,7 @@ bottom_right_ray = fire_ray(tracer, 3, 1, u_pixel=1.0, v_pixel=1.0)
     # image coverage
     for row ∈ 1:image.height
         for col ∈ 1:image.width
-            @test image.get_pixel(col, row) == Color(1.0, 2.0, 3.0)
+            @test image.pixels[get_pixel(image, col, row)] == RGB(1.0, 2.0, 3.0)
         end
     end
     
