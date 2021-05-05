@@ -57,8 +57,13 @@ ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
 fire_all_rays(tracer, ray -> Color(1.0, 2.0, 3.0))
 
+bottom_right_ray = fire_ray(tracer, 3, 1, u_pixel=1.0, v_pixel=1.0)
+
 @testset "ImageTracer tests" begin
     @test isapprox(ray1, ray2)
+
+    @test isapprox(Point(0.0, -2.0, -1.0), at(bottom_right_ray, 1.0) )
+
     for row ∈ 1:image.height
         for col ∈ 1:image.width
             @test image.get_pixel(col, row) == Color(1.0, 2.0, 3.0)
