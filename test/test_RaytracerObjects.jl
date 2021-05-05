@@ -1,4 +1,4 @@
-using ProjectMoana
+    using ProjectMoana
 using ColorTypes
 ## TESTING RAY METHODS ###############################################
 
@@ -48,14 +48,16 @@ end
 
 ## TESTING ImageTracer METHODS ###############################################
 
-image = HdrImage(width = 4, height = 2)
-camera = PerspectiveCamera(aspect_ratio = 2)
-tracer = ImageTracer(image = image, camera = camera)
+image = HdrImage(4, 2)
+camera = PerspectiveCamera(2)
+tracer = ImageTracer(image, camera)
 
 ray1 = fire_ray(tracer, 0, 0, 2.5, 1.5)
 ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
 fire_all_rays(tracer, ray -> Color(1.0, 2.0, 3.0))
+
+top_left_ray = fire_ray(tracer, 0, 0, 0.0, 0.0)
 
 @testset "ImageTracer tests" begin
     @test isapprox(ray1, ray2)
@@ -64,4 +66,5 @@ fire_all_rays(tracer, ray -> Color(1.0, 2.0, 3.0))
             @test image.get_pixel(col, row) == Color(1.0, 2.0, 3.0)
         end
     end
+    @test isapprox(at(top_left_ray, 1.0), Point(0.0, 2.0, 1.0))
 end
