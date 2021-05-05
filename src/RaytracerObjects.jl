@@ -1,4 +1,4 @@
-export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray
+export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray, fire_all_rays, ImageTracer
 
 
 """
@@ -69,17 +69,9 @@ struct ImageTracer
     camera::Camera
 end
 
-function fire_ray(im::ImageTracer, col, row)
-    u_pixel=0.5
-    v_pixel=0.5
-    u = (col + u_pixel)/(im.image.width - 1)
-    v = (col + v_pixel)/(im.image.height - 1)
-    return fire_ray(im.camera, u, v)
-end
-
-function fire_ray(im::ImageTracer, col, row, u_pixel, v_pixel)
-    u = (col + u_pixel)/(im.image.width - 1)
-    v = (col + v_pixel)/(im.image.height - 1)
+function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
+    u = (col + u_pixel)/(im.image.width)
+    v = 1.0 - (row + v_pixel)/(im.image.height)
     return fire_ray(im.camera, u, v)
 end
 
@@ -88,7 +80,7 @@ function fire_all_rays(im::ImageTracer, func)
         for col ∈ 1:im.image.width
             ray = fire_ray(im, col, row)
             color = func(ray)
-            im.image.set_pixel(col, row, color)
+            im.image.pixels[get_pixel(im.image, col, row)] = color
         end
     end
 end
