@@ -1,7 +1,3 @@
-import Base.:+, Base.:*, Base.:≈, Base.:-
-
-export Vec, Point, Transformation, Normal, cross, squared_norm, norm, normalize, translation, scaling, rotation_x, rotation_y, rotation_z,
-       inverse, is_consistent
 # Implementation of new type Vec
 struct Vec
     vx::Float64
@@ -23,6 +19,10 @@ struct Normal
     z::Float64
 end
 
+struct Vec2D
+    u::Float64
+    v::Float64
+end
 # Implementation of new type Transformation
 mutable struct Transformation
     m::Array{Array{Float64}}
