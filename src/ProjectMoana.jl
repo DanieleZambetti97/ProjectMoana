@@ -8,7 +8,7 @@ export HdrImage, InvalidPfmFileFormat,
        average_luminosity, clamp_image, normalize_image, read_pfm_image
 
 export Vec, Point, Transformation, Normal,
-       cross, squared_norm, norm, normalize, inverse, is_consistent,
+       cross, squared_norm, norm, normalize, inverse, is_consistent, toVec,
        translation, scaling, rotation_x, rotation_y, rotation_z
 
 export Camera, OrthogonalCamera, PerspectiveCamera, Ray, ImageTracer,

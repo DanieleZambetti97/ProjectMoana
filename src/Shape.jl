@@ -3,11 +3,13 @@ abstract type Shape
 end
 
 function ray_intersection(shape::Shape, ray::Ray)
-    return nothing
+    return nothing   #sarebbe meglio far uscire un error
 end
 
 struct Sphere
-    r::Float64
+    transformation::Transformation
+    Sphere() = new(Transformation())
+    Sphere(transformation::Transformation) = new(transformation)
 end
 
 struct HitRecord
@@ -20,8 +22,52 @@ end
 
 Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
 
-function ray_intersection(sphere::Sphere, ray::Ray)
+function _sphere_point_to_uv(point::Point)
+    u = atan2(point.y, point.x) / (2.0 * pi)
+    if u >= 0.0 
+        u = u
+    else
+        u = u + 1.0
+    end
+    v=acos(point.z) / pi
+    return Vec2D( u , v )
 end
 
-#########
+function _sphere_normal(point::Point, ray_dir::Vec)
+    result = Normal(point.x, point.y, point.z)
+    if toVec(point)*ray_dir < 0.0
+        return -result
+    else
+        return result
+    end
+end
 
+function ray_intersection(sphere::Sphere, ray::Ray)
+    inverse_ray= ray* inverse(sphere.transformation)
+    origin_vec = toVec(ray.origin)
+    a = squared_norm(ray.dir)
+    b = 2.0 * origin_vec * inverse_ray.dir
+    c = squared_norm(origin_vec)
+
+    Δ = b * b - 4 * a * c
+
+    if Δ<0
+        return nothing
+    else 
+        t_1 = ( -b - sqrt(Δ) ) / ( 2. * a )
+        t_2 = ( -b + sqrt(Δ) ) / ( 2. * a )
+        
+        if t_1 > inverse_ray.tmin && t_1 < inverse_ray.tmax
+            first_hit_t = t_1
+        elseif t_2 > inverse_ray.tmin && t_2 < inverse_ray.tmax
+            first_hit_t = t_2
+        else
+            return nothing
+        end
+        
+        hit_point = at(inverse_ray, first_hit_t)
+    end
+
+    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray )
+
+end

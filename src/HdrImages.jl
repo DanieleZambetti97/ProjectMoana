@@ -1,15 +1,5 @@
 using ColorTypes
 
-<<<<<<< HEAD
-###################################################################################################################
-=======
-import Base.:write
-
-export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
-       _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
-       average_luminosity, clamp_image, normalize_image
->>>>>>> e0841b97214855bc059f25a6eb97792c14e5a50f
-
 # creating HdrImage struct
 """
 This struct creates a **HdrImage**.

@@ -1,4 +1,3 @@
-using ProjectMoana
 # TESTING THE BASIC METHODS FOR HdrImages #######################################################################################
 
 img = HdrImage(3, 2)
