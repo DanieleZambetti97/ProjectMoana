@@ -24,7 +24,6 @@ function ray_intersection(sphere::Sphere, ray::Ray)
 end
 
 # Defining the sturct World 
-
 struct Wolrd
     shapes::Array{Shape}
     Wolrd() = new([]) 
@@ -36,14 +35,18 @@ add_shape(world::Wolrd, shape::Shape) = append!(world.shapes, shape)
 # Overloading for ray_intersection with the struct Wolrd
 function ray_intersection(world::Wolrd, ray::Ray)
     closest = nothing
-
     for i ∈ 1:length(world.shapes)
         intersection = ray_intersection(world.shapes[i], ray)
-        if intersection = nothing
-            continue
-        elseif intersection.t <  
-    end
 
+        if intersection != nothing
+            continue
+
+        elseif closest != nothing  || (intersection.t < closest.t)
+            closest = intersection
+        end
+    end
+    return closest
+    
 end
 
 
