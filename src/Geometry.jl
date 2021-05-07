@@ -83,6 +83,8 @@ Base.:*(scalar::Real, V1::Vec )   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.vx*V2.vx)+(V1.vy*V2.vy)+(V1.vz*V2.vz)
 
+Base.:≈(V1::Vec2D, V2::Vec2D) = V1.u ≈ V2.u && V1.v ≈ V2.v
+
 # Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.vy * V2.vz - V1.vz * V2.vy), (V1.vz * V2.vx - V1.vx * V2.vz), (V1.vx * V2.vy - V1.vy * V2.vx) )
 
@@ -111,7 +113,10 @@ Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
 
-
+# Convert a Point into a Vec
+function toVec(point::Point)
+    return Vec(point.x,point.y,point.z)
+end
 
 ## TRANSFORMATON METHODS #######################################################################################################à
 function _are_matr_close(m1, m2)
