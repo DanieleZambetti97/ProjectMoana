@@ -25,7 +25,7 @@ function parse_commandline()
             default = 1.0
             arg_type = Float64
         "OUT_FILE"
-            help = "output PNG file name"
+            help = "output LDR file name"
             required = false
             default = "out.jpeg"
     end
