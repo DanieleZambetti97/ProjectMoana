@@ -1,8 +1,26 @@
 using ColorTypes
 
+<<<<<<< HEAD
 ###################################################################################################################
+=======
+import Base.:write
+
+export HdrImage, read_pfm_image, valid_coordinates, pixel_offset, get_pixel, set_pixel,
+       _parse_img_size, _parse_endianness, _read_float, _read_line, InvalidPfmFileFormat,
+       average_luminosity, clamp_image, normalize_image
+>>>>>>> e0841b97214855bc059f25a6eb97792c14e5a50f
 
 # creating HdrImage struct
+"""
+This struct creates a **HdrImage**.
+
+## Arguments
+- *width* -> integer;
+- *height* -> integer;
+- *pixels* -> a monodimensional array of RGB colors;
+
+If not specified, the pixels array is this: ``[RGB() for i in 1:h*w]``.
+"""
 mutable struct HdrImage
     width::Int
     height::Int
@@ -11,9 +29,8 @@ mutable struct HdrImage
     HdrImage(w, h, array) = new(w, h, array)
 end
 
-# Check if the coordinates pass are valid
+# Check if the coordinates passed are valid
 valid_coordinates(img::HdrImage, x, y) = return((x > 0) && (x <= img.width) && (y >= 0) && (y <= img.height))
-
 
 # Check that the (x,y) pixel of the image is in the right place in the linear array pixels of the struct
 pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
@@ -25,8 +42,8 @@ get_pixel(img::HdrImage, x, y) =  valid_coordinates(img, x, y) && return( pixel_
 set_pixel(img::HdrImage, x, y, new_color::RGB) =  valid_coordinates(img, x, y) && (img.pixels[ get_pixel(img, x, y)] = new_color)
 
 
-################################################################################################################
-# Save an HdrImage on a stream or an output file in PFM format
+## SAVING an HdrImage on a stream or an output file in PFM format ################################################################
+
 function Base.write(io::IO, img::HdrImage)
     header = transcode(UInt8, "PF\n$(img.width) $(img.height)\n$(-1.0)\n")
     write(io, header)
@@ -46,8 +63,8 @@ function Base.write(file_output::String, img::HdrImage)
     write(io, img)
 end
 
-######################################################################################################
-# Read an HdrImage in PMF format from a file
+
+## READ an HdrImage in PMF format from a file #############################################################################
 
 # new error message InvalidPfmFileFormat
 struct InvalidPfmFileFormat <: Exception
@@ -58,7 +75,7 @@ struct InvalidPfmFileFormat <: Exception
     end
 end
 
-# Support function for read_pfm_image
+# Supporting function for read_pfm_image
 function _read_line(stream::IO)
     result = ""
     while true
@@ -149,8 +166,8 @@ function read_pfm_image(filein::String)
     read_pfm_image(io)
 end
 
-################################################################################################################
-# Save an LdrImage on an output file
+
+## SAVE an LdrImage on an output file #############################################################################à
 function average_luminosity(img::HdrImage, delta)
     sum = 0.0
     for pixel in img.pixels

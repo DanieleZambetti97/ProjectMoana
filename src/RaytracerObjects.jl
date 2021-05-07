@@ -1,8 +1,9 @@
 export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray, fire_all_rays, ImageTracer
 
+## Code for RAYS #########################################################################################################################
 
 """
-This Struct creates a **Ray**. Its constructor takes a origin point (Point type) and a direction vector (Vec type).
+This Struct creates a **Ray**. When not specified in the constructor, tmin = 1e-5 and tmax = +∞.
 """
 struct Ray
     origin::Point 
@@ -20,9 +21,31 @@ end
 
 Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
 
+Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
+
+"""
+It calculates the position of the ray at the instant *t*.
+"""
+at(ray::Ray, t::Float64) = ray.origin + ray.dir*t
+
+
+
+## Code for the CAMERAS #################################################################################################################
+
+# Camera is the abstract type which the two different cameras are generated from. 
 abstract type Camera
 end
 
+"""
+This Struct creates a **Orthogonal Camera**. 
+
+## Arguments:
+- *a* -> aspect ratio;
+- *T* -> generic Transformation.
+
+When not specified in the constructor, a = 1 and T = Transformation(), 
+where *a* is the aspect ratio and *T* a generic transformation.
+"""
 struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
@@ -33,11 +56,41 @@ struct OrthogonalCamera <: Camera
     OrthogonalCamera() = new( 1.0, Transformation() )
 
 end
+
+"""
+#### Usage 1:
+    fire_ray(camera, u, v)
+It fires a ray from a camera (Orthogonal or Perspective) directed to a pixel with coordinates *u* and *v* (on the screen).
+
+## Usage 2:
+    fire_ray(im, col, row, u_pixel, v_pixel)
+It fires a ray from a camera (contained in *im*) directed to (col, row)-pixel. It hits the pixel in hte point with coordinates 
+*u_pixel*, *v_pixel*.
+
+## Arguments:
+- *im* -> object of type ImageTracer;
+- *col* & *row* -> integers for the coordinates of the pixel in the raster image;
+- *u_pixel* and *v_pixel* -> integers for the coordinates inside the pixel.
+
+If not specified *u_pixel* = *v_pixel* = 0.5.
+
+"""
 function fire_ray( camera::OrthogonalCamera, u, v)
     Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0), 1.0 )
     return camera.transformation * Ray_StandardFrame
 end
 
+"""
+This Struct creates a **Perspective Camera**. 
+
+## Arguments:
+- *a* -> aspect ratio;
+- *T* -> generic Transformation;
+- *d* -> distance between the observer and the screen(?).
+
+When not specified in the constructor, a = 1 and T = Transformation(), 
+where *a* is the aspect ratio and *T* a generic transformation.
+"""
 struct PerspectiveCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
@@ -55,14 +108,15 @@ function fire_ray(camera::PerspectiveCamera, u, v)
 end
 
 
-# at method
-at(ray::Ray, t::Float64) = ray.origin + ray.dir*t
-
-# approx method for testing Ray
-Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
+## Defining IMAGETRACER and its methods: fire_ray and fire_all_rays: ##################################################################à
 
 """
-This struct create a **ImageTracer**. Its constructor takes a raster image (HdrImage) and a camera.
+This struct create a **ImageTracer**. 
+    
+## Arguments:
+- image -> object of type HdrImage;
+- camera.
+
 """
 struct ImageTracer
     image::HdrImage
@@ -75,6 +129,9 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
     return fire_ray(im.camera, u, v)
 end
 
+"""
+It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
+"""
 function fire_all_rays(im::ImageTracer, func)
     for row ∈ 1:im.image.height
         for col ∈ 1:im.image.width

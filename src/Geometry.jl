@@ -24,6 +24,15 @@ struct Vec2D
     v::Float64
 end
 # Implementation of new type Transformation
+"""
+This struct creates a **Transformation**.
+
+## Arguments
+- *m* -> matrix of type Array{Array{Float64}};
+- *invm* -> inverse matrix.
+
+If not specified, both of the matrixes are the Identity matrix (4x4).
+"""
 mutable struct Transformation
     m::Array{Array{Float64}}
     invm::Array{Array{Float64}}
@@ -57,7 +66,8 @@ ID4x4 = [[1.0, 0.0, 0.0, 0.0],
          [0.0, 0.0, 0.0, 1.0]]
 
 
-# Basic operations:
+## BASIC OPERATIONS between Vecs, Normals, Points and Scalars ###############################################################
+
 Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx, atol = 10^-15) && Base.isapprox(V1.vy,V2.vy, atol = 10^-15) && Base.isapprox(V1.vz,V2.vz, atol = 10^-15)
 
 Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x) && Base.isapprox(n1.y,n2.y) && Base.isapprox(n1.z,n2.z)
@@ -72,7 +82,6 @@ Base.:*(scalar::Real, V1::Vec )   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.vx*V2.vx)+(V1.vy*V2.vy)+(V1.vz*V2.vz)
 
-
 # Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.vy * V2.vz - V1.vz * V2.vy), (V1.vz * V2.vx - V1.vx * V2.vz), (V1.vx * V2.vy - V1.vy * V2.vx) )
 
@@ -82,7 +91,6 @@ squared_norm(V1::Vec) = V1*V1
 norm(V1::Vec) = sqrt(squared_norm(V1))
 
 normalize(V1::Vec) = Vec( (V1.vx/norm(V1)), (V1.vy/norm(V1)), (V1.vz/norm(V1)) )
-
 
 # Aprroximation for two Point
 Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x) && Base.isapprox(P1.y,P2.y) && Base.isapprox(P1.z,P2.z) 
@@ -102,7 +110,9 @@ Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
 
-# Transformation methods
+
+
+## TRANSFORMATON METHODS #######################################################################################################à
 function _are_matr_close(m1, m2)
     a = true
     for i in 1:4
@@ -138,7 +148,6 @@ function inverse(M::Transformation)
     return Transformation(M.invm, M.m)
 end
 
-
 # Defining translation, scaling and rotation
 function translation(vec)
     m = [[1.0, 0.0, 0.0, vec.vx],
@@ -167,7 +176,10 @@ function scaling(vec)
     return Transformation(m, invm)
 end
      
-# Rotations  
+# Rotations
+"""
+It defines a rotation around the x axis of an angle α (in RADIANTS!!).
+"""  
 function rotation_x(angle_rad::Float64)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
     m = [[1.0, 0.0, 0.0, 0.0],
@@ -182,6 +194,9 @@ function rotation_x(angle_rad::Float64)
     return Transformation(m, invm)
 end
 
+"""
+It defines a rotation around the y axis of an angle α (in RADIANTS!!).
+"""  
 function rotation_y(angle_rad::Float64)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
     m = [[cosang, 0.0, sinang, 0.0],
@@ -195,9 +210,10 @@ function rotation_y(angle_rad::Float64)
         
     return Transformation(m, invm)
 end
-
-     
-     
+  
+"""
+It defines a rotation around the z axis of an angle α (in RADIANTS!!).
+"""      
 function rotation_z(angle_rad::Float64)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
     m = [[cosang, -sinang, 0.0, 0.0],
