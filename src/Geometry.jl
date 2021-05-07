@@ -23,6 +23,7 @@ struct Vec2D
     u::Float64
     v::Float64
 end
+
 # Implementation of new type Transformation
 """
 This struct creates a **Transformation**.
