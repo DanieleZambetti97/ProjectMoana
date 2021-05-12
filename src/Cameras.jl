@@ -26,7 +26,7 @@ Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) &
 """
 It calculates the position of the ray at the instant *t*.
 """
-at(ray::Ray, t::Float64) = ray.origin + ray.dir*t
+at(ray::Ray, t::Number) = ray.origin + ray.dir*t
 
 
 

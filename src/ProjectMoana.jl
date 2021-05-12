@@ -7,14 +7,14 @@ export HdrImage, InvalidPfmFileFormat,
        valid_coordinates, pixel_offset, get_pixel, set_pixel,
        average_luminosity, clamp_image, normalize_image, read_pfm_image
 
-export Vec, Point, Transformation, Normal,
+export Vec, Point, Transformation, Normal, Vec2D,
        cross, squared_norm, norm, normalize, inverse, is_consistent, toVec,
        translation, scaling, rotation_x, rotation_y, rotation_z
 
 export Camera, OrthogonalCamera, PerspectiveCamera, Ray, ImageTracer,
        at, fire_ray, fire_all_rays
 
-export Shape, Sphere, World, HitRecord
+export Shape, Sphere, World, HitRecord, ray_intersection
 
 include("RaytracerColors.jl")
 include("HdrImages.jl")

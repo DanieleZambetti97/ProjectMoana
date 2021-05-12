@@ -21,9 +21,11 @@ struct HitRecord
 end
 
 Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
+Base.:≈(::Nothing,H2::HitRecord) = false
+
 
 function _sphere_point_to_uv(point::Point)
-    u = atan2(point.y, point.x) / (2.0 * pi)
+    u = atan(point.y, point.x) / (2.0 * pi)
     if u >= 0.0 
         u = u
     else
@@ -36,27 +38,25 @@ end
 function _sphere_normal(point::Point, ray_dir::Vec)
     result = Normal(point.x, point.y, point.z)
     if toVec(point)*ray_dir < 0.0
-        return -result
-    else
         return result
+    else
+        return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
     end
 end
 
 function ray_intersection(sphere::Sphere, ray::Ray)
-    inverse_ray= ray* inverse(sphere.transformation)
+    inverse_ray= inverse(sphere.transformation) * ray
     origin_vec = toVec(ray.origin)
-    a = squared_norm(ray.dir)
+    a = squared_norm(inverse_ray.dir)
     b = 2.0 * origin_vec * inverse_ray.dir
-    c = squared_norm(origin_vec)
-
+    c = squared_norm(origin_vec) - 1.0
     Δ = b * b - 4 * a * c
 
     if Δ<0
         return nothing
     else 
-        t_1 = ( -b - sqrt(Δ) ) / ( 2. * a )
-        t_2 = ( -b + sqrt(Δ) ) / ( 2. * a )
-        
+        t_1 = ( -b - sqrt(Δ) ) / (2.0 * a)
+        t_2 = ( -b + sqrt(Δ) ) / (2.0 * a)
         if t_1 > inverse_ray.tmin && t_1 < inverse_ray.tmax
             first_hit_t = t_1
         elseif t_2 > inverse_ray.tmin && t_2 < inverse_ray.tmax
