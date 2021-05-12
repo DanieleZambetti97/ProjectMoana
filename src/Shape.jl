@@ -53,6 +53,7 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     Δ = b * b - 4 * a * c
 
     if Δ<0
+        println("AAAAAAA")
         return nothing
     else 
         t_1 = ( -b - sqrt(Δ) ) / (2.0 * a)
