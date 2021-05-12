@@ -1,5 +1,6 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
+
 using ProjectMoana
 import Images: save
 import Base: write  
@@ -84,6 +85,8 @@ function main()
         camera = PerspectiveCamera(a, camera_tr, d)
     end
 
+    println("Camera created...")
+
 # creare ImageTracer
     tracer = ImageTracer(image, camera)
 
@@ -100,6 +103,8 @@ function main()
     println("Computing ray intersection...")
     fire_all_rays(tracer, on_off )
     println("Ray intersection valutated")
+
+    println("Firing rays...")
 
 # salvare PFM
     write(file_out_pfm, tracer.image)
