@@ -1,8 +1,7 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
 
-import ProjectMoana: OrthogonalCamera, PerspectiveCamera, HdrImage, rotation_z, translation, ImageTracer, fire_all_rays, ray_intersection, normalize_image,
-       clamp_image, World
+using ProjectMoana
 import Images: save
 import Base: write  
 
@@ -60,16 +59,18 @@ function main()
 # inizializzare World con 10 sfere
     world = World()
 
-    add_shape(world, Spehe(translation(Vec( 0.5, 0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5, 0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.5, 0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5, 0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.0, 0.5, 0.0) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.0, 0.0,-0.5) * scaling(0.1,0.1,0.1) )))
+    add_shape(world, Sphere(translation(Vec( 0.5, 0.5, 0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec(-0.5, 0.5, 0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec( 0.5,-0.5, 0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec( 0.5, 0.5,-0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec(-0.5,-0.5, 0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec(-0.5, 0.5,-0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec(-0.5,-0.5, 0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec(-0.5,-0.5,-0.5)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1))))
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1))))
+
+    println("Spheres generated...")
 
 # creare oggetto Orthogonal o Perspective camera a scelta dell'utente
     if params["CAMERA"] == "O"
