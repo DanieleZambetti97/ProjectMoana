@@ -66,6 +66,8 @@ function main()
         camera = PerspectiveCamera(a, camera_tr, d)
     end
 
+    println("Camera created...")
+
 # creare ImageTracer
     tracer = ImageTracer(image, camera)
 
@@ -78,6 +80,8 @@ function main()
     end
 
     fire_all_rays(tracer, on_off())
+
+    println("Firing rays...")
 
 # salvare PFM
     write(tracer.image, file_out_pfm)

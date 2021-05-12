@@ -46,7 +46,7 @@ end
 
 function ray_intersection(sphere::Sphere, ray::Ray)
     inverse_ray= inverse(sphere.transformation) * ray
-    origin_vec = toVec(ray.origin)
+    origin_vec = toVec(inverse_ray.origin)
     a = squared_norm(inverse_ray.dir)
     b = 2.0 * origin_vec * inverse_ray.dir
     c = squared_norm(origin_vec) - 1.0
