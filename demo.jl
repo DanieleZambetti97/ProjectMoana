@@ -1,16 +1,15 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
-
-import ProjectMoana: OrthogonalCamera, PerspectiveCamera, HdrImage, rotation_z, translation, ImageTracer, fire_all_rays, ray_intersection, normalize_image,
-       clamp_image, World
+using ProjectMoana
 import Images: save
 import Base: write  
+import ColorTypes: RGB
 
 using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [WIDTH] [HEIGHT] [DISTANCE] [CAMERA] [ANGLE_DEG] [FILE_OUT_PFM]",
+                               usage = "usage: [--help] [WIDTH] [HEIGHT] [CAMERA] [ANGLE_DEG] [DISTANCE] [FILE_OUT_PFM] [A_FACTOR]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
@@ -22,10 +21,6 @@ function parse_commandline()
             help = "height of the image"
             required = true 
             arg_type = Int       
-        "DISTANCE"
-            help = "distance of a Perspective Camera"
-            required = false
-            arg_type = Float64
         "CAMERA"
             help = "type of the camera (O, for Orthogonal, or P, for Perspective)"
             required = false
@@ -36,11 +31,21 @@ function parse_commandline()
             required = false
             default = 0.
             arg_type = Float64
+        "DISTANCE"
+            help = "distance of a Perspective Camera"
+            required = false
+            default = 1.
+            arg_type = Float64
         "FILE_OUT_PFM"
             help = "name of the output PFM file"
             required = false
             default = "out.pfm" 
             arg_type = String       
+        "A_FACTOR"
+            help = "a_factor for nomralize image luminosity during the convertion"
+            required = false
+            default = 5.0
+            arg_type = Float64
     end
 
     return parse_args(s)
@@ -60,17 +65,18 @@ function main()
 # inizializzare World con 10 sfere
     world = World()
 
-    add_shape(world, Spehe(translation(Vec( 0.5, 0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5, 0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.5, 0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5, 0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5, 0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec(-0.5,-0.5,-0.5) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.0, 0.5, 0.0) * scaling(0.1,0.1,0.1) )))
-    add_shape(world, Spehe(translation(Vec( 0.0, 0.0,-0.5) * scaling(0.1,0.1,0.1) )))
+    for x in [-0.5, 0.5]
+        for y in [-0.5, 0.5]
+            for z in [-0.5, 0.5]
+                add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)) ))
+            end
+        end
+    end
 
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
+
+    println("Sceene objects initialized")
 # creare oggetto Orthogonal o Perspective camera a scelta dell'utente
     if params["CAMERA"] == "O"
         camera = OrthogonalCamera(a, camera_tr)
@@ -81,7 +87,7 @@ function main()
 # creare ImageTracer
     tracer = ImageTracer(image, camera)
 
-    function on_off()
+    function on_off(ray)
         if ray_intersection(world, ray) == nothing
             return RGB(1., 1., 1.)
         else
@@ -89,23 +95,27 @@ function main()
         end
     end
 
-    fire_all_rays(tracer, on_off())
+    println("Observer initialized")
+
+    println("Computing ray intersection...")
+    fire_all_rays(tracer, on_off )
+    println("Ray intersection valutated")
 
 # salvare PFM
-    write(tracer.image, file_out_pfm)
+    write(file_out_pfm, tracer.image)
 
     println("$(file_out_pfm) has been wrtitten correctly to disk.")
 
 # convertire automaticamente in PNG con valori arbitrari di tone mapping
 
-    normalize_image(tracer.image, 1)
+    normalize_image(tracer.image, params["A_FACTOR"])
     clamp_image(tracer.image)
 
-    image = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
+    matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
     
-    save("demo.png", tracer.image')
+    save("demo.jpeg", matrix_pixels')
 
-    println("File demo.png has been automatically written to disk.")
+    println("File demo.jpeg has been automatically written to disk.")
       
 end
 

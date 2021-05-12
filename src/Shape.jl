@@ -6,7 +6,7 @@ function ray_intersection(shape::Shape, ray::Ray)
     return nothing   #sarebbe meglio far uscire un error
 end
 
-struct Sphere
+struct Sphere <: Shape
     transformation::Transformation
     Sphere() = new(Transformation())
     Sphere(transformation::Transformation) = new(transformation)
@@ -53,7 +53,6 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     Δ = b * b - 4 * a * c
 
     if Δ<0
-        println("AAAAAAA")
         return nothing
     else 
         t_1 = ( -b - sqrt(Δ) ) / (2.0 * a)
@@ -73,26 +72,27 @@ function ray_intersection(sphere::Sphere, ray::Ray)
 end
 
 # Defining the sturct World 
-struct Wolrd
+struct World
     shapes::Array{Shape}
-    Wolrd() = new([]) 
+    World() = new([]) 
 end
 
 # Adding shapes method
-add_shape(world::Wolrd, shape::Shape) = append!(world.shapes, shape)
-
+function add_shape(world::World, shape::Shape)
+    push!(world.shapes, shape)
+end
 # Overloading for ray_intersection with the struct Wolrd
-function ray_intersection(world::Wolrd, ray::Ray)
+function ray_intersection(world::World, ray::Ray)
     closest = nothing
     for i ∈ 1:length(world.shapes)
         intersection = ray_intersection(world.shapes[i], ray)
 
-        if intersection != nothing
+        if intersection == nothing
             continue
-
-        elseif closest != nothing  || (intersection.t < closest.t)
+        elseif closest == nothing  || (intersection.t < closest.t)
             closest = intersection
         end
+    
     end
     return closest
     
