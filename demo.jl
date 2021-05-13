@@ -77,15 +77,14 @@ function main()
     add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
     add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
 
-    println("Sceene objects initialized")
+    println("Scene objects created.")
+
 # creare oggetto Orthogonal o Perspective camera a scelta dell'utente
     if params["CAMERA"] == "O"
         camera = OrthogonalCamera(a, camera_tr)
     elseif params["CAMERA"] == "P"
         camera = PerspectiveCamera(a, camera_tr, d)
     end
-
-    println("Camera created...")
 
 # creare ImageTracer
     tracer = ImageTracer(image, camera)
