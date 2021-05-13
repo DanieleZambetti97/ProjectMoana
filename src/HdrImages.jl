@@ -2,7 +2,10 @@ using ColorTypes
 
 # creating HdrImage struct
 """
-This struct creates a **HdrImage**.
+    HdrImage(w, h)
+    HdrImage(w, h, pixels)
+
+It creates a **HdrImage**.
 
 ## Arguments
 - *width* -> integer;

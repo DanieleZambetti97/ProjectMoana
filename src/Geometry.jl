@@ -26,7 +26,10 @@ end
 
 # Implementation of new type Transformation
 """
-This struct creates a **Transformation**.
+    Transformation(m, invm)
+    Transformation()
+
+It creates a **Transformation**.
 
 ## Arguments
 - *m* -> matrix of type Array{Array{Float64}};
@@ -184,6 +187,8 @@ end
      
 # Rotations
 """
+    rotation_x(angle_rad)
+
 It defines a rotation around the x axis of an angle α (in RADIANTS!!).
 """  
 function rotation_x(angle_rad::Float64)
@@ -201,6 +206,8 @@ function rotation_x(angle_rad::Float64)
 end
 
 """
+    rotation_y(angle_rad)
+
 It defines a rotation around the y axis of an angle α (in RADIANTS!!).
 """  
 function rotation_y(angle_rad::Float64)
@@ -218,6 +225,8 @@ function rotation_y(angle_rad::Float64)
 end
   
 """
+    rotation_z(angle_rad)
+
 It defines a rotation around the z axis of an angle α (in RADIANTS!!).
 """      
 function rotation_z(angle_rad::Float64)

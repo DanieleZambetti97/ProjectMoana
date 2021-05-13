@@ -1,29 +1,20 @@
+## Code for SHAPES #########################################################################################
 
 abstract type Shape
 end
 
-function ray_intersection(shape::Shape, ray::Ray)
-    return nothing   #sarebbe meglio far uscire un error
-end
+"""
+    Sphere(T)
 
+It creates a **Sphere**, where T is a generic transformation.
+"""
 struct Sphere <: Shape
     transformation::Transformation
     Sphere() = new(Transformation())
     Sphere(transformation::Transformation) = new(transformation)
 end
 
-struct HitRecord
-    world_point::Point
-    normal::Normal
-    surface_point::Vec2D
-    t::Float64
-    ray::Ray
-end
-
-Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
-Base.:≈(::Nothing,H2::HitRecord) = false
-
-
+## Hidden methods for sphere
 function _sphere_point_to_uv(point::Point)
     u = atan(point.y, point.x) / (2.0 * pi)
     if u >= 0.0 
@@ -43,6 +34,43 @@ function _sphere_normal(point::Point, ray_dir::Vec)
         return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
     end
 end
+
+
+## Code for HITRECORD ###########################################################################################################################
+
+"""
+    HitRecord()
+
+## Arguments:
+- world point;
+- normal;
+- surface point (u & v coordinates);
+- t (distance covered by the ray);
+- ray.
+"""
+struct HitRecord
+    world_point::Point
+    normal::Normal
+    surface_point::Vec2D
+    t::Float64
+    ray::Ray
+end
+
+Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
+Base.:≈(::Nothing,H2::HitRecord) = false
+
+
+## RAY INTERSECTION ###############################################################################################################################
+
+"""
+    ray_intersection(shape, ray)
+
+Evaluates the intersection between a shape (or a World) and a ray, returning a HitRecord.
+"""
+function ray_intersection(shape::Shape, ray::Ray)
+    return nothing   #sarebbe meglio far uscire un error
+end
+
 
 function ray_intersection(sphere::Sphere, ray::Ray)
     inverse_ray= inverse(sphere.transformation) * ray
@@ -71,7 +99,12 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray )
 end
 
-# Defining the sturct World 
+## Definition of WORLD ############################################################################################################################################
+
+"""
+    World()
+It creates a **World** with an array of shapes.
+"""
 struct World
     shapes::Array{Shape}
     World() = new([]) 
@@ -82,7 +115,8 @@ function add_shape(world::World, shape::Shape)
     push!(world.shapes, shape)
 end
 
-# Overloading for ray_intersection with the struct Wolrd
+
+## Overloading for ray_intersection with the struct World
 function ray_intersection(world::World, ray::Ray)
     closest = nothing
     for i ∈ 1:length(world.shapes)

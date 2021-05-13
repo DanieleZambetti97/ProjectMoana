@@ -37,10 +37,10 @@ function parse_commandline()
             required = false
             default = 1.
             arg_type = Float64
-        "FILE_OUT_PFM"
-            help = "name of the output PFM file"
+        "FILE_OUT"
+            help = "name of the output file (without extension)"
             required = false
-            default = "out.pfm" 
+            default = "demo" 
             arg_type = String       
         "A_FACTOR"
             help = "a_factor for nomralize image luminosity during the convertion"
@@ -61,9 +61,10 @@ function main()
     d = params["DISTANCE"]
     camera_tr = rotation_z(params["ANGLE_DEG"]*360/2π) * translation(Vec(-1.0, 0.0, 0.0))
     image = HdrImage(w, h)
-    file_out_pfm = params["FILE_OUT_PFM"]
+    file_out_pfm = "$(params["FILE_OUT"]).pfm"
+    file_out_png = "$(params["FILE_OUT"]).png"
 
-# inizializzare World con 10 sfere
+# Creating WORLD with 10 spheres
     world = World()
 
     for x in [-0.5, 0.5]
@@ -79,14 +80,16 @@ function main()
 
     println("Scene objects created.")
 
-# creare oggetto Orthogonal o Perspective camera a scelta dell'utente
+
+# Creating a Perspective of Orthogonal CAMERA
     if params["CAMERA"] == "O"
         camera = OrthogonalCamera(a, camera_tr)
     elseif params["CAMERA"] == "P"
         camera = PerspectiveCamera(a, camera_tr, d)
     end
 
-# creare ImageTracer
+
+# Creating an ImageTracer object 
     tracer = ImageTracer(image, camera)
 
     function on_off(ray)
@@ -103,21 +106,22 @@ function main()
     fire_all_rays(tracer, on_off )
     println("Ray intersections evaluated.")
 
-# salvare PFM
+
+# Saving the PFM FILE 
     write(file_out_pfm, tracer.image)
 
     println("$(file_out_pfm) has been wrtitten correctly to disk.")
 
-# convertire automaticamente in PNG con valori arbitrari di tone mapping
 
+# Automatic CONVERSION TO JPEG FILE 
     normalize_image(tracer.image, params["A_FACTOR"])
     clamp_image(tracer.image)
 
     matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
     
-    save("demo.jpeg", matrix_pixels')
+    save(file_out_png, matrix_pixels')
 
-    println("File demo.jpeg has been automatically written to disk.")
+    println("File $(file_out_png) has been automatically written to disk.")
       
 end
 
