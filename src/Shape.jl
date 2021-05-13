@@ -53,7 +53,6 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     Δ = b * b - 4 * a * c
 
     if Δ<0
-        println("AAAAAAA")
         return nothing
     else 
         t_1 = ( -b - sqrt(Δ) ) / (2.0 * a)
@@ -74,12 +73,14 @@ end
 
 # Defining the sturct World 
 struct World
-    shapes::Array{Shape, 1}
+    shapes::Array{Shape}
     World() = new([]) 
 end
 
 # Adding shapes method
-add_shape(world::World, shape::Shape) = push!(world.shapes, shape)
+function add_shape(world::World, shape::Shape)
+    push!(world.shapes, shape)
+end
 
 # Overloading for ray_intersection with the struct Wolrd
 function ray_intersection(world::World, ray::Ray)
@@ -87,12 +88,12 @@ function ray_intersection(world::World, ray::Ray)
     for i ∈ 1:length(world.shapes)
         intersection = ray_intersection(world.shapes[i], ray)
 
-        if intersection != nothing
+        if intersection == nothing
             continue
-
-        elseif closest != nothing  || (intersection.t < closest.t)
+        elseif closest == nothing  || (intersection.t < closest.t)
             closest = intersection
         end
+    
     end
     return closest
     
