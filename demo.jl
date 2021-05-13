@@ -78,7 +78,7 @@ function main()
     add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
     add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
 
-    println("Scene objects created.")
+    println("World objects created.")
 
 
 # Creating a Perspective of Orthogonal CAMERA
@@ -110,7 +110,7 @@ function main()
 # Saving the PFM FILE 
     write(file_out_pfm, tracer.image)
 
-    println("$(file_out_pfm) has been wrtitten correctly to disk.")
+    println("$(file_out_pfm) has been written to disk.")
 
 
 # Automatic CONVERSION TO JPEG FILE 
@@ -121,7 +121,7 @@ function main()
     
     save(file_out_png, matrix_pixels')
 
-    println("File $(file_out_png) has been automatically written to disk.")
+    println("$(file_out_png) has been automatically written to disk.")
       
 end
 
