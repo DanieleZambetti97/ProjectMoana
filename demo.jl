@@ -4,6 +4,7 @@ Pkg.activate(normpath(@__DIR__))
 using ProjectMoana
 import Images: save
 import Base: write  
+import ColorTypes
 
 using ArgParse
 
@@ -84,7 +85,7 @@ function main()
 # creare ImageTracer
     tracer = ImageTracer(image, camera)
 
-    function on_off()
+    function on_off(ray)
         if ray_intersection(world, ray) == nothing
             return RGB(1., 1., 1.)
         else
@@ -92,7 +93,7 @@ function main()
         end
     end
 
-    fire_all_rays(tracer, on_off())
+    fire_all_rays(tracer, on_off)
 
     println("Firing rays...")
 

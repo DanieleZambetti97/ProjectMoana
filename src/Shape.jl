@@ -6,7 +6,7 @@ function ray_intersection(shape::Shape, ray::Ray)
     return nothing   #sarebbe meglio far uscire un error
 end
 
-struct Sphere
+struct Sphere <: Shape
     transformation::Transformation
     Sphere() = new(Transformation())
     Sphere(transformation::Transformation) = new(transformation)
@@ -73,16 +73,16 @@ function ray_intersection(sphere::Sphere, ray::Ray)
 end
 
 # Defining the sturct World 
-struct Wolrd
-    shapes::Array{Shape}
-    Wolrd() = new([]) 
+struct World
+    shapes::Array{Shape, 1}
+    World() = new([]) 
 end
 
 # Adding shapes method
-add_shape(world::Wolrd, shape::Shape) = append!(world.shapes, shape)
+add_shape(world::World, shape::Shape) = push!(world.shapes, shape)
 
 # Overloading for ray_intersection with the struct Wolrd
-function ray_intersection(world::Wolrd, ray::Ray)
+function ray_intersection(world::World, ray::Ray)
     closest = nothing
     for i ∈ 1:length(world.shapes)
         intersection = ray_intersection(world.shapes[i], ray)
