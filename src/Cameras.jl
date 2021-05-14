@@ -122,7 +122,7 @@ struct PerspectiveCamera <: Camera
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0 )
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0)
     return camera.transformation * Ray_StandardFrame
 end
 

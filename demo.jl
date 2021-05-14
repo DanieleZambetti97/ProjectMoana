@@ -59,7 +59,7 @@ function main()
     h = params["HEIGHT"]
     a = w/h
     d = params["DISTANCE"]
-    camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * translation(Vec(-1.0, 0.0, 0.0))
+    camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * rotation_x(params["ANGLE_DEG"]*0.5*π/180.0) * translation(Vec(-1.0, 0.0, 0.0))
     image = HdrImage(w, h)
     file_out_pfm = "images/$(params["FILE_OUT"]).pfm"
     file_out_png = "images/$(params["FILE_OUT"]).png"
@@ -77,7 +77,7 @@ function main()
 
     add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
     add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
-
+ 
     println("World objects created.")
 
 

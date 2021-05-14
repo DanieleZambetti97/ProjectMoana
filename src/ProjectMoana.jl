@@ -14,7 +14,7 @@ export Vec, Point, Transformation, Normal, Vec2D,
 export Camera, OrthogonalCamera, PerspectiveCamera, Ray, ImageTracer,
        at, fire_ray, fire_all_rays
 
-export Shape, Sphere, World, HitRecord, ray_intersection, add_shape
+export Shape, Sphere, World, Plane, HitRecord, ray_intersection, add_shape
 
 include("RaytracerColors.jl")
 include("HdrImages.jl")

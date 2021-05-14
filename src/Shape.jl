@@ -136,3 +136,43 @@ end
 
 
 #########
+
+struct Plane <: Shape
+    transformation::Transformation
+    Plane() = new(Transformation())
+    Plane(transformation::Transformation) = new(transformation)
+end
+
+## Hidden methods for sphere
+function _plane_point_to_uv(point::Point)
+    u = point.x - floor(point.x)
+    v = point.y - floor(point.y)
+    return Vec2D(u,v)
+end
+
+function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
+    result = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
+    result = normalize(result)
+    if ray_dir.vz > 0.0
+        return Normal(result.vx,result.vy,result.vz)
+    else
+        return Normal(-1.0*result.vx,-1.0*result.vy,-1.0*result.vz)
+    end
+end
+
+function ray_intersection(plane::Plane, ray::Ray)
+    inverse_ray= inverse(plane.transformation) * ray
+    origin_vec = toVec(inverse_ray.origin)
+
+    if inverse_ray.dir.vz == 0
+        return nothing
+    else 
+        t = - inverse_ray.origin.z / inverse_ray.dir.vz
+        if t<0
+            return nothing
+        else
+            hit_point = at(inverse_ray, t)
+        end
+    end
+    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, origin_vec, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray )
+end
