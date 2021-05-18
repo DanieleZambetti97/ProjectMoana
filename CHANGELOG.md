@@ -1,5 +1,5 @@
 ## HEAD
-- **Breaking chnge**: adding two different inputs from the command line: the ``demo.jl`` (generating the image of 10 spheres) and the ``pfm2ldr.jl`` (converting PFM images to any LDR format).
+- **Breaking change**: adding new executable ``demo.jl`` (generating the image of 10 spheres) and changing the old ``main.jl`` into ``pfm2ldr.jl`` (converting PFM images to any LDR format).
 
 ## 2021-05-05
 
