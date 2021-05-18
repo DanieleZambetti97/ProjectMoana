@@ -35,6 +35,33 @@ function _sphere_normal(point::Point, ray_dir::Vec)
     end
 end
 
+"""
+    Plane(T)
+
+It creates a **Plane**, where T is a generic transformation.
+"""
+struct Plane <: Shape
+    transformation::Transformation
+    Plane() = new(Transformation())
+    Plane(transformation::Transformation) = new(transformation)
+end
+
+## Hidden methods for plane
+function _plane_point_to_uv(point::Point)
+    u = point.x - floor(point.x)
+    v = point.y - floor(point.y)
+    return Vec2D(u,v)
+end
+
+function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
+    result = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
+    result = normalize(result)
+    if ray_dir.vz > 0.0
+        return Normal(result.vx,result.vy,result.vz)
+    else
+        return Normal(-1.0*result.vx,-1.0*result.vy,-1.0*result.vz)
+    end
+end
 
 ## Code for HITRECORD ###########################################################################################################################
 
@@ -59,6 +86,21 @@ end
 Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
 Base.:≈(::Nothing,H2::HitRecord) = false
 
+## Definition of WORLD ############################################################################################################################################
+
+"""
+    World()
+It creates a **World** with an array of shapes.
+"""
+struct World
+    shapes::Array{Shape}
+    World() = new([]) 
+end
+
+# Adding shapes method
+function add_shape(world::World, shape::Shape)
+    push!(world.shapes, shape)
+end
 
 ## RAY INTERSECTION ###############################################################################################################################
 
@@ -71,6 +113,22 @@ function ray_intersection(shape::Shape, ray::Ray)
     return nothing   #sarebbe meglio far uscire un error
 end
 
+## Overloading for ray_intersection with the struct World
+function ray_intersection(world::World, ray::Ray)
+    closest = nothing
+    for i ∈ 1:length(world.shapes)
+        intersection = ray_intersection(world.shapes[i], ray)
+
+        if intersection == nothing
+            continue
+        elseif closest == nothing  || (intersection.t < closest.t)
+            closest = intersection
+        end
+    
+    end
+    return closest
+    
+end
 
 function ray_intersection(sphere::Sphere, ray::Ray)
     inverse_ray= inverse(sphere.transformation) * ray
@@ -97,67 +155,6 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     end
 
     return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray )
-end
-
-## Definition of WORLD ############################################################################################################################################
-
-"""
-    World()
-It creates a **World** with an array of shapes.
-"""
-struct World
-    shapes::Array{Shape}
-    World() = new([]) 
-end
-
-# Adding shapes method
-function add_shape(world::World, shape::Shape)
-    push!(world.shapes, shape)
-end
-
-
-## Overloading for ray_intersection with the struct World
-function ray_intersection(world::World, ray::Ray)
-    closest = nothing
-    for i ∈ 1:length(world.shapes)
-        intersection = ray_intersection(world.shapes[i], ray)
-
-        if intersection == nothing
-            continue
-        elseif closest == nothing  || (intersection.t < closest.t)
-            closest = intersection
-        end
-    
-    end
-    return closest
-    
-end
-
-
-
-#########
-
-struct Plane <: Shape
-    transformation::Transformation
-    Plane() = new(Transformation())
-    Plane(transformation::Transformation) = new(transformation)
-end
-
-## Hidden methods for sphere
-function _plane_point_to_uv(point::Point)
-    u = point.x - floor(point.x)
-    v = point.y - floor(point.y)
-    return Vec2D(u,v)
-end
-
-function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    result = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
-    result = normalize(result)
-    if ray_dir.vz > 0.0
-        return Normal(result.vx,result.vy,result.vz)
-    else
-        return Normal(-1.0*result.vx,-1.0*result.vy,-1.0*result.vz)
-    end
 end
 
 function ray_intersection(plane::Plane, ray::Ray)
