@@ -45,7 +45,7 @@ function parse_commandline()
         "A_FACTOR"
             help = "a_factor for nomralize image luminosity during the convertion"
             required = false
-            default = 5.0
+            default = 1.
             arg_type = Float64
     end
 
@@ -59,7 +59,7 @@ function main()
     h = params["HEIGHT"]
     a = w/h
     d = params["DISTANCE"]
-    camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * rotation_x(params["ANGLE_DEG"]*0.5*π/180.0) * translation(Vec(-1.0, 0.0, 0.0))
+    camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
     file_out_pfm = "images/$(params["FILE_OUT"]).pfm"
     file_out_png = "images/$(params["FILE_OUT"]).png"
@@ -67,8 +67,8 @@ function main()
 # Creating WORLD with 10 spheres
     world = World()
 
-    for x in [-0.5, 0.6]
-        for y in [-0.5, 0.3]
+    for x in [-0.5, 0.5]
+        for y in [-0.5, 0.5]
             for z in [-0.5, 0.5]
                 add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)) ))
             end
@@ -77,7 +77,8 @@ function main()
 
     add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
     add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
- 
+#    add_shape(world, Plane(rotation_x(π/2.0) * rotation_y(π/3.0) * rotation_z(π/1.2) * translation(Vec( 100.0, 75.0, 50.0)) ))
+
     println("World objects created.")
 
 
@@ -94,9 +95,9 @@ function main()
 
     function on_off(ray)
         if ray_intersection(world, ray) == nothing
-            return RGB(1., 1., 1.)
-        else
             return RGB(0., 0., 0.)
+        else
+            return RGB(1., 1., 1.)
         end
     end
 
