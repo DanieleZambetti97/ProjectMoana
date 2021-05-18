@@ -23,9 +23,13 @@ struct Vec2D
     u::Float64
     v::Float64
 end
+
 # Implementation of new type Transformation
 """
-This struct creates a **Transformation**.
+    Transformation(m, invm)
+    Transformation()
+
+It creates a **Transformation**.
 
 ## Arguments
 - *m* -> matrix of type Array{Array{Float64}};
@@ -70,7 +74,7 @@ ID4x4 = [[1.0, 0.0, 0.0, 0.0],
 
 Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx, atol = 10^-15) && Base.isapprox(V1.vy,V2.vy, atol = 10^-15) && Base.isapprox(V1.vz,V2.vz, atol = 10^-15)
 
-Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x) && Base.isapprox(n1.y,n2.y) && Base.isapprox(n1.z,n2.z)
+Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 10^-15) && Base.isapprox(n1.y,n2.y, atol = 10^-15) && Base.isapprox(n1.z,n2.z, atol = 10^-15)
 
 Base.:+(V1::Vec , V2::Vec )  = Vec((V1.vx+V2.vx), (V1.vy+V2.vy), (V1.vz+V2.vz))
 
@@ -81,6 +85,8 @@ Base.:*(V1::Vec , scalar::Real)   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar
 Base.:*(scalar::Real, V1::Vec )   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar)
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.vx*V2.vx)+(V1.vy*V2.vy)+(V1.vz*V2.vz)
+
+Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 10^-15)  && isapprox(V1.v, V2.v, atol = 10^-15)
 
 # Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.vy * V2.vz - V1.vz * V2.vy), (V1.vz * V2.vx - V1.vx * V2.vz), (V1.vx * V2.vy - V1.vy * V2.vx) )
@@ -93,7 +99,7 @@ norm(V1::Vec) = sqrt(squared_norm(V1))
 normalize(V1::Vec) = Vec( (V1.vx/norm(V1)), (V1.vy/norm(V1)), (V1.vz/norm(V1)) )
 
 # Aprroximation for two Point
-Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x) && Base.isapprox(P1.y,P2.y) && Base.isapprox(P1.z,P2.z) 
+Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 10^-15) && Base.isapprox(P1.y,P2.y, atol = 10^-15) && Base.isapprox(P1.z,P2.z, atol = 10^-15) 
 
 # Sum Point + Vector returning a Point
 Base.:+(P::Point, V::Vec) = Point(P.x + V.vx, P.y + V.vy, P.z + V.vz)
@@ -110,7 +116,10 @@ Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
 
-
+# Convert a Point into a Vec
+function toVec(point::Point)
+    return Vec(point.x,point.y,point.z)
+end
 
 ## TRANSFORMATON METHODS #######################################################################################################à
 function _are_matr_close(m1, m2)
@@ -178,6 +187,8 @@ end
      
 # Rotations
 """
+    rotation_x(angle_rad)
+
 It defines a rotation around the x axis of an angle α (in RADIANTS!!).
 """  
 function rotation_x(angle_rad::Float64)
@@ -195,6 +206,8 @@ function rotation_x(angle_rad::Float64)
 end
 
 """
+    rotation_y(angle_rad)
+
 It defines a rotation around the y axis of an angle α (in RADIANTS!!).
 """  
 function rotation_y(angle_rad::Float64)
@@ -212,6 +225,8 @@ function rotation_y(angle_rad::Float64)
 end
   
 """
+    rotation_z(angle_rad)
+
 It defines a rotation around the z axis of an angle α (in RADIANTS!!).
 """      
 function rotation_z(angle_rad::Float64)

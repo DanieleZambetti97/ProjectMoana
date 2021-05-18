@@ -3,7 +3,12 @@ export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray, fire_all_
 ## Code for RAYS #########################################################################################################################
 
 """
-This Struct creates a **Ray**. When not specified in the constructor, tmin = 1e-5 and tmax = +∞.
+    Ray(origin, dir)
+    Ray(origin, dir, tmin) 
+    Ray(origin, dir, tmin, tmax)
+    Ray(origin, dir, tmin, tmax, depth)
+
+It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
 """
 struct Ray
     origin::Point 
@@ -24,9 +29,11 @@ Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.
 Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
 
 """
+    at(ray, t)
+
 It calculates the position of the ray at the instant *t*.
 """
-at(ray::Ray, t::Float64) = ray.origin + ray.dir*t
+at(ray::Ray, t::Number) = ray.origin + ray.dir*t
 
 
 
@@ -37,7 +44,12 @@ abstract type Camera
 end
 
 """
-This Struct creates a **Orthogonal Camera**. 
+    OrthogonalCamera(a, T)
+    OrthogonalCamera(a)
+    OrthogonalCamera(T)
+    OrthogonalCamera()
+
+It creates a **Orthogonal Camera**. 
 
 ## Arguments:
 - *a* -> aspect ratio;
@@ -60,10 +72,12 @@ end
 """
 #### Usage 1:
     fire_ray(camera, u, v)
+
 It fires a ray from a camera (Orthogonal or Perspective) directed to a pixel with coordinates *u* and *v* (on the screen).
 
 ## Usage 2:
     fire_ray(im, col, row, u_pixel, v_pixel)
+
 It fires a ray from a camera (contained in *im*) directed to (col, row)-pixel. It hits the pixel in hte point with coordinates 
 *u_pixel*, *v_pixel*.
 
@@ -81,7 +95,12 @@ function fire_ray( camera::OrthogonalCamera, u, v)
 end
 
 """
-This Struct creates a **Perspective Camera**. 
+    PerspectiveCamera(a, T, d)
+    PerspectiveCamera(a, T)
+    PerspectiveCamera(a)
+    PerspectiveCamera()
+
+It creates a **Perspective Camera**. 
 
 ## Arguments:
 - *a* -> aspect ratio;
@@ -103,7 +122,7 @@ struct PerspectiveCamera <: Camera
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0 )
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0)
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -111,7 +130,9 @@ end
 ## Defining IMAGETRACER and its methods: fire_ray and fire_all_rays: ##################################################################à
 
 """
-This struct create a **ImageTracer**. 
+    ImageTracer()
+
+It creates a **ImageTracer**. 
     
 ## Arguments:
 - image -> object of type HdrImage;
@@ -130,6 +151,8 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
 end
 
 """
+    fire_all_rays(im, func)
+
 It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
 """
 function fire_all_rays(im::ImageTracer, func)

@@ -7,4 +7,6 @@ include("test_HdrImages.jl")
 
 include("test_Geometry.jl")
 
-include("test_RaytracerObjects.jl")
+include("test_Cameras.jl")
+
+include("test_Shape.jl")

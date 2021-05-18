@@ -25,7 +25,7 @@ function parse_commandline()
             default = 1.0
             arg_type = Float64
         "OUT_FILE"
-            help = "output PNG file name"
+            help = "output LDR file name"
             required = false
             default = "out.jpeg"
     end
@@ -43,7 +43,7 @@ function main()
         img = read_pfm_image(inpf)
     end
     
-    println("File $(params["IN_FILE"]) has been read correctly from disk.") # check
+    println("File $(params["IN_FILE"]) has been read from disk.") # check
 
 # then normalizing and clamping
 
@@ -56,7 +56,7 @@ function main()
     
     save("$(params["OUT_FILE"])",image')
 
-    println("File $(params["OUT_FILE"]) has been written correctly to disk.") # check
+    println("File $(params["OUT_FILE"]) has been written to disk.") # check
     
 end
 
