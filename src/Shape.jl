@@ -2,16 +2,19 @@
 
 abstract type Shape
 end
+Base.:≈(S1::Shape,S2::Shape) = S1.transformation ≈ S2.transformation && S1.material ≈ S2.material
 
 """
     Sphere(T)
 
-It creates a **Sphere**, where T is a generic transformation.
+It creates a **Sphere**, where T is a generic ``Transformation`` applied to the unit sphere centered in the origin, M is the ``Material`` of the sphere.
 """
 struct Sphere <: Shape
     transformation::Transformation
-    Sphere() = new(Transformation())
-    Sphere(transformation::Transformation) = new(transformation)
+    material::Material
+    Sphere() = new(Transformation(), Material())
+    Sphere(transformation::Transformation) = new(transformation, Material())
+    Sphere(material::Material) = new(Transformation(), material)
 end
 
 ## Hidden methods for sphere
@@ -36,14 +39,16 @@ function _sphere_normal(point::Point, ray_dir::Vec)
 end
 
 """
-    Plane(T)
+    Plane(T,M)
 
-It creates a **Plane**, where T is a generic transformation.
+It creates a **Plane**, where T is a generic ``Transformation`` applied to the XY palane, M is the ``Material`` of the plane.
 """
 struct Plane <: Shape
     transformation::Transformation
-    Plane() = new(Transformation())
-    Plane(transformation::Transformation) = new(transformation)
+    material::Material
+    Plane() = new(Transformation(), Material())
+    Plane(transformation::Transformation) = new(transformation, Material())
+    Plane(material::Material) = new(Transformation(), material)
 end
 
 ## Hidden methods for plane
@@ -73,7 +78,8 @@ end
 - normal;
 - surface point (u & v coordinates);
 - t (distance covered by the ray);
-- ray.
+- ray;
+- shape
 """
 struct HitRecord
     world_point::Point
@@ -81,9 +87,10 @@ struct HitRecord
     surface_point::Vec2D
     t::Float64
     ray::Ray
+    shape::Shape
 end
 
-Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
+Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray && H1.shape ≈ H2.shape
 Base.:≈(::Nothing,H2::HitRecord) = false
 
 ## Definition of WORLD ############################################################################################################################################
@@ -154,7 +161,7 @@ function ray_intersection(sphere::Sphere, ray::Ray)
         hit_point = at(inverse_ray, first_hit_t)
     end
 
-    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray )
+    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray, sphere )
 end
 
 function ray_intersection(plane::Plane, ray::Ray)
@@ -171,5 +178,5 @@ function ray_intersection(plane::Plane, ray::Ray)
             hit_point = at(inverse_ray, t)
         end
     end
-    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, origin_vec, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray )
+    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, origin_vec, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
 end

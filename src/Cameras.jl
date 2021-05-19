@@ -1,5 +1,3 @@
-export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray, fire_all_rays, ImageTracer
-
 ## Code for RAYS #########################################################################################################################
 
 """
@@ -17,10 +15,7 @@ struct Ray
     tmax::Float64 
     depth::Int16
     
-    Ray(origin, dir) = new(origin, dir, 1e-5, Inf, 0)
-    Ray(origin, dir, tmin) = new(origin, dir, tmin, Inf, 0)
-    Ray(origin, dir, tmin, tmax) = new(origin, dir, tmin, tmax, 0)
-    Ray(origin, dir, tmin, tmax, depth) = new(origin, dir, tmin, tmax, depth)
+    Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
 
 end
 
@@ -62,10 +57,7 @@ struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
 
-    OrthogonalCamera(a, T) = new(a, T)
-    OrthogonalCamera(a::Float64) = new(a, Transformation() )
-    OrthogonalCamera(T::Transformation) = new(1.0, T )
-    OrthogonalCamera() = new( 1.0, Transformation() )
+    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation()) = new(a, T)
 
 end
 

@@ -10,7 +10,7 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [WIDTH] [HEIGHT] [CAMERA] [ANGLE_DEG] [DISTANCE] [FILE_OUT_PFM] [A_FACTOR]",
+                               usage = "usage: [--help] [WIDTH] [HEIGHT] [CAMERA] [ANGLE_DEG] [DISTANCE] [FILE_OUT_PFM] [RENDER_ALGORITHM] [A_FACTOR]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
@@ -41,7 +41,12 @@ function parse_commandline()
             help = "name of the output file (without extension)"
             required = false
             default = "demo" 
-            arg_type = String       
+            arg_type = String  
+        "RENDER_ALGORITHM"
+            help = "type of algortihm to use for rendere: "
+            required = false
+            default = "on_off" 
+            arg_type = String  
         "A_FACTOR"
             help = "a_factor for nomralize image luminosity during the convertion"
             required = false
@@ -63,6 +68,7 @@ function main()
     image = HdrImage(w, h)
     file_out_pfm = "images/$(params["FILE_OUT"]).pfm"
     file_out_png = "images/$(params["FILE_OUT"]).png"
+    algorithm = params["RENDER_ALGORITHM"]
 
 # Creating WORLD with 10 spheres
     world = World()
@@ -93,7 +99,7 @@ function main()
 # Creating an ImageTracer object 
     tracer = ImageTracer(image, camera)
 
-    function on_off(ray)
+    function OnOff_renderer(ray)
         if ray_intersection(world, ray) == nothing
             return RGB(0., 0., 0.)
         else
@@ -101,10 +107,17 @@ function main()
         end
     end
 
+    function Flat_renderer(ray)
+    end
+
     println("Observer initialized.")
 
     println("Computing ray intersection...")
-    fire_all_rays(tracer, on_off )
+    if params["RENDER_ALGORITHM"] == "flat"
+        fire_all_rays(tracer, Flat_renderer )
+    else
+        fire_all_rays(tracer, OnOff_renderer )
+    end
     println("Ray intersections evaluated.")
 
 
