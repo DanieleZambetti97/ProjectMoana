@@ -6,6 +6,8 @@ import ColorTypes: RGB
 
 abstract type Pigment end
 
+## Unfirom Pigment
+
 struct UniformPigment <: Pigment
     color::RGB
 
@@ -13,6 +15,9 @@ struct UniformPigment <: Pigment
 end
 
 get_color(un_pig) = return un_pig.color
+
+
+## Image Pigment
 
 struct ImagePigment <: Pigment
     image::HdrImage
@@ -36,6 +41,8 @@ function get_color(im_pig, uv::Vec2D)
 end
 
 
+## Checkered Pigment
+
 struct CheckeredPigment <: Pigment
     color1::RGB
     color2::RGB
@@ -56,6 +63,8 @@ function get_color(check_pig::CheckeredPigment)
     end 
 end
 
+Base.:≈(pig1::UniformPigment, pig2::UniformPigment) = pig1.color ≈ pig2.color
+Base.:≈(pig1::CheckeredPigment, pig2::CheckeredPigment) = pig1.color1 ≈ pig2.color1 && pig1.color2 ≈ pig2.color2 && pig1.n_steps ≈ pig2.n_steps
 
 
 ## Code for BRDF type and its sons #####################################################
@@ -76,6 +85,7 @@ end
 eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
 eval(brdf::DiffuseBRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return brdf.pigment.get_color(uv) * (brdf.reflectance / π)
 
+Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigment && brdf1.reflectance ≈ brdf2.reflectance
 
 ## Code for MATERIAL and its sons #####################################################
 
