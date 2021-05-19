@@ -43,7 +43,7 @@ function parse_commandline()
             default = "demo" 
             arg_type = String  
         "RENDER_ALGORITHM"
-            help = "type of algortihm to use for rendere: "
+            help = "type of algortihm to use for render"
             required = false
             default = "on_off" 
             arg_type = String  
@@ -99,25 +99,19 @@ function main()
 # Creating an ImageTracer object 
     tracer = ImageTracer(image, camera)
 
-    function OnOff_renderer(ray)
-        if ray_intersection(world, ray) == nothing
-            return RGB(0., 0., 0.)
-        else
-            return RGB(1., 1., 1.)
-        end
-    end
-
-    function Flat_renderer(ray)
-    end
-
     println("Observer initialized.")
 
-    println("Computing ray intersection...")
+    print("Computing ray intersection ")
     if params["RENDER_ALGORITHM"] == "flat"
-        fire_all_rays(tracer, Flat_renderer )
+        println("using Flat renderer")
+        renderer = FlatRenderer(world, background_color=RGB(0.,0.,0.))
     else
-        fire_all_rays(tracer, OnOff_renderer )
+        println("using On/off renderer")
+        renderer = OnOffRenderer(world, background_color=RGB(0.,0.,0.))
     end
+
+    fire_all_rays(tracer, renderer)
+
     println("Ray intersections evaluated.")
 
 
@@ -139,6 +133,6 @@ function main()
       
 end
 
-main()
+main()  
 
 ############
