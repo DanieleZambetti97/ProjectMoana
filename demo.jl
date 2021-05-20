@@ -61,8 +61,8 @@ function main()
     d = params["DISTANCE"]
     camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
-    file_out_pfm = "images/$(params["FILE_OUT"]).pfm"
-    file_out_png = "images/$(params["FILE_OUT"]).png"
+    file_out_pfm = "$(params["FILE_OUT"]).pfm"
+    file_out_png = "$(params["FILE_OUT"]).png"
 
 # Creating WORLD with 10 spheres
     world = World()
