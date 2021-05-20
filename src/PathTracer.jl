@@ -11,11 +11,7 @@ struct UniformPigment <: Pigment
     UniformPigment(color::RGB) = new(color)
 end
 
-<<<<<<< HEAD
-get_color(un_pig, uv::Vec2D) = return un_pig.color
-=======
 get_color(un_pig::UniformPigment, vec2d::Vec2D) = return un_pig.color
->>>>>>> a38bbd488ecfc0a2b3d338f1358d05dcb1d1bbcc
 
 
 ## Image Pigment
@@ -26,19 +22,19 @@ struct ImagePigment <: Pigment
     ImagePigment(img::HdrImage) = new(img)
 end
    
-function get_color(im_pig, uv::Vec2D)
-    col = floor(uv.u * im_pig.image.width)
-    row = floor(uv.v * im_pig.image.height)
+function get_color(im_pig:: ImagePigment, uv::Vec2D)
+    col = convert(Int64, floor(uv.u * im_pig.image.width +1))
+    row = convert(Int64, floor(uv.v * im_pig.image.height +1))
 
-    # if col >= im_pig.image.width
-    #     col = im_pig.image.width - 1
-    # end
+    if col >= im_pig.image.width
+        col = im_pig.image.width
+    end
 
-    # if row >= im_pig.image.height
-    #     row = im_pig.image.height - 1
-    # end
+    if row >= im_pig.image.height
+        row = im_pig.image.height
+    end
 
-    return get_pixel(im_pig.image, col, row) 
+    return im_pig.image.pixels[get_pixel(im_pig.image, col, row)] 
 end
 
 

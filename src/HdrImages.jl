@@ -29,6 +29,13 @@ pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 
 
 # Get and set methods
+
+"""
+    get_pixel(img, x, y)
+
+It returns the positional index of the (x, y) pixel of the image (img).
+If the coordinates are not valid it returns a Boolean.
+"""
 get_pixel(img::HdrImage, x, y) =  valid_coordinates(img, x, y) && return( pixel_offset(img, x, y)) 
 
 set_pixel(img::HdrImage, x, y, new_color::RGB) =  valid_coordinates(img, x, y) && (img.pixels[ get_pixel(img, x, y)] = new_color)

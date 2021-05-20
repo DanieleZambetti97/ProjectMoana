@@ -6,10 +6,10 @@ pigment = UniformPigment(color)
 
 
 image = HdrImage(2, 2)
-set_pixel(image, 1, 1, Color(1.0, 2.0, 3.0))
-set_pixel(image, 2, 1, Color(2.0, 3.0, 1.0))
-set_pixel(image, 1, 2, Color(2.0, 1.0, 3.0))
-set_pixel(image, 2, 2, Color(3.0, 2.0, 1.0))
+set_pixel(image, 1, 1, RGB(1.0, 2.0, 3.0))
+set_pixel(image, 2, 1, RGB(2.0, 3.0, 1.0))
+set_pixel(image, 1, 2, RGB(2.0, 1.0, 3.0))
+set_pixel(image, 2, 2, RGB(3.0, 2.0, 1.0))
 
 pigment2 = ImagePigment(image)
 
