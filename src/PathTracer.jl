@@ -14,7 +14,7 @@ struct UniformPigment <: Pigment
     UniformPigment(color::RGB) = new(color)
 end
 
-get_color(un_pig) = return un_pig.color
+get_color(un_pig, uv::Vec2D) = return un_pig.color
 
 
 ## Image Pigment
@@ -52,7 +52,7 @@ struct CheckeredPigment <: Pigment
     CheckeredPigment(color1, color2, n) = new(color1, color2, n)
 end
 
-function get_color(check_pig::CheckeredPigment)
+function get_color(check_pig::CheckeredPigment, uv::Vec2D)
     int_u = convert(Int64, floor(uv.u * check_pig.n_steps))
     int_v = convert(Int64, floor(uv.v * check_pig.n_steps))
 
@@ -71,12 +71,12 @@ Base.:≈(pig1::CheckeredPigment, pig2::CheckeredPigment) = pig1.color1 ≈ pig2
 
 abstract type BRDF end
 
-struct DiffuseBRDF <: BDRF
+struct DiffuseBRDF <: BRDF
    
     pigment::Pigment
     reflectance::Number
 
-    DiffuseBRDF() = new(UnfiromPigment(RGB(1.,1.,1.)), 1)
+    DiffuseBRDF() = new(UniformPigment(RGB(1.,1.,1.)), 1)
     DiffuseBRDF(pigment::Pigment) = new(pigment, 1)
     DiffuseBRDF(pigment::Pigment, r) = new(pigment, r)
     
