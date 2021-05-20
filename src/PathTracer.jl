@@ -11,7 +11,11 @@ struct UniformPigment <: Pigment
     UniformPigment(color::RGB) = new(color)
 end
 
+<<<<<<< HEAD
 get_color(un_pig, uv::Vec2D) = return un_pig.color
+=======
+get_color(un_pig::UniformPigment, vec2d::Vec2D) = return un_pig.color
+>>>>>>> a38bbd488ecfc0a2b3d338f1358d05dcb1d1bbcc
 
 
 ## Image Pigment

@@ -16,7 +16,7 @@ export Camera, OrthogonalCamera, PerspectiveCamera, Ray, ImageTracer,
 
 export Shape, Sphere, World, Plane, HitRecord, ray_intersection, add_shape
 
-export BRDF, Material, Pigment, Renderer
+export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment
 
 export  OnOff_renderer, Flat_renderer
 
