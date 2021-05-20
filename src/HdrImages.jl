@@ -2,8 +2,7 @@ using ColorTypes
 
 # creating HdrImage struct
 """
-    HdrImage(w, h)
-    HdrImage(w, h, pixels)
+HdrImage(w, h; array=[RGB() for i in 1:h*w])
 
 It creates a **HdrImage**.
 
@@ -18,8 +17,8 @@ mutable struct HdrImage
     width::Int
     height::Int
     pixels::Array{RGB, 1}
-    HdrImage(w, h) = new(w, h, [RGB() for i in 1:h*w])
-    HdrImage(w, h, array) = new(w, h, array)
+
+    HdrImage(w, h; array=[RGB() for i in 1:h*w]) = new(w, h, array )
 end
 
 # Check if the coordinates passed are valid

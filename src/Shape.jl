@@ -12,9 +12,7 @@ It creates a **Sphere**, where T is a generic ``Transformation`` applied to the 
 struct Sphere <: Shape
     transformation::Transformation
     material::Material
-    Sphere() = new(Transformation(), Material())
-    Sphere(transformation::Transformation) = new(transformation, Material())
-    Sphere(material::Material) = new(Transformation(), material)
+    Sphere(;transformation=Transformation(), material=Material() ) = new(transformation, material)
 end
 
 ## Hidden methods for sphere
@@ -46,9 +44,7 @@ It creates a **Plane**, where T is a generic ``Transformation`` applied to the X
 struct Plane <: Shape
     transformation::Transformation
     material::Material
-    Plane() = new(Transformation(), Material())
-    Plane(transformation::Transformation) = new(transformation, Material())
-    Plane(material::Material) = new(Transformation(), material)
+    Plane(;transformation::Transformation=Transformation(), material::Material=Material() ) = new(transformation, material)
 end
 
 ## Hidden methods for plane

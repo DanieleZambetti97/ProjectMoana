@@ -16,7 +16,9 @@ export Camera, OrthogonalCamera, PerspectiveCamera, Ray, ImageTracer,
 
 export Shape, Sphere, World, Plane, HitRecord, ray_intersection, add_shape
 
-export Material, BRDF, Pigment 
+export BRDF, Material, Pigment, Renderer
+
+export  OnOff_renderer, Flat_renderer
 
 include("RaytracerColors.jl")
 include("HdrImages.jl")
@@ -24,7 +26,7 @@ include("Geometry.jl")
 include("Cameras.jl")
 include("PathTracer.jl")
 include("Shape.jl")
-include("PathTracer.jl")
+include("Renderer.jl")
 
 greet(name) = println("Hello $(name)! Moana welcomes you!")
 greet() = println("Hello User! Moana welcomes you!")

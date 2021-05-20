@@ -1,7 +1,4 @@
 import ColorTypes: RGB
-## Code for PATH TRACER algorithm #############################################
-
-
 ## Code for PIGMENT type and its sons ##################################################
 
 abstract type Pigment end
@@ -97,3 +94,6 @@ struct Material
 end 
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance
 
+## Code for PATH TRACER algorithm #############################################
+abstract type Renderer
+end

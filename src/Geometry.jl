@@ -40,9 +40,9 @@ If not specified, both of the matrixes are the Identity matrix (4x4).
 mutable struct Transformation
     m::Array{Array{Float64}}
     invm::Array{Array{Float64}}
+
     Transformation(m, invm) = new(m, invm)
     Transformation() = new(ID4x4, ID4x4)
-    
 end
 
 # Supporting methods for Transformation

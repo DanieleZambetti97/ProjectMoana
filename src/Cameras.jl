@@ -1,10 +1,7 @@
 ## Code for RAYS #########################################################################################################################
 
 """
-    Ray(origin, dir)
-    Ray(origin, dir, tmin) 
-    Ray(origin, dir, tmin, tmax)
-    Ray(origin, dir, tmin, tmax, depth)
+Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0)
 
 It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
 """
@@ -19,7 +16,7 @@ struct Ray
 
 end
 
-Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
+Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir; R.tmin, R.tmax, R.depth )
 
 Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
 
@@ -39,10 +36,7 @@ abstract type Camera
 end
 
 """
-    OrthogonalCamera(a, T)
-    OrthogonalCamera(a)
-    OrthogonalCamera(T)
-    OrthogonalCamera()
+    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation())
 
 It creates a **Orthogonal Camera**. 
 
@@ -57,7 +51,7 @@ struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
 
-    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation()) = new(a, T)
+    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation()) = new(aspect_ratio, transformation)
 
 end
 
@@ -82,15 +76,12 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0), 1.0 )
+    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0); depth=1 )
     return camera.transformation * Ray_StandardFrame
 end
 
 """
-    PerspectiveCamera(a, T, d)
-    PerspectiveCamera(a, T)
-    PerspectiveCamera(a)
-    PerspectiveCamera()
+    PerspectiveCamera(;a=1.0, T=Transformation(), d=1.0)
 
 It creates a **Perspective Camera**. 
 
@@ -107,14 +98,11 @@ struct PerspectiveCamera <: Camera
     transformation::Transformation
     distance::Float64
 
-    PerspectiveCamera(a, T, d) = new(a, T, d )
-    PerspectiveCamera(a, T) = new(a, T, 1.0 )
-    PerspectiveCamera(a) = new(a, Transformation(), 1.0 )
-    PerspectiveCamera() = new(1.0, Transformation(), 1.0 )  
+    PerspectiveCamera(;aspect_ratio=1.0, transformation=Transformation(), distance=1.0) = new(aspect_ratio, transformation, distance )
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0)
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), depth=1)
     return camera.transformation * Ray_StandardFrame
 end
 
