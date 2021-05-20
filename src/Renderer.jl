@@ -1,3 +1,8 @@
+## Code for RENDEREING algorithms #############################################
+
+abstract type Renderer
+end
+
 struct OnOff_renderer <: Renderer
     world::World
 #    background_color::RGB #che in realtà non è un RGB ma il peso di ogni canale

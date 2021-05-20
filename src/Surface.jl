@@ -1,21 +1,40 @@
 import ColorTypes: RGB
+
 ## Code for PIGMENT type and its sons ##################################################
 
 abstract type Pigment end
 
 ## Unfirom Pigment
 
+"""
+    UniformPigment(color)
+
+It creates a uniform pigment, where color is a RGB type.
+"""
 struct UniformPigment <: Pigment
     color::RGB
 
     UniformPigment(color::RGB) = new(color)
 end
 
+"""
+    get_color(un_pig, Vec2D)
+    get_color(im_pig, Vec2D)
+    get_color(check_pig, Vec2D)
+
+It returns the **COLOR** of the pixel with coordinates (u,v) of the Vec2D given. It works with every pigment implemented 
+(uniform, image, checkered).
+"""
 get_color(un_pig::UniformPigment, vec2d::Vec2D) = return un_pig.color
 
 
 ## Image Pigment
 
+"""
+    ImagePigment(img)
+
+It creates a Image Pigment, where img is HdrImage type. Thus, the image is transferred to the pixels.
+"""
 struct ImagePigment <: Pigment
     image::HdrImage
 
@@ -40,13 +59,18 @@ end
 
 ## Checkered Pigment
 
+"""
+    CheckeredPigment(color1, color2, n_steps)
+
+It creates a Checkered Pigment, useful for debugging. 
+If not defined n_steps = 10.
+"""
 struct CheckeredPigment <: Pigment
     color1::RGB
     color2::RGB
     n_steps::Number
 
-    CheckeredPigment(color1, color2) = new(color1, color2, 10)
-    CheckeredPigment(color1, color2, n) = new(color1, color2, n)
+    CheckeredPigment(color1, color2; n_steps=10) = new(color1, color2, n_steps)
 end
 
 function get_color(check_pig::CheckeredPigment, uv::Vec2D)
@@ -68,6 +92,14 @@ Base.:≈(pig1::CheckeredPigment, pig2::CheckeredPigment) = pig1.color1 ≈ pig2
 
 abstract type BRDF end
 
+"""
+    DiffuseBRDF(pigment, r)
+
+It creates a Diffuse BRDF, where _r_ is the reflectance of the surface.
+If not defined:
+- pigment = UniformPigment(RGB(1.,1.,1.));
+- r = 1.
+"""
 struct DiffuseBRDF <: BRDF
    
     pigment::Pigment
@@ -86,6 +118,14 @@ Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigm
 
 ## Code for MATERIAL and its sons #####################################################
 
+"""
+    Material(brdf, e_r)
+
+It creates a Material, where brdf is a generic BRDF and e_r is the emitted radiance of the surface (Pigment type).
+If not defined:
+- brdf = DiffuseBRDF();
+- e_r = UniformPigment(RGB(0.,0.,0.)).
+"""
 struct Material
     brdf::BRDF
     emitted_radiance::Pigment
@@ -94,6 +134,5 @@ struct Material
 end 
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance
 
-## Code for PATH TRACER algorithm #############################################
-abstract type Renderer
-end
+
+
