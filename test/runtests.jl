@@ -10,3 +10,5 @@ include("test_Geometry.jl")
 include("test_Cameras.jl")
 
 include("test_Shape.jl")
+
+include("test_Renderer.jl")

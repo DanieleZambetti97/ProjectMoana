@@ -11,7 +11,7 @@ struct UniformPigment <: Pigment
     UniformPigment(color::RGB) = new(color)
 end
 
-get_color(un_pig) = return un_pig.color
+get_color(un_pig::UniformPigment, vec2d::Vec2D) = return un_pig.color
 
 
 ## Image Pigment
@@ -73,7 +73,7 @@ struct DiffuseBRDF <: BRDF
     pigment::Pigment
     reflectance::Number
 
-    DiffuseBRDF() = new(UnfiromPigment(RGB(1.,1.,1.)), 1)
+    DiffuseBRDF() = new(UniformPigment(RGB(1.,1.,1.)), 1)
     DiffuseBRDF(pigment::Pigment) = new(pigment, 1)
     DiffuseBRDF(pigment::Pigment, r) = new(pigment, r)
     

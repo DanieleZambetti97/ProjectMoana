@@ -13,6 +13,7 @@ struct Sphere <: Shape
     transformation::Transformation
     material::Material
     Sphere(;transformation=Transformation(), material=Material() ) = new(transformation, material)
+#    Sphere() = new(Tansformation(), Material())
 end
 
 ## Hidden methods for sphere
