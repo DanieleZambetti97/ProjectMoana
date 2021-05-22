@@ -18,7 +18,7 @@ mutable struct HdrImage
     height::Int
     pixels::Array{RGB, 1}
 
-    HdrImage(w, h; array=[RGB() for i in 1:h*w]) = new(w, h, array )
+    HdrImage(w, h, array=[RGB() for i in 1:h*w]) = new(w, h, array )
 end
 
 # Check if the coordinates passed are valid

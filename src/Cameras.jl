@@ -1,34 +1,3 @@
-## Code for RAYS #########################################################################################################################
-
-"""
-Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0)
-
-It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
-"""
-struct Ray
-    origin::Point 
-    dir::Vec
-    tmin::Float64
-    tmax::Float64 
-    depth::Int16
-    
-    Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
-
-end
-
-Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir; R.tmin, R.tmax, R.depth )
-
-Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
-
-"""
-    at(ray, t)
-
-It calculates the position of the ray at the instant *t*.
-"""
-at(ray::Ray, t::Number) = ray.origin + ray.dir*t
-
-
-
 ## Code for the CAMERAS #################################################################################################################
 
 # Camera is the abstract type which the two different cameras are generated from. 
@@ -36,7 +5,7 @@ abstract type Camera
 end
 
 """
-    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation())
+    OrthogonalCamera( aspect_ratio=1.0, transformation=Transformation())
 
 It creates a **Orthogonal Camera**. 
 
@@ -51,8 +20,7 @@ struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
 
-    OrthogonalCamera(; aspect_ratio=1.0, transformation=Transformation()) = new(aspect_ratio, transformation)
-
+    OrthogonalCamera( aspect_ratio=1.0, transformation=Transformation()) = new(aspect_ratio, transformation)
 end
 
 """
@@ -76,7 +44,7 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0); depth=1 )
+    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0))
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -98,11 +66,12 @@ struct PerspectiveCamera <: Camera
     transformation::Transformation
     distance::Float64
 
-    PerspectiveCamera(;aspect_ratio=1.0, transformation=Transformation(), distance=1.0) = new(aspect_ratio, transformation, distance )
+    PerspectiveCamera(aspect_ratio=1.0, transformation=Transformation(), distance=1.0) = new(aspect_ratio, transformation, distance )
+#    PerspectiveCamera(transformation=Transformation(), distance=1.0) = new(1.0, transformation, distance )
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), depth=1)
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1))
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -135,6 +104,16 @@ end
 
 It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
 """
+function fire_all_rays(im::ImageTracer, func, world::World)
+    for row ∈ 1:im.image.height
+        for col ∈ 1:im.image.width
+            ray = fire_ray(im, col, row)
+            color = func(ray, world)
+            im.image.pixels[get_pixel(im.image, col, row)] = color
+        end
+    end
+end
+
 function fire_all_rays(im::ImageTracer, func)
     for row ∈ 1:im.image.height
         for col ∈ 1:im.image.width

@@ -17,6 +17,9 @@ struct UniformPigment <: Pigment
     UniformPigment(color::RGB) = new(color)
 end
 
+Base.:≈(pig1::UniformPigment, pig2::UniformPigment) = pig1.color ≈ pig2.color
+
+
 """
     get_color(un_pig, Vec2D)
     get_color(im_pig, Vec2D)
@@ -70,8 +73,10 @@ struct CheckeredPigment <: Pigment
     color2::RGB
     n_steps::Number
 
-    CheckeredPigment(color1, color2; n_steps=10) = new(color1, color2, n_steps)
+    CheckeredPigment(color1, color2, n_steps=10) = new(color1, color2, n_steps)
 end
+
+Base.:≈(pig1::CheckeredPigment, pig2::CheckeredPigment) = pig1.color1 ≈ pig2.color1 && pig1.color2 ≈ pig2.color2 && pig1.n_steps ≈ pig2.n_steps
 
 function get_color(check_pig::CheckeredPigment, uv::Vec2D)
     int_u = convert(Int64, floor(uv.u * check_pig.n_steps))
@@ -83,9 +88,6 @@ function get_color(check_pig::CheckeredPigment, uv::Vec2D)
         return check_pig.color2
     end 
 end
-
-Base.:≈(pig1::UniformPigment, pig2::UniformPigment) = pig1.color ≈ pig2.color
-Base.:≈(pig1::CheckeredPigment, pig2::CheckeredPigment) = pig1.color1 ≈ pig2.color1 && pig1.color2 ≈ pig2.color2 && pig1.n_steps ≈ pig2.n_steps
 
 
 ## Code for BRDF type and its sons #####################################################
@@ -105,10 +107,7 @@ struct DiffuseBRDF <: BRDF
     pigment::Pigment
     reflectance::Number
 
-    DiffuseBRDF() = new(UniformPigment(RGB(1.,1.,1.)), 1)
-    DiffuseBRDF(pigment::Pigment) = new(pigment, 1)
-    DiffuseBRDF(pigment::Pigment, r) = new(pigment, r)
-    
+    DiffuseBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)), reflectance::Number=1. ) = new(pigment, reflectance)    
 end
 
 eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
@@ -130,7 +129,7 @@ struct Material
     brdf::BRDF
     emitted_radiance::Pigment
 
-    Material(;brdf::BRDF=DiffuseBRDF(), emitted_radiance::Pigment=UniformPigment(RGB(0.,0.,0.)) ) = new(brdf, emitted_radiance)
+    Material(brdf::BRDF=DiffuseBRDF(), emitted_radiance::Pigment=UniformPigment(RGB(0.,0.,0.)) ) = new(brdf, emitted_radiance)
 end 
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance
 

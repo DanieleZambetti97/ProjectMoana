@@ -23,7 +23,7 @@ function parse_commandline()
             required = true 
             arg_type = Int       
         "CAMERA"
-            help = "type of the camera (O, for Orthogonal, or P, for Perspective)"
+            help = "type of the camera [O, for Orthogonal, or P, for Perspective]"
             required = false
             default = "O"
             arg_type = String
@@ -43,7 +43,7 @@ function parse_commandline()
             default = "demo" 
             arg_type = String  
         "RENDER_ALGORITHM"
-            help = "type of algortihm to use for render"
+            help = "type of algortihm to use for render [on_off, flat, path_tracer]"
             required = false
             default = "on_off" 
             arg_type = String  
@@ -66,17 +66,18 @@ function main()
     d = params["DISTANCE"]
     camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
-    file_out_pfm = "images/$(params["FILE_OUT"]).pfm"
-    file_out_png = "images/$(params["FILE_OUT"]).png"
+    file_out_pfm = "$(params["FILE_OUT"]).pfm"
+    file_out_png = "$(params["FILE_OUT"]).png"
     algorithm = params["RENDER_ALGORITHM"]
 
 # Creating WORLD with 10 spheres
+    material1= Material(DiffuseBRDF(CheckeredPigment(RGB(0.2, 0.7, 0.3), RGB(0.3, 0.2, 0.7))))
     world = World()
 
     for x in [-0.5, 0.5]
         for y in [-0.5, 0.5]
             for z in [-0.5, 0.5]
-                add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)) ))
+                add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)), material1 ))
             end
         end
     end
@@ -104,13 +105,11 @@ function main()
     print("Computing ray intersection ")
     if params["RENDER_ALGORITHM"] == "flat"
         println("using Flat renderer")
-        renderer = FlatRenderer(world, background_color=RGB(0.,0.,0.))
+        fire_all_rays(tracer, Flat_renderer, world)
     else
-        println("using On/off renderer")
-        renderer = OnOffRenderer(world, background_color=RGB(0.,0.,0.))
+        println("using On/Off renderer")
+        fire_all_rays(tracer, OnOff_renderer, world)
     end
-
-    fire_all_rays(tracer, renderer)
 
     println("Ray intersections evaluated.")
 

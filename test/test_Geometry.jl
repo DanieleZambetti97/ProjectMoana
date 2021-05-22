@@ -3,7 +3,7 @@
 a = Vec(1.0,2.0,3.0)
 b = Vec(4.0,6.0,8.0)
 
-@testset "Geometry Vec tests           " begin
+@testset "Geometry: Vec tests           " begin
 	@test isapprox(a,a)
 	@test false == isapprox(a,b)
 	@test isapprox(a+b ,Vec(5.0,8.0,11.0) )
@@ -17,7 +17,7 @@ end
 a = Point(1.0, 2.0, 3.0)
 b = Point(4.0, 6.0, 8.0)
 
-@testset "Geometry Point tests         " begin
+@testset "Geometry: Point tests         " begin
 	@test isapprox(a,a) == true
 	@test isapprox(a,b) == false
 	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) == true
@@ -47,7 +47,7 @@ V_expected = Vec(14.0, 38.0, 51.0)
 P_expected = Point(18.0, 46.0, 58.0)
 N_expected = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry Transofrmation tests" begin
+@testset "Geometry: Transofrmation tests" begin
 
     @test is_consistent(T1)
     @test isapprox(T1, T1_same)

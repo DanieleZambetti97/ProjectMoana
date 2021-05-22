@@ -1,3 +1,34 @@
+## Code for RAYS #########################################################################################################################
+
+"""
+Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0)
+
+It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
+"""
+struct Ray
+    origin::Point 
+    dir::Vec
+    tmin::Float64
+    tmax::Float64 
+    depth::Int16
+    
+    Ray( origin, dir, tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
+
+end
+
+Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
+
+Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
+
+"""
+    at(ray, t)
+
+It calculates the position of the ray at the instant *t*.
+"""
+at(ray::Ray, t::Number) = ray.origin + ray.dir*t
+
+
+
 ## Code for SHAPES #########################################################################################
 
 abstract type Shape
@@ -12,7 +43,7 @@ It creates a **Sphere**, where T is a generic ``Transformation`` applied to the 
 struct Sphere <: Shape
     transformation::Transformation
     material::Material
-    Sphere(;transformation=Transformation(), material=Material() ) = new(transformation, material)
+    Sphere(transformation=Transformation(), material=Material() ) = new(transformation, material)
 #    Sphere() = new(Tansformation(), Material())
 end
 
@@ -45,7 +76,7 @@ It creates a **Plane**, where T is a generic ``Transformation`` applied to the X
 struct Plane <: Shape
     transformation::Transformation
     material::Material
-    Plane(;transformation::Transformation=Transformation(), material::Material=Material() ) = new(transformation, material)
+    Plane(transformation::Transformation=Transformation(), material::Material=Material() ) = new(transformation, material)
 end
 
 ## Hidden methods for plane

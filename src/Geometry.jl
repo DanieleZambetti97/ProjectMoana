@@ -41,8 +41,7 @@ mutable struct Transformation
     m::Array{Array{Float64}}
     invm::Array{Array{Float64}}
 
-    Transformation(m, invm) = new(m, invm)
-    Transformation() = new(ID4x4, ID4x4)
+    Transformation(m=ID4x4, invm=ID4x4) = new(m, invm)
 end
 
 # Supporting methods for Transformation
