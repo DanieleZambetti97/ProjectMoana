@@ -1,34 +1,28 @@
 using ProjectMoana
 using ColorTypes
 
-sphere = Sphere(translation(Vec(2, 0, 0)) * scaling(Vec(.1, .1, .1)), Material(DiffuseBRDF(UniformPigment(RGB(1.,1.,1.)))) )
-image = HdrImage(9, 9)
-camera = OrthogonalCamera()
-tracer = ImageTracer(image, camera)
 world = World()
+add_shape(world, Sphere(translation(Vec(2., 0., 0.)) * scaling(Vec(0.1, 0.1, 0.1))))
 
-add_shape(world, sphere)
+image = HdrImage(3, 3)
+camera = PerspectiveCamera()
+tracer = ImageTracer(image, camera)
 
 fire_all_rays(tracer, OnOff_renderer, world)
 
 @testset "Renderer: Test OnOff renderer" begin
-    for i ∈ 1:9
-        println("\n Riga #$(i)")
-        for j ∈ 1:9
-            if image.pixels[get_pixel(image, i, j)] == RGB(1.,1.,1.)
-                print("W ")
-            elseif image.pixels[get_pixel(image, i, j)] == RGB(0.,0.,0.) 
-                print("B ")
-            end
+    for i ∈ 1:3
+        for j ∈ 1:3
+            image.pixels[get_pixel(image, i, j)] == RGB(1.,1.,1.)
         end
     end
-            
-    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.) ##
+
+    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.)
     @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.,0.,0.)
     @test image.pixels[get_pixel(image,3, 1)]≈RGB(0.,0.,0.)
 
     @test image.pixels[get_pixel(image,1, 2)]≈RGB(0.,0.,0.)
-    @test image.pixels[get_pixel(image,5, 5)]≈RGB(1.,1.,1.) ##
+    @test image.pixels[get_pixel(image,2, 2)]≈RGB(1.,1.,1.)
     @test image.pixels[get_pixel(image,3, 2)]≈RGB(0.,0.,0.)
 
     @test image.pixels[get_pixel(image,1, 3)]≈RGB(0.,0.,0.)

@@ -55,7 +55,7 @@ tracer = ImageTracer(image, camera)
 ray1 = fire_ray(tracer, 0, 0, 2.5, 1.5)
 ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
-fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0))
+fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0 ))
 
 top_left_ray = fire_ray(tracer, 0, 0, 0.0, 0.0)
 bottom_right_ray = fire_ray(tracer, 3, 1, 1.0, 1.0)
