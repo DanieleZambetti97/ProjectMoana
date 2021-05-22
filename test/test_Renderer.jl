@@ -1,6 +1,7 @@
 using ProjectMoana
+using ColorTypes
 
-sphere = Sphere(translation(Vec(2, 0, 0)) * scaling(Vec(0.2, 0.2, 0.2)), Material(DiffuseBRDF(UniformPigment(RGB(1.,1.,1.)))) )
+sphere = Sphere(translation(Vec(2, 0, 0)) * scaling(Vec(1, 1, 1)), Material(DiffuseBRDF(UniformPigment(RGB(1.,1.,1.)))) )
 image = HdrImage(3, 3)
 camera = OrthogonalCamera()
 tracer = ImageTracer(image, camera)
@@ -11,12 +12,18 @@ add_shape(world, sphere)
 fire_all_rays(tracer, OnOff_renderer, world)
 
 @testset "Renderer: Test OnOff renderer" begin
-#    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.)
+    # for i ∈ 1:3
+    #     for j ∈ 1:3
+    #         println(image.pixels[get_pixel(image, i, j)])
+    #     end
+    # end
+            
+    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.) ##
     @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.,0.,0.)
     @test image.pixels[get_pixel(image,3, 1)]≈RGB(0.,0.,0.)
 
     @test image.pixels[get_pixel(image,1, 2)]≈RGB(0.,0.,0.)
-#    @test image.pixels[get_pixel(image,2, 2)]≈RGB(1.,1.,1.)
+    @test image.pixels[get_pixel(image,2, 2)]≈RGB(1.,1.,1.) ##
     @test image.pixels[get_pixel(image,3, 2)]≈RGB(0.,0.,0.)
 
     @test image.pixels[get_pixel(image,1, 3)]≈RGB(0.,0.,0.)
