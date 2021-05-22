@@ -145,8 +145,8 @@ struct ImageTracer
 end
 
 function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
-    u = (col + u_pixel)/(im.image.width)
-    v = 1.0 - (row + v_pixel)/(im.image.height)
+    u = (col -1 + u_pixel)/(im.image.width)
+    v = 1.0 - (row -1 + v_pixel)/(im.image.height)
     return fire_ray(im.camera, u, v)
 end
 
