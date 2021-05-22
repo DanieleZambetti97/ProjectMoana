@@ -1,9 +1,9 @@
 ## Code for RAYS #########################################################################################################################
 
 """
-Ray( origin, dir; tmin=1e-5, tmax=Inf, depth=0)
+Ray( origin, dir, tmin, tmax, depth)
 
-It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
+It creates a **Ray**. When not specified tmin = 1e-5, tmax = +∞ and depth = 0.
 """
 struct Ray
     origin::Point 
