@@ -12,11 +12,12 @@ add_shape(world, sphere)
 fire_all_rays(tracer, OnOff_renderer, world)
 
 @testset "Renderer: Test OnOff renderer" begin
-    # for i ∈ 1:3
-    #     for j ∈ 1:3
-    #         println(image.pixels[get_pixel(image, i, j)])
-    #     end
-    # end
+    for i ∈ 1:3
+        println("Riga #$(i)")
+        for j ∈ 1:3
+            println(image.pixels[get_pixel(image, i, j)])
+        end
+    end
             
     @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.) ##
     @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.,0.,0.)
