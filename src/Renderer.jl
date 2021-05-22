@@ -9,7 +9,7 @@ function OnOff_renderer(ray::Ray, world::World; on_color::RGB=RGB(1.,1.,1.), off
 end
 
 
-function Flat_renderer(ray::Ray, world::World; background_color=RGB(0.,0.,0.) )
+function Flat_renderer(ray::Ray, world::World; background_color=RGB(0.4,0.4,0.4) )
     hit_record = ray_intersection(world, ray)
     if hit_record == nothing
         return background_color

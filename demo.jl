@@ -71,19 +71,28 @@ function main()
     algorithm = params["RENDER_ALGORITHM"]
 
 # Creating WORLD with 10 spheres
-    material1= Material(DiffuseBRDF(CheckeredPigment(RGB(0.2, 0.7, 0.3), RGB(0.3, 0.2, 0.7))))
+    material1 = Material(DiffuseBRDF(UniformPigment(RGB(0.7, 0.3, 0.2))))
+    material2 = Material(DiffuseBRDF(CheckeredPigment(RGB(0.2, 0.7, 0.3), RGB(0.3, 0.2, 0.7), 4)))
+
+    sphere_texture = HdrImage(2, 2)
+    set_pixel(sphere_texture, 1, 1, RGB(0.1, 0.2, 0.3))
+    set_pixel(sphere_texture, 1, 2, RGB(0.2, 0.1, 0.3))
+    set_pixel(sphere_texture, 2, 1, RGB(0.3, 0.2, 0.1))
+    set_pixel(sphere_texture, 2, 2, RGB(0.3, 0.1, 0.2))
+
+    material3 = Material(DiffuseBRDF(ImagePigment(sphere_texture)))
     world = World()
 
     for x in [-0.5, 0.5]
         for y in [-0.5, 0.5]
             for z in [-0.5, 0.5]
-                add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)), material1 ))
+                add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(.1, .1, .1)), material1 ))
             end
         end
     end
 
-    add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)) ))
-    add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)) ))
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1,0.1,0.1)), material2 ))
+    add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.1,0.1,0.1)), material3 ))
 #    add_shape(world, Plane(rotation_x(π/2.0) * rotation_y(π/3.0) * rotation_z(π/1.2) * translation(Vec( 100.0, 75.0, 50.0)) ))
 
     println("World objects created.")
