@@ -30,18 +30,18 @@ end
 
 abstract type Renderer end 
 
-struct Renederer_OnOff <: Renderer
+struct Renderer_OnOff <: Renderer
     world::World
     background_color :: RGB 
 
     Renederer_Flat(world::World, background_color::RGB=RGB(0.,0.,0.) ) = new(world, background_color) 
 end
 
-struct Renederer_Flat <: Renderer
+struct Renderer_Flat <: Renderer
     world::World
     background_color :: RGB 
 
-    Renederer_Flat(world::World, background_color::RGB=RGB(0.,0.,0.) ) = new(world, background_color) 
+    Renderer_Flat(world::World, background_color::RGB=RGB(0.,0.,0.) ) = new(world, background_color) 
 end
 
 struct Renderer_PathTracer <: Renderer
