@@ -20,6 +20,8 @@ export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
 
 export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTracer
 
+export PCG, pcg_init, pcg_rand
+
 include("Colors.jl")
 include("HdrImages.jl")
 include("Geometry.jl")
@@ -27,6 +29,7 @@ include("Surface.jl")
 include("Shape.jl")
 include("Cameras.jl")
 include("Renderer.jl")
+include("PCG.jl")
 
 greet(name) = println("Hello $(name)! Moana welcomes you!")
 greet() = println("Hello User! Moana welcomes you!")
