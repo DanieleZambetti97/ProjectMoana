@@ -107,7 +107,7 @@ end
 - surface point (u & v coordinates);
 - t (distance covered by the ray);
 - ray;
-- shape
+- shape.
 """
 struct HitRecord
     world_point::Point
