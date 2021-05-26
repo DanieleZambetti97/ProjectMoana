@@ -5,7 +5,7 @@ struct OnOff_Renderer <: Renderer
     world::World
     on_color::RGB
     off_color::RGB
-    OnOff_Renderer(world::World, on_color::RGB=RGB(1.,1.,1.), off_color::RGB=RGB(0.,0.,0.) ) = new(world, background_color) 
+    OnOff_Renderer(world::World, on_color::RGB=RGB(1.,1.,1.), off_color::RGB=RGB(0.,0.,0.) ) = new(world, on_color, off_color) 
 end
 
 function OnOff(ray::Ray, renderer::OnOff_Renderer)
@@ -28,7 +28,7 @@ end
 function Flat(ray::Ray, renderer::Flat_Renderer)
     hit_record = ray_intersection(renderer.world, ray)
     if hit_record == nothing
-        return background_color
+        return renderer.background_color
     else
         material = hit_record.shape.material
         return get_color(material.brdf.pigment, hit_record.surface_point) + get_color(material.emitted_radiance, hit_record.surface_point)

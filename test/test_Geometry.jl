@@ -3,9 +3,9 @@
 a = Vec(1.0,2.0,3.0)
 b = Vec(4.0,6.0,8.0)
 
-@testset "Geometry: Vec tests           " begin
+@testset "Geometry: Vec tests            " begin
 	@test isapprox(a,a)
-	@test false == isapprox(a,b)
+	@test false ≈ isapprox(a,b)
 	@test isapprox(a+b ,Vec(5.0,8.0,11.0) )
 	@test isapprox(b-a ,Vec(3.0,4.0,5.0) )
 	@test isapprox(2*a, Vec(2.0,4.0,6.0))
@@ -17,12 +17,12 @@ end
 a = Point(1.0, 2.0, 3.0)
 b = Point(4.0, 6.0, 8.0)
 
-@testset "Geometry: Point tests         " begin
-	@test isapprox(a,a) == true
-	@test isapprox(a,b) == false
-	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) == true
-	@test isapprox((a + b), Point(5.0, 8.0, 11.0)) == true
-	#@test isapprox((b - a), Vec(3.0, 4.0, 5.0)) == true #uncomment when adding Vec - Vec method
+@testset "Geometry: Point tests          " begin
+	@test isapprox(a,a) ≈ true
+	@test isapprox(a,b) ≈ false
+	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) ≈ true
+	@test isapprox((a + b), Point(5.0, 8.0, 11.0)) ≈ true
+	#@test isapprox((b - a), Vec(3.0, 4.0, 5.0)) ≈ true #uncomment when adding Vec - Vec method
 end
 
 
@@ -47,7 +47,7 @@ V_expected = Vec(14.0, 38.0, 51.0)
 P_expected = Point(18.0, 46.0, 58.0)
 N_expected = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry: Transofrmation tests" begin
+@testset "Geometry: Transofrmation tests " begin
 
     @test is_consistent(T1)
     @test isapprox(T1, T1_same)
@@ -55,8 +55,8 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     T1_same.m[1][3] += 100.0
     T1_same.invm[2][1] += 100.0
 
-    @test isapprox(T1, T1_same) == false
-    @test isapprox(T1, T1_same) == false
+    @test isapprox(T1, T1_same) ≈ false
+    @test isapprox(T1, T1_same) ≈ false
 
     @test is_consistent(T2)
     @test is_consistent(T_expected)
@@ -103,21 +103,21 @@ end
 
 pcg = PCG()
 
-@testset "Geometry: " begin
+@testset "Geometry: Orthonormal Base test" begin
 
-    for i in range(10^6):
+    for i in range(1, length=10^6)
         normal = Vec(pcg_randf(pcg), pcg_randf(pcg), pcg_randf(pcg))
         normal = normalize(normal)
-        e1, e2, e3 = create_onb_from_z(normal)
+        e1, e2, e3 = create_onb(normal)
 
         @test e3 ≈ normal
 
-        @test 1.0 == squared_norm(e1)
-        @test 1.0 == squared_norm(e2)
-        @test 1.0 == squared_norm(e3)
+        @test isapprox(1.0 , squared_norm(e1), atol = 10^-15)
+        @test isapprox(1.0 , squared_norm(e2), atol = 10^-15)
+        @test isapprox(1.0 , squared_norm(e3), atol = 10^-15)
 
-        @test 0.0 == e1 * e2
-        @test 0.0 == e2 * e3
-        @test 0.0 == e3 * e1
+        @test isapprox(0.0 , e1 * e2, atol = 10^-15)
+        @test isapprox(0.0 , e2 * e3, atol = 10^-15)
+        @test isapprox(0.0 , e3 * e1, atol = 10^-15)
     end
 end
