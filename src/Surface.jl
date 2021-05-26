@@ -94,7 +94,7 @@ end
 
 abstract type BRDF end
 eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
-scatter_ray(bradf::BRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth) = return "Abstract method, not implemented"
+scatter_ray(brdf::BRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth) = return "Abstract method, not implemented"
 
 """
     DiffuseBRDF(pigment, r)

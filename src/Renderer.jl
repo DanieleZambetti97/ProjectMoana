@@ -45,7 +45,7 @@ struct PathTracer_Renderer <: Renderer
     max_depth::Int
     russian_roulette_limit::Int
 
-    PathTracer_Renderer(world::World, background_color::RGB=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=10, max_depth=2, russian_roulette_limit=3) = new(world, background_color, pcg, num_of_rays, max_depth, russian_roulette_limit)
+    PathTracer_Renderer(world::World; background_color::RGB=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=10, max_depth=2, russian_roulette_limit=3) = new(world, background_color, pcg, num_of_rays, max_depth, russian_roulette_limit)
 end
 
     # def __call__(self, ray: Ray) -> Color:
