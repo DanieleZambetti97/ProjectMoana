@@ -87,12 +87,12 @@ function _plane_point_to_uv(point::Point)
 end
 
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    dir = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
+    dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
     result = normalize(dir)
-    if ray_dir.vz > 0.0
-        return Normal(result.vx,result.vy,result.vz)
+    if ray_dir.z > 0.0
+        return Normal(result.x,result.y,result.z)
     else
-        return Normal(-1.0*result.vx,-1.0*result.vy,-1.0*result.vz)
+        return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
     end
 end
 
@@ -196,10 +196,10 @@ function ray_intersection(plane::Plane, ray::Ray)
     inverse_ray= inverse(plane.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
 
-    if inverse_ray.dir.vz == 0
+    if inverse_ray.dir.z == 0
         return nothing
     else 
-        t = - inverse_ray.origin.z / inverse_ray.dir.vz
+        t = - inverse_ray.origin.z / inverse_ray.dir.z
         if t<0
             return nothing
         else

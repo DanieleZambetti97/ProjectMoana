@@ -130,7 +130,7 @@ If not defined:
 - pigment = UniformPigment(RGB(1.,1.,1.));
 - r = 1.
 """
-struct SpeculerBRDF <: BRDF   
+struct SpecularBRDF <: BRDF   
     pigment::Pigment
 
     SpecularBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)) ) = new(pigment)    
@@ -141,7 +141,7 @@ Base.:≈(brdf1::SpecularBRDF, brdf2::SpecularBRDF) = brdf1.pigment ≈ brdf2.pi
 ##in realtà non serve main
 
 function scatter_ray(brdf::SpecularBRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth)
-    ray_dir = normalize(Vec(incoming_dir.vx, incoming_dir.vy, incoming_dir.vz))
+    ray_dir = normalize(Vec(incoming_dir.x, incoming_dir.y, incoming_dir.z))
     normal = normalize(toVec(normal))
     dot_prod = normal * ray_dir
 
