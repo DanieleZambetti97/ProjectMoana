@@ -49,7 +49,7 @@ struct PathTracer_Renderer <: Renderer
 end
 
 function PathTracer(ray::Ray, rend::PathTracer_Renderer)
-    if ray.depth > rend.max_depth:
+    if ray.depth > rend.max_depth
         return RGB(0.0, 0.0, 0.0)
     end
     
@@ -61,37 +61,42 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
 
 
     hit_material = hit_record.shape.material
-    hit_color = hit_material.brdf.pigment.get_color(hit_record.surface_point)
-    emitted_radiance = hit_material.emitted_radiance.get_color(hit_record.surface_point)
+    hit_color = get_color(hit_material.brdf.pigment, hit_record.surface_point)
+    emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)
 
 
     hit_color_lum = max(hit_color.r, hit_color.g, hit_color.b)
 
 
     # Russian roulette
-    if ray.depth >= self.russian_roulette_limit:
-        if self.pcg.random_float() > hit_color_lum:
+    if ray.depth >= rend.russian_roulette_limit
+        if pcg_randf(rend.pcg) > hit_color_lum
             # Keep the recursion going, but compensate for other potentially discarded rays
             hit_color *= 1.0 / (1.0 - hit_color_lum)
-        else:
+        else
             # Terminate prematurely
             return emitted_radiance
+        end
+    end
 
 
-    cum_radiance = Color(0.0, 0.0, 0.0)
-    if hit_color_lum > 0.0:  # Only do costly recursions if it's worth it
-        for ray_index in range(self.num_of_rays):
-            new_ray = hit_material.brdf.scatter_ray(
-                pcg=self.pcg,
-                incoming_dir=hit_record.ray.dir,
-                interaction_point=hit_record.world_point,
-                normal=hit_record.normal,
-                depth=ray.depth + 1,
+    cum_radiance = RGB(0.0, 0.0, 0.0)
+    if hit_color_lum > 0.0  # Only do costly recursions if it's worth it
+        for ray_index ∈ 1:rend.num_of_rays
+            new_ray = scatter_ray(
+                hit_material.brdf,
+                self.pcg,
+                hit_record.ray.dir,
+                hit_record.world_point,
+                hit_record.normal,
+                ray.depth + 1,
             )
             # Recursive call
-            new_radiance = self(new_ray)
+            new_radiance = PathTracer(new_ray, rend)
             cum_radiance += hit_color * new_radiance
+        end
+    end
 
 
-    return emitted_radiance + cum_radiance * (1.0 / self.num_of_rays)
-    
+    return emitted_radiance + cum_radiance * (1.0 / rend.num_of_rays)
+end

@@ -12,7 +12,7 @@ export Vec, Point, Transformation, Normal, Vec2D,
        cross, squared_norm, norm, normalize, inverse, is_consistent, toVec, create_onb,
        translation, scaling, rotation_x, rotation_y, rotation_z
 
-export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF, SpecularBRDF
+export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF, SpecularBRDF, scatter_ray
 
 export Shape, Sphere, World, Plane, HitRecord, ray_intersection, add_shape, Ray, at
        
