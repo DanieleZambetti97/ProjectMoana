@@ -116,7 +116,7 @@ Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
 
 # Convert a Point into a Vec
-function toVec(point::Point)
+function toVec(point::Union{Point,Normal})
     return Vec(point.x,point.y,point.z)
 end
 
@@ -242,3 +242,15 @@ function rotation_z(angle_rad::Float64)
     return Transformation(m, invm)
 end
 
+###############################################################################
+function create_onb(normal_passed::Union{Normal,Vec})
+    normal = normalize(toVec(normal_passed))
+    sign = signcopy(1.0,normal.z)
+    a = -1.0 / (sign + normal.z)
+    b = normal.x * normal.y * a
+
+    e1 = Vec(1.0 + sign * normal.x * normal.x * a, sign * b, -sign * normal.x)
+    e2 = Vec(b, sign + normal.y * normal.y * a, -normal.y)
+
+    return e1, e2, Vec(normal.x, normal.y, normal.z)
+end

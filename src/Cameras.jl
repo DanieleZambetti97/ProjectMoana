@@ -1,6 +1,9 @@
 ## Code for the CAMERAS #################################################################################################################
 
+abstract type Renderer end 
+
 # Camera is the abstract type which the two different cameras are generated from. 
+
 abstract type Camera
 end
 
@@ -104,11 +107,11 @@ end
 
 It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
 """
-function fire_all_rays(im::ImageTracer, func, world::World)
+function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
     for row ∈ 1:im.image.height
         for col ∈ 1:im.image.width
             ray = fire_ray(im, col, row)
-            color = func(ray, world)
+            color = func(ray, renderer)
             im.image.pixels[get_pixel(im.image, col, row)] = color
         end
     end

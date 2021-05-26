@@ -92,7 +92,7 @@ function main()
     end
 
    add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.2, 0.2, 0.2)), material2 ))
-   add_shape(world, Sphere(translation(Vec( 0.0, 0.0,-0.5)) * scaling(Vec(0.2, 0.2, 0.2)), material3 ))
+   add_shape(world, Sphere(translation(Vec( -0.5, 0.0,-0.5)) * scaling(Vec(2, 2, 2)), material3 ))
    add_shape(world, Plane(translation(Vec(1.1,0,-1.5))*rotation_y(0.0*pi/2.), material2))
 
     println("World objects created.")
@@ -114,10 +114,12 @@ function main()
     print("Computing ray intersection ")
     if params["RENDER_ALGORITHM"] == "flat"
         println("using Flat renderer")
-        fire_all_rays(tracer, Flat_renderer, world)
+        renderer = Flat_Renderer(world, RGB(0.4,0.4,0.4))
+        fire_all_rays(tracer, Flat, renderer)
     else
         println("using On/Off renderer")
-        fire_all_rays(tracer, OnOff_renderer, world)
+        renderer = OnOff_Renderer(world)
+        fire_all_rays(tracer, OnOff, renderer)
     end
 
     println("Ray intersections evaluated.")

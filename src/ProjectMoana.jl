@@ -8,17 +8,17 @@ export HdrImage, InvalidPfmFileFormat,
        average_luminosity, clamp_image, normalize_image, read_pfm_image
 
 export Vec, Point, Transformation, Normal, Vec2D,
-       cross, squared_norm, norm, normalize, inverse, is_consistent, toVec,
+       cross, squared_norm, norm, normalize, inverse, is_consistent, toVec, create_onb,
        translation, scaling, rotation_x, rotation_y, rotation_z
 
 export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF
 
 export Shape, Sphere, World, Plane, HitRecord, ray_intersection, add_shape, Ray, at
        
-export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer,
+export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
        fire_ray, fire_all_rays
 
-export  Renderer_OnOff, Renederer_Flat, Renderer_PathTracer, OnOff_renderer, Flat_renderer
+export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTracer
 
 include("Colors.jl")
 include("HdrImages.jl")

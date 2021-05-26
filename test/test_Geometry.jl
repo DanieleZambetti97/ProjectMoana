@@ -100,3 +100,24 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     @test isapprox(translation_1 * translation_2, expected)
 
 end
+
+pcg = PCG()
+
+@testset "Geometry: " begin
+
+    for i in range(10^6):
+        normal = Vec(pcg_randf(pcg), pcg_randf(pcg), pcg_randf(pcg))
+        normal = normalize(normal)
+        e1, e2, e3 = create_onb_from_z(normal)
+
+        @test e3 ≈ normal
+
+        @test 1.0 == squared_norm(e1)
+        @test 1.0 == squared_norm(e2)
+        @test 1.0 == squared_norm(e3)
+
+        @test 0.0 == e1 * e2
+        @test 0.0 == e2 * e3
+        @test 0.0 == e3 * e1
+    end
+end

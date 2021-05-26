@@ -93,6 +93,8 @@ end
 ## Code for BRDF type and its sons #####################################################
 
 abstract type BRDF end
+eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
+scatter_ray(bradf::BRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth) = return "Abstract method, not implemented"
 
 """
     DiffuseBRDF(pigment, r)
@@ -103,17 +105,48 @@ If not defined:
 - r = 1.
 """
 struct DiffuseBRDF <: BRDF
-   
     pigment::Pigment
     reflectance::Number
 
     DiffuseBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)), reflectance::Number=1. ) = new(pigment, reflectance)    
 end
+Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigment && brdf1.reflectance ≈ brdf2.reflectance
 
-eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
 eval(brdf::DiffuseBRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return brdf.pigment.get_color(uv) * (brdf.reflectance / π)
 
-Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigment && brdf1.reflectance ≈ brdf2.reflectance
+function scatter_ray(brdf::DiffuseBRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth)
+    e1, e2, e3 = create_onb(normal)
+    cos_theta_sq = pcg_randf(pcg)
+    cosθ, sinθ = sqrt(cos_theta_sq), sqrt(1.0 - cos_theta_sq)
+    ϕ = 2.0 * π * pcg_randf(pcg)
+    return Ray( interaction_point, e1*cos(ϕ)*cosθ + e2*sin(ϕ)*cosθ + e3*sinθ, 1.0e-3, inf, depth)
+end
+
+"""
+    SpecularBRDF(pigment, r)
+
+It creates a Diffuse BRDF, where _r_ is the reflectance of the surface.
+If not defined:
+- pigment = UniformPigment(RGB(1.,1.,1.));
+- r = 1.
+"""
+struct SpeculerBRDF <: BRDF   
+    pigment::Pigment
+
+    SpecularBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)) ) = new(pigment)    
+end
+Base.:≈(brdf1::SpecularBRDF, brdf2::SpecularBRDF) = brdf1.pigment ≈ brdf2.pigment
+
+#eval(brdf::SpecularBRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return brdf.pigment.get_color(uv) * (brdf.reflectance / π)
+##in realtà non serve main
+
+function scatter_ray(brdf::SpecularBRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth)
+    ray_dir = normalize(Vec(incoming_dir.vx, incoming_dir.vy, incoming_dir.vz))
+    normal = normalize(toVec(normal))
+    dot_prod = normal * ray_dir
+
+    return Ray(interaction_point, ray_dir - normal * 2 * dot_prod, 1e-5, inf, depth)
+end
 
 ## Code for MATERIAL and its sons #####################################################
 
