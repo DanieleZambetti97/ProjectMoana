@@ -57,16 +57,16 @@ ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
 fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0 ))
 
-top_left_ray = fire_ray(tracer, 0, 0, 0.0, 0.0)
-bottom_right_ray = fire_ray(tracer, 3, 1, 1.0, 1.0)
+top_left_ray = fire_ray(tracer, 1, 1, 0.0, 0.0)
+bottom_right_ray = fire_ray(tracer, 4, 2, 1.0, 1.0)
 
 @testset "Cameras: ImageTracer tests" begin
     # uv submapping
     @test isapprox(ray1, ray2)
     
     # orientation
-    @test isapprox(at(bottom_right_ray, 1.0), Point(0.0, -2.0, -1.0))
-    @test isapprox(at(top_left_ray, 1.0), Point(0.0, 2.0, 1.0))
+    @test at(bottom_right_ray, 1.0) ≈ Point(0.0, -2.0, -1.0)
+    @test at(top_left_ray, 1.0) ≈ Point(0.0, 2.0, 1.0)
 
     # image coverage
     for row ∈ 1:image.height

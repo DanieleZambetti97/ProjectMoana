@@ -87,8 +87,8 @@ function _plane_point_to_uv(point::Point)
 end
 
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    result = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
-    result = normalize(result)
+    dir = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
+    result = normalize(dir)
     if ray_dir.vz > 0.0
         return Normal(result.vx,result.vy,result.vz)
     else

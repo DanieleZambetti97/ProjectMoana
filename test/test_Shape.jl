@@ -32,7 +32,7 @@ end
 
 
 
-plane = Plane()
+plane = Plane(translation(Vec(0.,0.,0.)), Material(DiffuseBRDF(CheckeredPigment(RGB(0.2, 0.7, 0.3), RGB(0.3, 0.2, 0.7), 8))))
 ray1 = Ray(Point(11.5,0.3,10), Vec(0,0,-1))
 intersection1 = ray_intersection(plane,ray1)
 ray2 = Ray(Point(11.5,0.3,10), Vec(0,0,1))

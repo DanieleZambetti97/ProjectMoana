@@ -40,15 +40,15 @@ add_shape(world, sphere)
 fire_all_rays(tracer, Flat_renderer, world)
 
 @testset "Renderer: Test Flat renderer " begin
-    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.,0.,0.)
-    @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.,0.,0.)
-    @test image.pixels[get_pixel(image,3, 1)]≈RGB(0.,0.,0.)
+    @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.4,0.4,0.4)
+    @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.4,0.4,0.4)
+    @test image.pixels[get_pixel(image,3, 1)]≈RGB(0.4,0.4,0.4)
 
-    @test image.pixels[get_pixel(image,1, 2)]≈RGB(0.,0.,0.)
+    @test image.pixels[get_pixel(image,1, 2)]≈RGB(0.4,0.4,0.4)
     @test image.pixels[get_pixel(image,2, 2)]≈sphere_color
-    @test image.pixels[get_pixel(image,3, 2)]≈RGB(0.,0.,0.)
+    @test image.pixels[get_pixel(image,3, 2)]≈RGB(0.4,0.4,0.4)
 
-    @test image.pixels[get_pixel(image,1, 3)]≈RGB(0.,0.,0.)
-    @test image.pixels[get_pixel(image,2, 3)]≈RGB(0.,0.,0.)
-    @test image.pixels[get_pixel(image,3, 3)]≈RGB(0.,0.,0.)
+    @test image.pixels[get_pixel(image,1, 3)]≈RGB(0.4,0.4,0.4)
+    @test image.pixels[get_pixel(image,2, 3)]≈RGB(0.4,0.4,0.4)
+    @test image.pixels[get_pixel(image,3, 3)]≈RGB(0.4,0.4,0.4)
 end
