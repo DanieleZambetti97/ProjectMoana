@@ -83,14 +83,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     cum_radiance = RGB(0.0, 0.0, 0.0)
     if hit_color_lum > 0.0  # Only do costly recursions if it's worth it
         for ray_index ∈ 1:rend.num_of_rays
-            new_ray = scatter_ray(
-                hit_material.brdf,
-                self.pcg,
-                hit_record.ray.dir,
-                hit_record.world_point,
-                hit_record.normal,
-                ray.depth + 1,
-            )
+            new_ray = scatter_ray(hit_material.brdf, rend.pcg, hit_record.ray.dir, hit_record.world_point, hit_record.normal, ray.depth + 1)
             # Recursive call
             new_radiance = PathTracer(new_ray, rend)
             cum_radiance += hit_color * new_radiance

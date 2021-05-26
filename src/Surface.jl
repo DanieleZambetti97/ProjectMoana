@@ -119,7 +119,7 @@ function scatter_ray(brdf::DiffuseBRDF, pcg::PCG, incoming_dir::Vec, interaction
     cos_theta_sq = pcg_randf(pcg)
     cosθ, sinθ = sqrt(cos_theta_sq), sqrt(1.0 - cos_theta_sq)
     ϕ = 2.0 * π * pcg_randf(pcg)
-    return Ray( interaction_point, e1*cos(ϕ)*cosθ + e2*sin(ϕ)*cosθ + e3*sinθ, 1.0e-3, inf, depth)
+    return Ray( interaction_point, e1*cos(ϕ)*cosθ + e2*sin(ϕ)*cosθ + e3*sinθ, 1.0e-3, Inf, depth)
 end
 
 """
@@ -145,7 +145,7 @@ function scatter_ray(brdf::SpecularBRDF, pcg::PCG, incoming_dir::Vec, interactio
     normal = normalize(toVec(normal))
     dot_prod = normal * ray_dir
 
-    return Ray(interaction_point, ray_dir - normal * 2 * dot_prod, 1e-5, inf, depth)
+    return Ray(interaction_point, ray_dir - normal * 2 * dot_prod, 1e-5, Inf, depth)
 end
 
 ## Code for MATERIAL and its sons #####################################################
