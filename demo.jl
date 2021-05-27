@@ -77,22 +77,23 @@ function main()
 
 # Creating WORLD with 10 spheres
     world = World()
-    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(0.4, 0.8, 1.))), UniformPigment(RGB(0.,0.,0.)))
+    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8, 1.))), UniformPigment(RGB(0.,0.,0.)))
     sky = Sphere(scaling(Vec(1000.,1000.,1000.)), sky_color )
     add_shape(world, sky)
 
-    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(1.,1.,1.))), UniformPigment(RGB(1.,1.,1.)))
-    sun = Sphere(translation(Vec(-300,-450,350))*scaling(Vec(100.,100.,100.)), sun_color )
+    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(RGB(1.,1.,1.)))
+    sun = Sphere(translation(Vec(0.5,0.,0.))*scaling(Vec(1000,1000,1000)), sun_color )
     add_shape(world, sun)
 
-    material1 = Material(DiffuseBRDF(UniformPigment(RGB(0.1, 0.0, 0.0))))
+    material1 = Material(DiffuseBRDF(UniformPigment(RGB(1., 0.2, 0.1))))
     ball = Sphere(translation(Vec(3,-1.5,0.))*scaling(Vec(1.,1.,1.)), material1 )
     add_shape(world, ball)
 
-#    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.,0.7,0.2), RGB(0., 0.2,0.8), 10)))
+#    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.,0.7,0.2), RGB(0., 0.2,0.8), 100)))
     ground_color = Material(DiffuseBRDF(UniformPigment(RGB(0.,0.7,0.2))))
-    ground = Plane(translation(Vec(1.1,0.,-1.5)), ground_color )
-#    add_shape(world, ground)
+    ground = Sphere(translation(Vec(0.,0.,10^9-1.))*scaling(Vec(10^9,10^9,10^9)), ground_color)
+    #    ground = Plane(translation(Vec(1.1,0.,-1.5)), ground_color )
+    add_shape(world, ground)
 
     mirror_color = Material(SpecularBRDF())
     mirror = Sphere(translation(Vec(3,1.5,0))*scaling(Vec(1.,1.,1.)), mirror_color)
@@ -121,7 +122,7 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=10, russian_roulette_limit=4)
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=5, max_depth=3, russian_roulette_limit=4)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
