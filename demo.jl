@@ -10,7 +10,7 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [--width W] [--height H] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A]",
+                               usage = "usage: [--help] [--width W] [--height H] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S]" ,
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
@@ -52,6 +52,10 @@ function parse_commandline()
             required = false
             default = 1.
             arg_type = Float64
+        "--seq"
+            help = "sequence number for PCG generator"
+            required = false
+            arg_type = Int 
     end
 
     return parse_args(s)
@@ -69,6 +73,7 @@ function main()
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
+    seq = convert(UInt64, params["seq"])
 
 # Creating WORLD with 10 spheres
     world = World()
@@ -116,7 +121,7 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=2, max_depth=10, russian_roulette_limit=4)
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=10, russian_roulette_limit=4)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
