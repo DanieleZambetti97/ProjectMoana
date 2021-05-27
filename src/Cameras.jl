@@ -110,9 +110,9 @@ It fires all rays, requiring a ImageTracer and a generic function (to assign col
 function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
     temp = 100
     for row ∈ 1:im.image.height
-           percentage= convert(Int,floor(100*(row-1)/im.image.height))
+           percentage= convert(Int,floor(10*(row-1)/im.image.height))
            if percentage != temp
-                print("\rComputed $percentage% of pixels \n")
+                print("\rComputed $(percentage*10)% of pixels ")
                 temp = percentage
             end
             for col ∈ 1:im.image.width
