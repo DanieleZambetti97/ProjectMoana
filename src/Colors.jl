@@ -13,6 +13,8 @@ Base.:-(c1::RGB{T}, c2::RGB{T}) where {T} = RGB((c1.r - c2.r), (c1.g - c2.g), (c
 # Product "scalar * color"
 Base.:*(c::RGB{T}, scalar::Real) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
 
+Base.:*(c1::RGB{T}, c2::RGB{T}) where {T} = RGB(c1.r*c2.r, c1.g*c2.g, c1.b*c2.b)
+
 # Product "color * scalar"
 Base.:*(scalar::Real, c::RGB{T}) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
 

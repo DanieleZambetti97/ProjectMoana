@@ -45,7 +45,7 @@ struct PathTracer_Renderer <: Renderer
     max_depth::Int
     russian_roulette_limit::Int
 
-    PathTracer_Renderer(world::World; background_color::RGB=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=10, max_depth=2, russian_roulette_limit=3) = new(world, background_color, pcg, num_of_rays, max_depth, russian_roulette_limit)
+    PathTracer_Renderer(world::World; background_color=RGB(0.,0.,0.), pcg=PCG(), num_of_rays=10, max_depth=2, russian_roulette_limit=3) = new(world, background_color, pcg, num_of_rays, max_depth, russian_roulette_limit)
 end
 
 function PathTracer(ray::Ray, rend::PathTracer_Renderer)
@@ -59,7 +59,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
         return rend.background_color
     end
 
-
+#    println(hit_record)
     hit_material = hit_record.shape.material
     hit_color = get_color(hit_material.brdf.pigment, hit_record.surface_point)
     emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)
@@ -83,14 +83,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     cum_radiance = RGB(0.0, 0.0, 0.0)
     if hit_color_lum > 0.0  # Only do costly recursions if it's worth it
         for ray_index ∈ 1:rend.num_of_rays
-            new_ray = scatter_ray(
-                hit_material.brdf,
-                self.pcg,
-                hit_record.ray.dir,
-                hit_record.world_point,
-                hit_record.normal,
-                ray.depth + 1,
-            )
+            new_ray = scatter_ray(hit_material.brdf, rend.pcg, hit_record.ray.dir, hit_record.world_point, hit_record.normal, ray.depth + 1)
             # Recursive call
             new_radiance = PathTracer(new_ray, rend)
             cum_radiance += hit_color * new_radiance

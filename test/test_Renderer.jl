@@ -62,24 +62,24 @@ end
 @testset "Renderer: Furnace test for Path Tracer renderer" begin
     pcg = PCG()
 
-    for i in range(1, length=5):
+    for i in 1:10^2
         world = World()
 
         emitted_radiance = pcg_randf(pcg)
         reflectance = pcg_randf(pcg)
-        enclosure_material = Material( DiffuseBRDF(UniformPigment(Color(1.0, 1.0, 1.0) * reflectance)), UniformPigment(Color(1.0, 1.0, 1.0) * emitted_radiance))
+        enclosure_material = Material( DiffuseBRDF(UniformPigment(RGB(1.0, 1.0, 1.0) * reflectance)), UniformPigment(RGB(1.0, 1.0, 1.0) * emitted_radiance))
 
-        world.add(Sphere(Transformation(), enclosure_material))
+        add_shape(world, Sphere(Transformation(), enclosure_material))
 
-        path_tracer = PathTracer_Renderer(world, pcg=pcg, num_of_rays=1, max_depth=100, russian_roulette_limit=101)
+        path_tracer = PathTracer_Renderer(world, pcg=pcg, num_of_rays=1, max_depth=1000, russian_roulette_limit=101)
 
         ray = Ray(Point(0, 0, 0), Vec(1, 0, 0))
-        color = path_tracer(ray)
+        color = PathTracer(ray, path_tracer)
 
         expected = emitted_radiance / (1.0 - reflectance)
-        @test approx(expected, color.r, atol=1e-3)
-        @test approx(expected, color.g, atol=1e-3)
-        @test approx(expected, color.b, atol=1e-3)
+        @test isapprox(expected, color.r, atol=5e-2)
+        @test isapprox(expected, color.g, atol=5e-2)
+        @test isapprox(expected, color.b, atol=5e-2)
     end
     
 end

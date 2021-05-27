@@ -5,7 +5,7 @@ include("test_Colors.jl")
 
 include("test_HdrImages.jl")
 
-include("test_Geometry.jl")
+#include("test_Geometry.jl")
 
 include("test_Cameras.jl")
 
