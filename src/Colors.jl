@@ -18,6 +18,9 @@ Base.:*(c1::RGB{T}, c2::RGB{T}) where {T} = RGB(c1.r*c2.r, c1.g*c2.g, c1.b*c2.b)
 # Product "color * scalar"
 Base.:*(scalar::Real, c::RGB{T}) where {T} = RGB(c.r*scalar, c.g*scalar, c.b*scalar)
 
+# Product "color * color"
+Base.:*(c1::RGB{T}, c2::RGB{T}) where {T} = RGB(c1.r*c2.r, c1.g*c2.g, c1.b*c2.b)
+
 # Aprroxmation for two color
 Base.:isapprox(c1::RGB{T}, c2::RGB{T}) where {T} = Base.isapprox(c1.r,c2.r) && Base.isapprox(c1.g,c2.g) && Base.isapprox(c1.b,c2.b) 
 
