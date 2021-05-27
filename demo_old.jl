@@ -10,44 +10,44 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [WIDTH] [HEIGHT] [CAMERA] [ANGLE_DEG] [DISTANCE] [FILE_OUT_PFM] [RENDER_ALGORITHM] [A_FACTOR]",
+                               usage = "usage: [--help] [--width W] [--height H] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "WIDTH"
+        "--width"
             help = "width of the image"
             required = true
             arg_type = Int
-        "HEIGHT"
+        "--height"
             help = "height of the image"
             required = true 
             arg_type = Int       
-        "CAMERA"
+        "--camera"
             help = "type of the camera [O, for Orthogonal, or P, for Perspective]"
             required = false
             default = "O"
             arg_type = String
-        "ANGLE_DEG"
+        "--angle"
             help = "angle of the z-axis rotation applied to camera (in degrees)"
             required = false
             default = 0.
             arg_type = Float64
-        "DISTANCE"
+        "--dist"
             help = "distance of a Perspective Camera"
             required = false
             default = 1.
             arg_type = Float64
-        "FILE_OUT"
+        "--file_out"
             help = "name of the output file (without extension)"
             required = false
             default = "demo" 
             arg_type = String  
-        "RENDER_ALGORITHM"
+        "--render_alg"
             help = "type of algortihm to use for render [on_off, flat, path_tracer]"
             required = false
-            default = "on_off" 
+            default = "flat" 
             arg_type = String  
-        "A_FACTOR"
+        "--a"
             help = "a_factor for nomralize image luminosity during the convertion"
             required = false
             default = 1.
@@ -60,15 +60,15 @@ end
 function main()
     params = parse_commandline()
 
-    w = params["WIDTH"]
-    h = params["HEIGHT"]
+    w = params["width"]
+    h = params["height"]
     a = w/h
-    d = params["DISTANCE"]
-    camera_tr = rotation_z(params["ANGLE_DEG"]*π/180.0) * translation(Vec(-1.0,0.,0.))
+    d = params["dist"]
+    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
-    file_out_pfm = "$(params["FILE_OUT"]).pfm"
-    file_out_png = "$(params["FILE_OUT"]).png"
-    algorithm = params["RENDER_ALGORITHM"]
+    file_out_pfm = "$(params["file_out"]).pfm"
+    file_out_png = "$(params["file_out"]).png"
+    algorithm = params["render_alg"]
 
 # Creating WORLD with 10 spheres
     material1 = Material(DiffuseBRDF(UniformPigment(RGB(0.7, 0.3, 0.2))))
@@ -99,9 +99,9 @@ function main()
 
 
 # Creating a Perspective of Orthogonal CAMERA
-    if params["CAMERA"] == "O"
+    if params["camera"] == "O"
         camera = OrthogonalCamera(a, camera_tr)
-    elseif params["CAMERA"] == "P"
+    elseif params["camera"] == "P"
         camera = PerspectiveCamera(a, camera_tr, d)
     end
 
@@ -112,7 +112,7 @@ function main()
     println("Observer initialized.")
 
     print("Computing ray intersection ")
-    if params["RENDER_ALGORITHM"] == "flat"
+    if params["render_alg"] == "flat"
         println("using Flat renderer")
         renderer = Flat_Renderer(world, RGB(0.4,0.4,0.4))
         fire_all_rays(tracer, Flat, renderer)
@@ -132,7 +132,7 @@ function main()
 
 
 # Automatic CONVERSION TO JPEG FILE 
-    normalize_image(tracer.image, params["A_FACTOR"])
+    normalize_image(tracer.image, params["a"])
     clamp_image(tracer.image)
 
     matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
