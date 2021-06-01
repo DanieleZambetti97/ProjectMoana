@@ -55,7 +55,11 @@ function _sphere_point_to_uv(point::Point)
     else
         u = u + 1.0
     end
-    v=acos(point.z) / pi
+    if abs(point.z)>1.0
+        v=1.
+    else
+        v=acos(point.z) / pi
+    end
     return Vec2D( u , v )
 end
 

@@ -108,19 +108,16 @@ end
 It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
 """
 function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
-    temp = 100
+    temp = -2
     for row ∈ 1:im.image.height
-           percentage= convert(Int,floor(10*(row-1)/im.image.height))
-           if percentage != temp
-                print("\rComputed $(percentage*10)% of pixels ")
+           percentage= convert(Int,floor(100*(row-1)/im.image.height))
+           if percentage == temp+2
+                i = convert(Int,floor(1+percentage/2))
+                print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(50-i))]")
                 temp = percentage
             end
             for col ∈ 1:im.image.width
-#            println("($row, $col)")
                 ray = fire_ray(im, col, row)
-                # if col==3 && row==6
-                # println(ray)
-                # end
                 color = func(ray, renderer)
             im.image.pixels[get_pixel(im.image, col, row)] = color
         end
@@ -128,11 +125,7 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
 end
 
 function fire_all_rays(im::ImageTracer, func)
-#    println(" ")
     for row ∈ 1:im.image.height
-#        percentage=convert(Int64, 100*row/im.image.height) 
-#        println("\r")
-#        println("Computed $percentage% of pixels")
         for col ∈ 1:im.image.width
             ray = fire_ray(im, col, row)
             color = func(ray)
