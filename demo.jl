@@ -78,30 +78,36 @@ function main()
 
 # Creating WORLD with 10 spheres
     world = World()
-    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(RGB(0.,0.,0.)))
-    sky = Sphere(scaling(Vec(100,100,100)), sky_color )
+    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.8,1.))), UniformPigment(RGB(5*10^-1,10^-1,10^-1)))
+    plane_color = Material(DiffuseBRDF(CheckeredPigment(RGB(.1,.8,1.), RGB(1.,.8,.1), 5)), UniformPigment(RGB(5*10^-1,10^-1,10^-1)))
+#    sky = Sphere(scaling(Vec(100,100,100)), sky_color )
+    sky = Plane(translation(Vec(1000.,0.,0.))*rotation_y(pi/2.), plane_color)
     add_shape(world, sky)
 
-    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(RGB(10^-1,10^-1,10^-1)))
-    sun = Sphere(translation(Vec(0.5,0.,0.))*scaling(Vec(100,100,100)), sun_color )
-    add_shape(world, sun)
-    sun_color2 = Material(DiffuseBRDF(UniformPigment(RGB(0.1,0.1,0.1))), UniformPigment(RGB(1.,0.1,0.1)))
-    sun2 = Sphere(translation(Vec(1.5,10,0.4))*scaling(Vec(1,1,1)), sun_color2 )
-    add_shape(world, sun2)
+#    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(RGB(10^-1,10^-1,10^-1)))
+#    sun = Sphere(translation(Vec(0.5,0.,10.))*scaling(Vec(100,100,100)), sun_color )
+#    add_shape(world, sun)
+#    sun_color2 = Material(DiffuseBRDF(UniformPigment(RGB(0.1,0.1,0.1))), UniformPigment(RGB(100.,0.1,0.1)))
+#    sun2 = Sphere(translation(Vec(1.5,10,0.4))*scaling(Vec(1,1,1)), sun_color2 )
+#    add_shape(world, sun2)
 
-    material1 = Material(DiffuseBRDF(UniformPigment(RGB(1.,0.2,0.1))))
-    ball = Sphere(translation(Vec(3,-1.5,0.))*scaling(Vec(1.,1.,1.)), material1 )
-    add_shape(world, ball)
+#    material1 = Material(DiffuseBRDF(UniformPigment(RGB(1.,0.2,0.1))))
+#    ball = Sphere(translation(Vec(3,-1.5,0.))*scaling(Vec(1.,1.,1.)), material1 )
+#    add_shape(world, ball)
 
-    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7,0.4,0.9), RGB(0., 0.2,0.8), 100)))
-#    ground_color = Material(DiffuseBRDF(UniformPigment(RGB(0.,0.7,0.2))))
-    ground = Sphere(translation(Vec(0.,0.,10^9-1.))*scaling(Vec(10^9,10^9,10^9)), ground_color)
-#    ground = Plane(translation(Vec(1.1,0.,-1.5)), ground_color )
-    add_shape(world, ground)
+#    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7,0.4,0.9), RGB(0., 0.2,0.8), 10)))
+#    ground_color = Material(DiffuseBRDF(UniformPigment(RGB(1.,0.4,0.2))))
+#    ground = Sphere(translation(Vec(0.,0.,10^9-1.))*scaling(Vec(10^9,10^9,10^9)), ground_color)
+#    ground = Plane(translation(Vec(0.,0.,-2.))* rotation_y(0. * pi/2.), ground_color )
+#    add_shape(world, ground)
 
-    mirror_color = Material(SpecularBRDF())
-    mirror = Sphere(translation(Vec(3,1.5,0))*scaling(Vec(1.,1.,1.)), mirror_color)
-    add_shape(world, mirror)
+#    plane_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.1,0.3,0.1), RGB(0., 0.4,0.5), 5)))
+#    plane = Plane(translation(Vec(0.,-10.,0.))* rotation_x(1. * pi/2.), plane_color )
+#    add_shape(world, plane)
+
+#    mirror_color = Material(SpecularBRDF())
+#    mirror = Sphere(translation(Vec(3,1.5,0))*scaling(Vec(1.,1.,1.)), mirror_color)
+#    add_shape(world, mirror)
 
     println("World objects created.")
 
@@ -126,7 +132,7 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=10, max_depth=8, russian_roulette_limit=5)      
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=5, max_depth=3, russian_roulette_limit=3)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
@@ -143,15 +149,15 @@ function main()
     println("$(file_out_pfm) has been written to disk.")
 
 
-# Automatic CONVERSION TO JPEG FILE 
-    normalize_image(tracer.image, params["a"])
-    clamp_image(tracer.image)
+# # Automatic CONVERSION TO JPEG FILE 
+#     normalize_image(tracer.image, params["a"])
+#     clamp_image(tracer.image)
 
-    matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
+#     matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
     
-    save(file_out_png, matrix_pixels')
+#     save(file_out_png, matrix_pixels')
 
-    println("$(file_out_png) has been automatically written to disk.")
+#     println("$(file_out_png) has been automatically written to disk.")
       
 end
 

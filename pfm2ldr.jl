@@ -7,19 +7,19 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [IN_FILE] [A_FACTOR] [γ] [OUT_FILE]",
+                               usage = "usage: [--help] [IN_FILE] [--a_factor] [--γ] [OUT_FILE]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
         "IN_FILE"
             help = "input PFM file name"
             required = true
-        "A_FACTOR"
+        "--a_factor"
             help = "a_factor"
             required = false
             default = 0.18
             arg_type = Float64
-        "γ"
+        "--γ"
             help = "γ factor"
             required = false
             default = 1.0
@@ -27,7 +27,7 @@ function parse_commandline()
         "OUT_FILE"
             help = "output LDR file name"
             required = false
-            default = "out.jpeg"
+            default = "out.png"
     end
 
     return parse_args(s)

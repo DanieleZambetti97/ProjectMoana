@@ -90,14 +90,27 @@ function _plane_point_to_uv(point::Point)
     return Vec2D(u,v)
 end
 
+function _plane_normal(point::Point, ray_dir::Vec)
+    result = Normal(0., 0., 1.)
+    Vec(0., 0., 1.) * ray_dir < 0.0 ? nothing : result = Normal(0., 0., -1.)
+    return result
+end
+
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
-    result = normalize(dir)
-    if ray_dir.z > 0.0
-        return Normal(result.x,result.y,result.z)
-    else
-        return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
+    result = Normal(0., 0., 1.)
+    if ray_dir * Vec(0., 0., 1.) < 0.0
+        result = Normal(0.,0.,-1.)
+    else 
+        nothing
     end
+    return result
+    # dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
+    # result = normalize(dir)
+    # if ray_dir.z > 0.0
+    #     return Normal(result.x,result.y,result.z)
+    # else
+    #     return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
+    # end
 end
 
 ## Code for HITRECORD ###########################################################################################################################
@@ -200,15 +213,15 @@ function ray_intersection(plane::Plane, ray::Ray)
     inverse_ray= inverse(plane.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
 
-    if inverse_ray.dir.z == 0
+    if inverse_ray.dir.z ≈ 0
         return nothing
     else 
         t = - inverse_ray.origin.z / inverse_ray.dir.z
-        if t<0
-            return nothing
-        else
+        if inverse_ray.tmin < t < inverse_ray.tmax
             hit_point = at(inverse_ray, t)
+        else
+            return nothing
         end
     end
-    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, origin_vec, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
+    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
 end

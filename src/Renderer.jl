@@ -60,6 +60,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     end
 
 #    println(hit_record)
+
     hit_material = hit_record.shape.material
     hit_color = get_color(hit_material.brdf.pigment, hit_record.surface_point)
     emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)

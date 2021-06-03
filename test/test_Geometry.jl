@@ -105,7 +105,7 @@ pcg = PCG()
 
 @testset "Geometry: Orthonormal Base test" begin
 
-    for i in range(1, length=10^6)
+    for i in range(1, length=10^3)
         normal = Vec(pcg_randf(pcg), pcg_randf(pcg), pcg_randf(pcg))
         normal = normalize(normal)
         e1, e2, e3 = create_onb(normal)
