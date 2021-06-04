@@ -97,13 +97,13 @@ function _plane_normal(point::Point, ray_dir::Vec)
 end
 
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    result = Normal(0., 0., 1.)
-    if ray_dir * Vec(0., 0., 1.) < 0.0
-        result = Normal(0.,0.,-1.)
-    else 
-        nothing
-    end
-    return result
+    # result = Normal(0., 0., 1.)
+    # if ray_dir * Vec(0., 0., 1.) < 0.0
+    #     result = Normal(0.,0.,-1.)
+    # else 
+    #     nothing
+    # end
+    # return result
     # dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
     # result = normalize(dir)
     # if ray_dir.z > 0.0

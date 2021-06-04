@@ -112,8 +112,8 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
     for row ∈ 1:im.image.height
            percentage= convert(Int,floor(100*(row-1)/im.image.height))
            if percentage == temp+2
-                i = convert(Int,floor(1+percentage/2))
-                print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(50-i))]")
+                i = convert(Int,floor(percentage/2))
+                print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(49-i))]")
                 temp = percentage
             end
             for col ∈ 1:im.image.width
