@@ -3,6 +3,7 @@ Pkg.activate(normpath(@__DIR__))
 using ProjectMoana
 using ArgParse
 import ColorTypes:RGB
+import Images:save 
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program make an averege image from 4 images. Try me!",
@@ -43,8 +44,8 @@ function main()
         end
     end
 
-    # write(string(fileinput, "sum.pfm"), out)
-    # println("$(string(fileinput, "sum.pfm")) has been automatically written to disk.")
+     write(string(fileinput, "sum.pfm"), out)
+     println("$(string(fileinput, "sum.pfm")) has been automatically written to disk.")
 
     # Automatic CONVERSION TO JPEG FILE 
     normalize_image(out, 0.18)
