@@ -2,7 +2,7 @@
 
 img = HdrImage(3, 2)
 
-@testset "HdrImages Basic Methods " begin
+@testset "HdrImages: Basic Methods " begin
     @test img.width == 3
     @test img.height == 2
     @test valid_coordinates(img, 2, 1) == true
@@ -58,14 +58,14 @@ set_pixel(img2,3, 2, RGB(7.0e2, 8.0e2, 9.0e2))
 buf = IOBuffer()
 write(buf,img2)
 
-@testset "HdrImages Writing Method" begin
+@testset "HdrImages: Writing Method" begin
     @test take!(buf) == LE_REFERENCE_BYTES
 end
 
 # Test the read function
 line = IOBuffer(b"Hello\nWorld!")
 
-@testset "HdrImages Reading Method" begin
+@testset "HdrImages: Reading Method" begin
 
     @test _read_line(line) == "Hello"
     @test _read_line(line) == "World!"
@@ -104,7 +104,7 @@ img3 = HdrImage(2,1)
 set_pixel(img3, 1, 1, RGB(5.0, 10.0, 15.0))  # Luminosity: 10.0
 set_pixel(img3, 2, 1, RGB(500.0, 1000.0, 1500.0))  # Luminosity: 1000.0
 
-@testset "LdrImages Saving Methods" begin
+@testset "LdrImages: Saving Methods" begin
     @test 100 ≈ average_luminosity(img3, 0.0)
     normalize_image(img3, 1000.0, 100.0)
     @test isapprox(img3.pixels[get_pixel(img3, 1, 1)], RGB(0.5e2, 1.0e2, 1.5e2))

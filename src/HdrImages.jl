@@ -2,8 +2,7 @@ using ColorTypes
 
 # creating HdrImage struct
 """
-    HdrImage(w, h)
-    HdrImage(w, h, pixels)
+HdrImage(w, h; array=[RGB() for i in 1:h*w])
 
 It creates a **HdrImage**.
 
@@ -18,8 +17,8 @@ mutable struct HdrImage
     width::Int
     height::Int
     pixels::Array{RGB, 1}
-    HdrImage(w, h) = new(w, h, [RGB() for i in 1:h*w])
-    HdrImage(w, h, array) = new(w, h, array)
+
+    HdrImage(w, h, array=[RGB() for i in 1:h*w]) = new(w, h, array )
 end
 
 # Check if the coordinates passed are valid
@@ -30,6 +29,13 @@ pixel_offset(img::HdrImage, x, y) = (y-1) * img.width + x
 
 
 # Get and set methods
+
+"""
+    get_pixel(img, x, y)
+
+It returns the positional index of the (x, y) pixel of the image (img).
+If the coordinates are not valid it returns a Boolean.
+"""
 get_pixel(img::HdrImage, x, y) =  valid_coordinates(img, x, y) && return( pixel_offset(img, x, y)) 
 
 set_pixel(img::HdrImage, x, y, new_color::RGB) =  valid_coordinates(img, x, y) && (img.pixels[ get_pixel(img, x, y)] = new_color)

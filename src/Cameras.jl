@@ -1,53 +1,14 @@
-export Camera, OrthogonalCamera, PerspectiveCamera, Ray, at, fire_ray, fire_all_rays, ImageTracer
-
-## Code for RAYS #########################################################################################################################
-
-"""
-    Ray(origin, dir)
-    Ray(origin, dir, tmin) 
-    Ray(origin, dir, tmin, tmax)
-    Ray(origin, dir, tmin, tmax, depth)
-
-It creates a **Ray**. When not specified in the constructor, tmin = 1e-5, tmax = +∞ and depth = 0.
-"""
-struct Ray
-    origin::Point 
-    dir::Vec
-    tmin::Float64
-    tmax::Float64 
-    depth::Int16
-    
-    Ray(origin, dir) = new(origin, dir, 1e-5, Inf, 0)
-    Ray(origin, dir, tmin) = new(origin, dir, tmin, Inf, 0)
-    Ray(origin, dir, tmin, tmax) = new(origin, dir, tmin, tmax, 0)
-    Ray(origin, dir, tmin, tmax, depth) = new(origin, dir, tmin, tmax, depth)
-
-end
-
-Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
-
-Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
-
-"""
-    at(ray, t)
-
-It calculates the position of the ray at the instant *t*.
-"""
-at(ray::Ray, t::Number) = ray.origin + ray.dir*t
-
-
-
 ## Code for the CAMERAS #################################################################################################################
 
+abstract type Renderer end 
+
 # Camera is the abstract type which the two different cameras are generated from. 
+
 abstract type Camera
 end
 
 """
-    OrthogonalCamera(a, T)
-    OrthogonalCamera(a)
-    OrthogonalCamera(T)
-    OrthogonalCamera()
+    OrthogonalCamera( aspect_ratio=1.0, transformation=Transformation())
 
 It creates a **Orthogonal Camera**. 
 
@@ -62,11 +23,7 @@ struct OrthogonalCamera <: Camera
     aspect_ratio::Float64
     transformation::Transformation
 
-    OrthogonalCamera(a, T) = new(a, T)
-    OrthogonalCamera(a::Float64) = new(a, Transformation() )
-    OrthogonalCamera(T::Transformation) = new(1.0, T )
-    OrthogonalCamera() = new( 1.0, Transformation() )
-
+    OrthogonalCamera( aspect_ratio=1.0, transformation=Transformation()) = new(aspect_ratio, transformation)
 end
 
 """
@@ -90,15 +47,12 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0), 1.0 )
+    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0))
     return camera.transformation * Ray_StandardFrame
 end
 
 """
-    PerspectiveCamera(a, T, d)
-    PerspectiveCamera(a, T)
-    PerspectiveCamera(a)
-    PerspectiveCamera()
+    PerspectiveCamera(;a=1.0, T=Transformation(), d=1.0)
 
 It creates a **Perspective Camera**. 
 
@@ -115,14 +69,12 @@ struct PerspectiveCamera <: Camera
     transformation::Transformation
     distance::Float64
 
-    PerspectiveCamera(a, T, d) = new(a, T, d )
-    PerspectiveCamera(a, T) = new(a, T, 1.0 )
-    PerspectiveCamera(a) = new(a, Transformation(), 1.0 )
-    PerspectiveCamera() = new(1.0, Transformation(), 1.0 )  
+    PerspectiveCamera(aspect_ratio=1.0, transformation=Transformation(), distance=1.0) = new(aspect_ratio, transformation, distance )
+#    PerspectiveCamera(transformation=Transformation(), distance=1.0) = new(1.0, transformation, distance )
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1), 1.0)
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1))
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -155,6 +107,23 @@ end
 
 It fires all rays, requiring a ImageTracer and a generic function (to assign colors to the pixels).
 """
+function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
+    temp = -2
+    for row ∈ 1:im.image.height
+           percentage= convert(Int,floor(100*(row-1)/im.image.height))
+           if percentage == temp+2
+                i = convert(Int,floor(percentage/2))
+                print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(49-i))]")
+                temp = percentage
+            end
+            for col ∈ 1:im.image.width
+                ray = fire_ray(im, col, row)
+                color = func(ray, renderer)
+            im.image.pixels[get_pixel(im.image, col, row)] = color
+        end
+    end
+end
+
 function fire_all_rays(im::ImageTracer, func)
     for row ∈ 1:im.image.height
         for col ∈ 1:im.image.width

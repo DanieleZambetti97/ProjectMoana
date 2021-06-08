@@ -2,7 +2,7 @@ using ProjectMoana
 using ColorTypes
 ## TESTING RAY METHODS ###############################################
 
-@testset "Ray tests   " begin
+@testset "Cameras: Ray tests   " begin
     ray1 = Ray(Point(1.0, 2.0, 3.0), Vec(5.0, 4.0, -1.0))
     ray2 = Ray(Point(1.0, 2.0, 3.0), Vec(5.0, 4.0, -1.0))
     ray3 = Ray(Point(5.0, 1.0, 4.0), Vec(3.0, 9.0, 4.0))
@@ -16,7 +16,7 @@ using ColorTypes
 
 end
 
-@testset "Camera tests" begin
+@testset "Cameras: Camera tests" begin
 
     ray = Ray( Point(1.0, 2.0, 3.0), Vec(6.0, 5.0, 4.0))
     transformation = translation( Vec(10.0, 11.0, 12.0) ) * rotation_x(pi/2.0)
@@ -40,7 +40,7 @@ end
     @test isapprox( at(ray3,1.0), Point(0.0, 2.0, 1.0) )
     @test isapprox( at(ray4,1.0), Point(0.0, -2.0, 1.0 ))
 
-    cam = OrthogonalCamera(translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0))
+    cam = OrthogonalCamera(1.0, translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0))
     ray = fire_ray(cam, 0.5, 0.5)
 
     @test isapprox( at(ray, 1.0), Point(0.0, -2.0, 0.0))
@@ -55,18 +55,18 @@ tracer = ImageTracer(image, camera)
 ray1 = fire_ray(tracer, 0, 0, 2.5, 1.5)
 ray2 = fire_ray(tracer, 2, 1, 0.5, 0.5)
 
-fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0))
+fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0 ))
 
-top_left_ray = fire_ray(tracer, 0, 0, 0.0, 0.0)
-bottom_right_ray = fire_ray(tracer, 3, 1, 1.0, 1.0)
+top_left_ray = fire_ray(tracer, 1, 1, 0.0, 0.0)
+bottom_right_ray = fire_ray(tracer, 4, 2, 1.0, 1.0)
 
-@testset "ImageTracer tests" begin
+@testset "Cameras: ImageTracer tests" begin
     # uv submapping
     @test isapprox(ray1, ray2)
     
     # orientation
-    @test isapprox(at(bottom_right_ray, 1.0), Point(0.0, -2.0, -1.0))
-    @test isapprox(at(top_left_ray, 1.0), Point(0.0, 2.0, 1.0))
+    @test at(bottom_right_ray, 1.0) ≈ Point(0.0, -2.0, -1.0)
+    @test at(top_left_ray, 1.0) ≈ Point(0.0, 2.0, 1.0)
 
     # image coverage
     for row ∈ 1:image.height

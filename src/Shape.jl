@@ -1,17 +1,50 @@
+## Code for RAYS #########################################################################################################################
+
+"""
+Ray( origin, dir, tmin, tmax, depth)
+
+It creates a **Ray**. When not specified tmin = 1e-5, tmax = +∞ and depth = 0.
+"""
+struct Ray
+    origin::Point 
+    dir::Vec
+    tmin::Float64
+    tmax::Float64 
+    depth::Int16
+    
+    Ray( origin, dir, tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
+
+end
+
+Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
+
+Base.:isapprox(ray1::Ray, ray2::Ray) = Base.isapprox(ray1.origin, ray2.origin) && Base.isapprox(ray1.dir, ray2.dir)
+
+"""
+    at(ray, t)
+
+It calculates the position of the ray at the instant *t*.
+"""
+at(ray::Ray, t::Number) = ray.origin + ray.dir*t
+
+
+
 ## Code for SHAPES #########################################################################################
 
 abstract type Shape
 end
+Base.:≈(S1::Shape,S2::Shape) = S1.transformation ≈ S2.transformation && S1.material ≈ S2.material
 
 """
     Sphere(T)
 
-It creates a **Sphere**, where T is a generic transformation.
+It creates a **Sphere**, where T is a generic ``Transformation`` applied to the unit sphere centered in the origin, M is the ``Material`` of the sphere.
 """
 struct Sphere <: Shape
     transformation::Transformation
-    Sphere() = new(Transformation())
-    Sphere(transformation::Transformation) = new(transformation)
+    material::Material
+    Sphere(transformation=Transformation(), material=Material() ) = new(transformation, material)
+#    Sphere() = new(Tansformation(), Material())
 end
 
 ## Hidden methods for sphere
@@ -22,7 +55,11 @@ function _sphere_point_to_uv(point::Point)
     else
         u = u + 1.0
     end
-    v=acos(point.z) / pi
+    if abs(point.z)>1.0
+        v=1.
+    else
+        v=acos(point.z) / pi
+    end
     return Vec2D( u , v )
 end
 
@@ -36,14 +73,14 @@ function _sphere_normal(point::Point, ray_dir::Vec)
 end
 
 """
-    Plane(T)
+    Plane(T,M)
 
-It creates a **Plane**, where T is a generic transformation.
+It creates a **Plane**, where T is a generic ``Transformation`` applied to the XY palane, M is the ``Material`` of the plane.
 """
 struct Plane <: Shape
     transformation::Transformation
-    Plane() = new(Transformation())
-    Plane(transformation::Transformation) = new(transformation)
+    material::Material
+    Plane(transformation::Transformation=Transformation(), material::Material=Material() ) = new(transformation, material)
 end
 
 ## Hidden methods for plane
@@ -53,14 +90,27 @@ function _plane_point_to_uv(point::Point)
     return Vec2D(u,v)
 end
 
+function _plane_normal(point::Point, ray_dir::Vec)
+    result = Normal(0., 0., 1.)
+    Vec(0., 0., 1.) * ray_dir < 0.0 ? nothing : result = Normal(0., 0., -1.)
+    return result
+end
+
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    result = Vec(point.x-origin.vx, point.y-origin.vy, point.z-origin.vz)
-    result = normalize(result)
-    if ray_dir.vz > 0.0
-        return Normal(result.vx,result.vy,result.vz)
-    else
-        return Normal(-1.0*result.vx,-1.0*result.vy,-1.0*result.vz)
-    end
+    # result = Normal(0., 0., 1.)
+    # if ray_dir * Vec(0., 0., 1.) < 0.0
+    #     result = Normal(0.,0.,-1.)
+    # else 
+    #     nothing
+    # end
+    # return result
+    # dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
+    # result = normalize(dir)
+    # if ray_dir.z > 0.0
+    #     return Normal(result.x,result.y,result.z)
+    # else
+    #     return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
+    # end
 end
 
 ## Code for HITRECORD ###########################################################################################################################
@@ -73,7 +123,8 @@ end
 - normal;
 - surface point (u & v coordinates);
 - t (distance covered by the ray);
-- ray.
+- ray;
+- shape.
 """
 struct HitRecord
     world_point::Point
@@ -81,9 +132,10 @@ struct HitRecord
     surface_point::Vec2D
     t::Float64
     ray::Ray
+    shape::Shape
 end
 
-Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray
+Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray && H1.shape ≈ H2.shape
 Base.:≈(::Nothing,H2::HitRecord) = false
 
 ## Definition of WORLD ############################################################################################################################################
@@ -154,22 +206,22 @@ function ray_intersection(sphere::Sphere, ray::Ray)
         hit_point = at(inverse_ray, first_hit_t)
     end
 
-    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray )
+    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray, sphere )
 end
 
 function ray_intersection(plane::Plane, ray::Ray)
     inverse_ray= inverse(plane.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
 
-    if inverse_ray.dir.vz == 0
+    if inverse_ray.dir.z ≈ 0
         return nothing
     else 
-        t = - inverse_ray.origin.z / inverse_ray.dir.vz
-        if t<0
-            return nothing
-        else
+        t = - inverse_ray.origin.z / inverse_ray.dir.z
+        if inverse_ray.tmin < t < inverse_ray.tmax
             hit_point = at(inverse_ray, t)
+        else
+            return nothing
         end
     end
-    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, origin_vec, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray )
+    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
 end

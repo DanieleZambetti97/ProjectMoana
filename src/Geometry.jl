@@ -1,8 +1,8 @@
 # Implementation of new type Vec
 struct Vec
-    vx::Float64
-    vy::Float64
-    vz::Float64
+    x::Float64
+    y::Float64
+    z::Float64
 end
 
 # Implementation of new type Point
@@ -40,9 +40,8 @@ If not specified, both of the matrixes are the Identity matrix (4x4).
 mutable struct Transformation
     m::Array{Array{Float64}}
     invm::Array{Array{Float64}}
-    Transformation(m, invm) = new(m, invm)
-    Transformation() = new(ID4x4, ID4x4)
-    
+
+    Transformation(m=ID4x4, invm=ID4x4) = new(m, invm)
 end
 
 # Supporting methods for Transformation
@@ -72,37 +71,37 @@ ID4x4 = [[1.0, 0.0, 0.0, 0.0],
 
 ## BASIC OPERATIONS between Vecs, Normals, Points and Scalars ###############################################################
 
-Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.vx,V2.vx, atol = 10^-15) && Base.isapprox(V1.vy,V2.vy, atol = 10^-15) && Base.isapprox(V1.vz,V2.vz, atol = 10^-15)
+Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.x,V2.x, atol = 10^-15) && Base.isapprox(V1.y,V2.y, atol = 10^-15) && Base.isapprox(V1.z,V2.z, atol = 10^-15)
 
 Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 10^-15) && Base.isapprox(n1.y,n2.y, atol = 10^-15) && Base.isapprox(n1.z,n2.z, atol = 10^-15)
 
-Base.:+(V1::Vec , V2::Vec )  = Vec((V1.vx+V2.vx), (V1.vy+V2.vy), (V1.vz+V2.vz))
+Base.:+(V1::Vec , V2::Vec )  = Vec((V1.x+V2.x), (V1.y+V2.y), (V1.z+V2.z))
 
-Base.:-(V1::Vec , V2::Vec )   = Vec((V1.vx-V2.vx), (V1.vy-V2.vy), (V1.vz-V2.vz))
+Base.:-(V1::Vec , V2::Vec )   = Vec((V1.x-V2.x), (V1.y-V2.y), (V1.z-V2.z))
 
-Base.:*(V1::Vec , scalar::Real)   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar)
+Base.:*(V1::Vec , scalar::Real)   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 
-Base.:*(scalar::Real, V1::Vec )   = Vec(V1.vx*scalar, V1.vy*scalar, V1.vz*scalar)
+Base.:*(scalar::Real, V1::Vec )   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 
-Base.:*(V1::Vec , V2::Vec )   = (V1.vx*V2.vx)+(V1.vy*V2.vy)+(V1.vz*V2.vz)
+Base.:*(V1::Vec , V2::Vec )   = (V1.x*V2.x)+(V1.y*V2.y)+(V1.z*V2.z)
 
 Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 10^-15)  && isapprox(V1.v, V2.v, atol = 10^-15)
 
 # Cross product Vecs
-cross(V1::Vec, V2::Vec) = Vec( (V1.vy * V2.vz - V1.vz * V2.vy), (V1.vz * V2.vx - V1.vx * V2.vz), (V1.vx * V2.vy - V1.vy * V2.vx) )
+cross(V1::Vec, V2::Vec) = Vec( (V1.y * V2.z - V1.z * V2.y), (V1.z * V2.x - V1.x * V2.z), (V1.x * V2.y - V1.y * V2.x) )
 
 # Norm
 squared_norm(V1::Vec) = V1*V1
 
 norm(V1::Vec) = sqrt(squared_norm(V1))
 
-normalize(V1::Vec) = Vec( (V1.vx/norm(V1)), (V1.vy/norm(V1)), (V1.vz/norm(V1)) )
+normalize(V1::Vec) = Vec( (V1.x/norm(V1)), (V1.y/norm(V1)), (V1.z/norm(V1)) )
 
 # Aprroximation for two Point
 Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 10^-15) && Base.isapprox(P1.y,P2.y, atol = 10^-15) && Base.isapprox(P1.z,P2.z, atol = 10^-15) 
 
 # Sum Point + Vector returning a Point
-Base.:+(P::Point, V::Vec) = Point(P.x + V.vx, P.y + V.vy, P.z + V.vz)
+Base.:+(P::Point, V::Vec) = Point(P.x + V.x, P.y + V.y, P.z + V.z)
 
 # Sum Point + Point returning a Point
 Base.:+(P1::Point, P2::Point) = Point(P1.x + P2.x, P1.y + P2.y, P1.z + P2.z)
@@ -111,13 +110,13 @@ Base.:+(P1::Point, P2::Point) = Point(P1.x + P2.x, P1.y + P2.y, P1.z + P2.z)
 Base.:-(P1::Point, P2::Point) = Vec(P1.x - P2.x, P1.y - P2.y, P1.z - P2.z)
 
 # Difference Point - Vector returning a Point
-Base.:-(P::Point, V::Vec) = Point(P.x - V.vx, P.y - V.vy, P.z - V.vz)
+Base.:-(P::Point, V::Vec) = Point(P.x - V.x, P.y - V.y, P.z - V.z)
 
 # Product Point * scalar
 Base.:*(P::Point, a) = Point(P.x*a, P.y*a, P.z*a)
 
 # Convert a Point into a Vec
-function toVec(point::Point)
+function toVec(point::Union{Point,Normal,Vec})
     return Vec(point.x,point.y,point.z)
 end
 
@@ -144,9 +143,9 @@ Base.:*(M::Transformation, P::Point) = Point( P.x * M.m[1][1] + P.y * M.m[1][2] 
                                               P.x * M.m[2][1] + P.y * M.m[2][2] + P.z * M.m[2][3] + M.m[2][4], 
                                               P.x * M.m[3][1] + P.y * M.m[3][2] + P.z * M.m[3][3] + M.m[3][4] )
 
-Base.:*(M::Transformation, V::Vec) = Vec( V.vx * M.m[1][1] + V.vy * M.m[1][2] + V.vz * M.m[1][3], 
-                                          V.vx * M.m[2][1] + V.vy * M.m[2][2] + V.vz * M.m[2][3], 
-                                          V.vx * M.m[3][1] + V.vy * M.m[3][2] + V.vz * M.m[3][3] )
+Base.:*(M::Transformation, V::Vec) = Vec( V.x * M.m[1][1] + V.y * M.m[1][2] + V.z * M.m[1][3], 
+                                          V.x * M.m[2][1] + V.y * M.m[2][2] + V.z * M.m[2][3], 
+                                          V.x * M.m[3][1] + V.y * M.m[3][2] + V.z * M.m[3][3] )
 
 Base.:*(M::Transformation, N::Normal) = Normal( N.x * M.invm[1][1] + N.y * M.invm[2][1] + N.z * M.invm[3][1], 
                                                 N.x * M.invm[1][2] + N.y * M.invm[2][2] + N.z * M.invm[3][2], 
@@ -159,13 +158,13 @@ end
 
 # Defining translation, scaling and rotation
 function translation(vec)
-    m = [[1.0, 0.0, 0.0, vec.vx],
-         [0.0, 1.0, 0.0, vec.vy],
-         [0.0, 0.0, 1.0, vec.vz],
+    m = [[1.0, 0.0, 0.0, vec.x],
+         [0.0, 1.0, 0.0, vec.y],
+         [0.0, 0.0, 1.0, vec.z],
          [0.0, 0.0, 0.0, 1.0]]
-    invm = [[1.0, 0.0, 0.0, -vec.vx],
-            [0.0, 1.0, 0.0, -vec.vy],
-            [0.0, 0.0, 1.0, -vec.vz],
+    invm = [[1.0, 0.0, 0.0, -vec.x],
+            [0.0, 1.0, 0.0, -vec.y],
+            [0.0, 0.0, 1.0, -vec.z],
             [0.0, 0.0, 0.0, 1.0]]
     
     return Transformation(m, invm)
@@ -173,13 +172,13 @@ end
 
    
 function scaling(vec)
-    m = [[vec.vx, 0.0, 0.0, 0.0],
-         [0.0, vec.vy, 0.0, 0.0],
-         [0.0, 0.0, vec.vz, 0.0],
+    m = [[vec.x, 0.0, 0.0, 0.0],
+         [0.0, vec.y, 0.0, 0.0],
+         [0.0, 0.0, vec.z, 0.0],
          [0.0, 0.0, 0.0, 1.0]]
-    invm = [[1 / vec.vx, 0.0, 0.0, 0.0],
-            [0.0, 1 / vec.vy, 0.0, 0.0],
-            [0.0, 0.0, 1 / vec.vz, 0.0],
+    invm = [[1 / vec.x, 0.0, 0.0, 0.0],
+            [0.0, 1 / vec.y, 0.0, 0.0],
+            [0.0, 0.0, 1 / vec.z, 0.0],
             [0.0, 0.0, 0.0, 1.0]]
     
     return Transformation(m, invm)
@@ -243,3 +242,15 @@ function rotation_z(angle_rad::Float64)
     return Transformation(m, invm)
 end
 
+###############################################################################
+function create_onb(normal_passed::Union{Normal,Vec})
+    normal = normalize(toVec(normal_passed))
+    sign = copysign(1.0,normal.z)
+    a = -1.0 / (sign + normal.z)
+    b = normal.x * normal.y * a
+
+    e1 = Vec(1.0 + sign * normal.x * normal.x * a, sign * b, -sign * normal.x)
+    e2 = Vec(b, sign + normal.y * normal.y * a, -normal.y)
+
+    return e1, e2, Vec(normal.x, normal.y, normal.z)
+end

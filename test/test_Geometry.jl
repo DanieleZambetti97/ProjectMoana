@@ -3,9 +3,9 @@
 a = Vec(1.0,2.0,3.0)
 b = Vec(4.0,6.0,8.0)
 
-@testset "Geometry Vec tests           " begin
+@testset "Geometry: Vec tests            " begin
 	@test isapprox(a,a)
-	@test false == isapprox(a,b)
+	@test false ≈ isapprox(a,b)
 	@test isapprox(a+b ,Vec(5.0,8.0,11.0) )
 	@test isapprox(b-a ,Vec(3.0,4.0,5.0) )
 	@test isapprox(2*a, Vec(2.0,4.0,6.0))
@@ -17,19 +17,19 @@ end
 a = Point(1.0, 2.0, 3.0)
 b = Point(4.0, 6.0, 8.0)
 
-@testset "Geometry Point tests         " begin
-	@test isapprox(a,a) == true
-	@test isapprox(a,b) == false
-	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) == true
-	@test isapprox((a + b), Point(5.0, 8.0, 11.0)) == true
-	#@test isapprox((b - a), Vec(3.0, 4.0, 5.0)) == true #uncomment when adding Vec - Vec method
+@testset "Geometry: Point tests          " begin
+	@test isapprox(a,a) ≈ true
+	@test isapprox(a,b) ≈ false
+	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) ≈ true
+	@test isapprox((a + b), Point(5.0, 8.0, 11.0)) ≈ true
+	#@test isapprox((b - a), Vec(3.0, 4.0, 5.0)) ≈ true #uncomment when adding Vec - Vec method
 end
 
 
 ## TESTING TRANSFORMATION METHODS ###############################################
 
-T1 = Transformation( [ [1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], [9.0, 9.0, 8.0, 7.0], [6.0, 5.0, 4.0, 1.0] ],
-                     [ [-3.75, 2.75, -1, 0], [4.375, -3.875, 2.0, -0.5], [0.5, 0.5, -1.0, 1.0], [-1.375, 0.875, 0.0, -0.5] ] )
+T1 = Transformation([ [1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], [9.0, 9.0, 8.0, 7.0], [6.0, 5.0, 4.0, 1.0] ],
+                      [ [-3.75, 2.75, -1, 0], [4.375, -3.875, 2.0, -0.5], [0.5, 0.5, -1.0, 1.0], [-1.375, 0.875, 0.0, -0.5] ] )
 
 T2 = Transformation( [ [3.0, 5.0, 2.0, 4.0], [4.0, 1.0, 0.0, 5.0], [6.0, 3.0, 2.0, 0.0], [1.0, 4.0, 2.0, 1.0] ],
                      [ [0.4, -0.2, 0.2, -0.6], [2.9, -1.7, 0.2, -3.1], [-5.55, 3.15, -0.4, 6.45], [-0.9, 0.7, -0.2, 1.1] ] )
@@ -47,7 +47,7 @@ V_expected = Vec(14.0, 38.0, 51.0)
 P_expected = Point(18.0, 46.0, 58.0)
 N_expected = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry Transofrmation tests" begin
+@testset "Geometry: Transofrmation tests " begin
 
     @test is_consistent(T1)
     @test isapprox(T1, T1_same)
@@ -55,8 +55,8 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     T1_same.m[1][3] += 100.0
     T1_same.invm[2][1] += 100.0
 
-    @test isapprox(T1, T1_same) == false
-    @test isapprox(T1, T1_same) == false
+    @test isapprox(T1, T1_same) ≈ false
+    @test isapprox(T1, T1_same) ≈ false
 
     @test is_consistent(T2)
     @test is_consistent(T_expected)
@@ -99,4 +99,25 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     @test is_consistent(translation_1)
     @test isapprox(translation_1 * translation_2, expected)
 
+end
+
+pcg = PCG()
+
+@testset "Geometry: Orthonormal Base test" begin
+
+    for i in range(1, length=10^3)
+        normal = Vec(pcg_randf(pcg), pcg_randf(pcg), pcg_randf(pcg))
+        normal = normalize(normal)
+        e1, e2, e3 = create_onb(normal)
+
+        @test e3 ≈ normal
+
+        @test isapprox(1.0 , squared_norm(e1), atol = 10^-15)
+        @test isapprox(1.0 , squared_norm(e2), atol = 10^-15)
+        @test isapprox(1.0 , squared_norm(e3), atol = 10^-15)
+
+        @test isapprox(0.0 , e1 * e2, atol = 10^-15)
+        @test isapprox(0.0 , e2 * e3, atol = 10^-15)
+        @test isapprox(0.0 , e3 * e1, atol = 10^-15)
+    end
 end
