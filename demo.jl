@@ -81,7 +81,7 @@ function main()
     WHITE = RGB(1.,1.,1.)
     BLACK = RGB(0.,0.,0.)
     
-    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.5,.8))), UniformPigment(BLACK))
+    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.5,.99))), UniformPigment(BLACK))
     sky = Plane(translation(Vec(0.,0.,100.)) * rotation_y( pi/6.), sky_color)
     add_shape(world, sky)
 
@@ -98,11 +98,11 @@ function main()
     add_shape(world, mirror)
 
     planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
-    planet2 = Sphere(translation(Vec(8.,-2.,4.)) * scaling(Vec(3.,3.,3.)), planet2_color)
+    planet2 = Sphere(translation(Vec(6.,-2.,4.)) * scaling(Vec(3.,3.,3.)), planet2_color)
     add_shape(world, planet2)
 
     planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
-    planet = Sphere(translation(Vec(1.5,-2.,-1.5)) * scaling(Vec(1.,1.,1.)), planet_color)
+    planet = Sphere(translation(Vec(2,-2.,-1.5)) * scaling(Vec(1.,1.,1.)), planet_color)
     add_shape(world, planet)
 
     println("World objects created.")
