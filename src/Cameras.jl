@@ -89,17 +89,33 @@ It creates a **ImageTracer**.
 ## Arguments:
 - image -> object of type HdrImage;
 - camera.
+- ray_per_side^2 is the number of ray that are trow for each pixels to reduce aliasing
 
 """
 struct ImageTracer
     image::HdrImage
     camera::Camera
+    ray_per_side::Int
+    pcg::PCG
+
+    ImageTracer(image::HdrImage, camera::Camera, ray_per_side::Int=1, pcg::PCG=PCG()) = new(image, camera, ray_per_side, pcg)
 end
 
 function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
-    u = (col -1 + u_pixel)/(im.image.width)
-    v = 1.0 - (row -1 + v_pixel)/(im.image.height)
-    return fire_ray(im.camera, u, v)
+    ray_vector = []
+    for i in 1:im.ray_per_side
+        for j in 1:im.ray_per_side
+            if im.ray_per_side > 1
+                u_pixel = (j - 1 + pcg_randf(im.pcg)) / im.ray_per_side
+                v_pixel = (i - 1 + pcg_randf(im.pcg)) / im.ray_per_side
+            end
+            u = (col -1 + u_pixel)/(im.image.width)
+            v = 1.0 - (row -1 + v_pixel)/(im.image.height)
+            ray = fire_ray(im.camera, u, v)
+            push!(ray_vector, ray)
+        end
+    end
+    return ray_vector 
 end
 
 """
@@ -110,17 +126,24 @@ It fires all rays, requiring a ImageTracer and a generic function (to assign col
 function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
     temp = -2
     for row ∈ 1:im.image.height
-           percentage= convert(Int,floor(100*(row-1)/im.image.height))
-           if percentage == temp+2
-                i = convert(Int,floor(percentage/2))
-                print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(49-i))]")
-                temp = percentage
+        for col ∈ 1:im.image.width
+            cum_color = RGB(0.,0.,0.)
+            rays_in_pixel= fire_ray(im, col, row)
+
+            for ray in rays_in_pixel
+                cum_color += func(ray, renderer)
             end
-            for col ∈ 1:im.image.width
-                ray = fire_ray(im, col, row)
-                color = func(ray, renderer)
-            im.image.pixels[get_pixel(im.image, col, row)] = color
+
+            im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1. / im.ray_per_side^2)
         end
+
+        percentage= convert(Int,floor(100*(row-1)/im.image.height)) ##print progress
+        if percentage == temp+2
+            i = convert(Int,floor(percentage/2))
+            print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(49-i))]")
+            temp = percentage
+        end
+
     end
 end
 

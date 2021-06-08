@@ -16,11 +16,13 @@ function parse_commandline()
     @add_arg_table s begin
         "--width"
             help = "width of the image"
-            required = true
+            required = false
+            default = 640
             arg_type = Int
         "--height"
             help = "height of the image"
-            required = true 
+            required = false
+            default = 480 
             arg_type = Int       
         "--camera"
             help = "type of camera [O, for Orthogonal, or P, for Perspective]"
@@ -40,7 +42,7 @@ function parse_commandline()
         "--file_out"
             help = "name of the output file (without extension)"
             required = false
-            default = "demo" 
+            default = "demo_out" 
             arg_type = String  
         "--render_alg"
             help = "type of rendering algortihm [O for On-Off, F for Flat, P for Path Tracer]"
@@ -71,7 +73,6 @@ function main()
     d = params["dist"]
     camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
-    path_tracer
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
@@ -96,7 +97,7 @@ function main()
     add_shape(world, ground)
 
     mirror_color = Material(SpecularBRDF())
-    mirror = Sphere(translation(Vec(3,2,0))*scaling(Vec(1.,1.,1.)), mirror_color)
+    mirror = Sphere(translation(Vec(3,2,-1.5))*scaling(Vec(1.,1.,1.)), mirror_color)
     add_shape(world, mirror)
 
     planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
@@ -104,7 +105,7 @@ function main()
     add_shape(world, planet2)
 
     planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
-    planet = Sphere(translation(Vec(2,-2.,-1.5)) * scaling(Vec(1.,1.,1.)), planet_color)
+    planet = Sphere(translation(Vec(2,-2.,-2.)) * scaling(Vec(1.,1.,1.)), planet_color)
     add_shape(world, planet)
 
     println("World objects created.")
@@ -119,7 +120,7 @@ function main()
 
 
 # Creating an ImageTracer object 
-    tracer = ImageTracer(image, camera)
+    tracer = ImageTracer(image, camera, 3)
 
     println("Observer initialized.")
 
@@ -130,7 +131,7 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=1, max_depth=2, russian_roulette_limit=3)
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=3, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
@@ -147,14 +148,14 @@ function main()
 
 
 # Automatic CONVERSION TO JPEG FILE 
-    normalize_image(tracer.image, params["a"])
-    clamp_image(tracer.image)
+    # normalize_image(tracer.image, params["a"])
+    # clamp_image(tracer.image)
 
-    matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
+    # matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
     
-    save(file_out_png, matrix_pixels')
+    # save(file_out_png, matrix_pixels')
 
-    println("$(file_out_png) has been automatically written to disk.")
+    # println("$(file_out_png) has been automatically written to disk.")
       
 end
 

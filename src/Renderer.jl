@@ -55,7 +55,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     
 
     hit_record = ray_intersection(rend.world, ray)
-    if hit_record == nothing
+    if hit_record === nothing
         return rend.background_color
     end
 
