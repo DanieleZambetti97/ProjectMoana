@@ -23,7 +23,7 @@ function parse_commandline()
             required = true 
             arg_type = Int       
         "--camera"
-            help = "type of the camera [O, for Orthogonal, or P, for Perspective]"
+            help = "type of camera [O, for Orthogonal, or P, for Perspective]"
             required = false
             default = "P"
             arg_type = String
@@ -43,12 +43,12 @@ function parse_commandline()
             default = "demo" 
             arg_type = String  
         "--render_alg"
-            help = "type of algortihm to use for render [O for On-Off, F for Flat, P for Path Tracer]"
+            help = "type of rendering algortihm [O for On-Off, F for Flat, P for Path Tracer]"
             required = false
             default = "P" 
             arg_type = String  
         "--a"
-            help = "a_factor for nomralize image luminosity during the convertion"
+            help = "a_factor for normalizing image luminosity during the convertion"
             required = false
             default = 1.
             arg_type = Float64
