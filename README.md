@@ -1,4 +1,4 @@
-<img align="right" width="300" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/logos/PM_logo_2.png">
+<img align="right" width="300" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/PM_logo_2.png">
 
 # ProjectMoana :ocean::ocean:
 [![Unit tests](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml/badge.svg?branch=cameras)](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml)
