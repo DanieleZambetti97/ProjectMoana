@@ -78,7 +78,7 @@ function main()
     seq = convert(UInt64, params["seq"])
 
 
-# Creating WORLD with 10 spheres
+# Creating WORLD with sky, sun, checkered gorud, Mars, Jupiter and mirror
     world = World()
     WHITE = RGB(1.,1.,1.)
     BLACK = RGB(0.,0.,0.)
