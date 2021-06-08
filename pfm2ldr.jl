@@ -7,14 +7,14 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [IN_FILE] [--a_factor] [--γ] [OUT_FILE]",
+                               usage = "usage: [--help] [IN_FILE] [--a] [--γ] [OUT_FILE]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
         "IN_FILE"
             help = "input PFM file name"
             required = true
-        "--a_factor"
+        "--a"
             help = "a_factor"
             required = false
             default = 0.18
@@ -34,7 +34,7 @@ function parse_commandline()
 end
 
 function main()
-    greet()
+    # greet()
     params = parse_commandline()
 
 # firtsly, open the input file
@@ -47,7 +47,7 @@ function main()
 
 # then normalizing and clamping
 
-    normalize_image(img, params["A_FACTOR"])
+    normalize_image(img, params["a"])
     clamp_image(img)
 
 # saving the image in the output format using Images method
