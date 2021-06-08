@@ -71,10 +71,12 @@ function main()
     d = params["dist"]
     camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
+    path_tracer
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
     seq = convert(UInt64, params["seq"])
+
 
 # Creating WORLD with 10 spheres
     world = World()
