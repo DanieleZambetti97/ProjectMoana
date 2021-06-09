@@ -48,7 +48,7 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
     Ray_StandardFrame = Ray( Point(-1.0f0, (1.0f0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0f0, 0.0f0, 0.0f0))
-    return camera.transformation * Ray_StandardFrame
+    return Float32(camera.transformation * Ray_StandardFrame)
 end
 
 """
@@ -75,7 +75,7 @@ end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
     Ray_StandardFrame = Ray( Point(-camera.distance, 0.0f0, 0.0), Vec(camera.distance, (1.0f0-2*u)*camera.aspect_ratio, 2*v-1))
-    return camera.transformation * Ray_StandardFrame
+    return (camera.transformation * Ray_StandardFrame)
 end
 
 
@@ -109,8 +109,8 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5f0, v_pixel=0.5f0)
                 u_pixel = (j - 1 + pcg_randf(im.pcg)) / im.ray_per_side
                 v_pixel = (i - 1 + pcg_randf(im.pcg)) / im.ray_per_side
             end
-            u = (col -1 + u_pixel)/(im.image.width)
-            v = 1.0f0 - (row -1 + v_pixel)/(im.image.height)
+            u = Float32((col -1 + u_pixel)/(im.image.width))
+            v = Float32(1.0f0 - (row -1 + v_pixel)/(im.image.height))
             ray = fire_ray(im.camera, u, v)
             push!(ray_vector, ray)
         end
@@ -134,7 +134,7 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
                 cum_color += func(ray, renderer)
             end
 
-            im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1. / im.ray_per_side^2)
+            im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1.f0 / im.ray_per_side^2)
         end
 
         percentage= convert(Int,floor(100*(row-1)/im.image.height)) ##print progress

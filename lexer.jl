@@ -12,5 +12,6 @@ struct InputStream
     saved_location
     tabulation
 
-    InputStream( stream::Stream, location::SourceLocation=SourceLocation(     ), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
+    InputStream( stream::Stream, location::SourceLocation=SourceLocation(     ), saved_char = 
+                "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
 end

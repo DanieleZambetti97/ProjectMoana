@@ -50,7 +50,7 @@ function _matr_prod(a, b)
     for i in 1:4
         for j in 1:4
             for k in 1:4
-                result[i][j] += a[i][k] * b[k][j]
+                result[i][j] += Float32(a[i][k] * b[k][j])
             end
         end
     end
