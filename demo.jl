@@ -10,16 +10,16 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [--width W] [--height H] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S]" ,
+                               usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S]" ,
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "--width"
+        "--w"
             help = "width of the image"
             required = false
             default = 640
             arg_type = Int
-        "--height"
+        "--h"
             help = "height of the image"
             required = false
             default = 480 
