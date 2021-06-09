@@ -62,11 +62,11 @@ end
 @testset "Renderer: Furnace test for Path Tracer renderer" begin
     pcg = PCG()
 
-    for i in 1:10^2
+    for i in 1:10^3
         world = World()
 
-        emitted_radiance = pcg_randf(pcg)
-        reflectance = pcg_randf(pcg)
+        emitted_radiance = pcg_randf(pcg) * 0.8 #per assicurare la convergenza scelgo un numero casuale non troppo vicino a 1
+        reflectance = pcg_randf(pcg) * 0.8
         enclosure_material = Material( DiffuseBRDF(UniformPigment(RGB(1.0, 1.0, 1.0) * reflectance)), UniformPigment(RGB(1.0, 1.0, 1.0) * emitted_radiance))
 
         add_shape(world, Sphere(Transformation(), enclosure_material))

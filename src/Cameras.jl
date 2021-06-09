@@ -115,6 +115,7 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5f0, v_pixel=0.5f0)
             push!(ray_vector, ray)
         end
     end
+    
     return ray_vector 
 end
 
