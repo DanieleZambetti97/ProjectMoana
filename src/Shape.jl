@@ -3,13 +3,13 @@
 """
 Ray( origin, dir, tmin, tmax, depth)
 
-It creates a **Ray**. When not specified tmin = 1e-5, tmax = +∞ and depth = 0.
+It creates a **Ray**. When not specified tmin = 1e-5, tmax = +∞ and depth = 0.f0
 """
 struct Ray
     origin::Point 
     dir::Vec
-    tmin::Float64
-    tmax::Float64 
+    tmin::Float32
+    tmax::Float32 
     depth::Int16
     
     Ray( origin, dir, tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
@@ -49,14 +49,14 @@ end
 
 ## Hidden methods for sphere
 function _sphere_point_to_uv(point::Point)
-    u = atan(point.y, point.x) / (2.0 * pi)
-    if u >= 0.0 
+    u = atan(point.y, point.x) / (2.0f0 * pi)
+    if u >= 0.f0 
         u = u
     else
-        u = u + 1.0
+        u = u + 1.f0
     end
-    if abs(point.z)>1.0
-        v=1.
+    if abs(point.z)>1.f0
+        v=1.f0
     else
         v=acos(point.z) / pi
     end
@@ -65,10 +65,10 @@ end
 
 function _sphere_normal(point::Point, ray_dir::Vec)
     result = Normal(point.x, point.y, point.z)
-    if toVec(point)*ray_dir < 0.0
+    if toVec(point)*ray_dir < 0.f0
         return result
     else
-        return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
+        return Normal(-1.f0*result.x,-1.f0*result.y,-1.f0*result.z)
     end
 end
 
@@ -91,25 +91,25 @@ function _plane_point_to_uv(point::Point)
 end
 
 function _plane_normal(point::Point, ray_dir::Vec)
-    result = Normal(0., 0., 1.)
-    Vec(0., 0., 1.) * ray_dir < 0.0 ? nothing : result = Normal(0., 0., -1.)
+    result = Normal(0.f0, 0.f0, 1.f0)
+    Vec(0.f0, 0.f0, 1.f0) * ray_dir < 0.f0 ? nothing : result = Normal(0.f0, 0.f0, -1.f0)
     return result
 end
 
 function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    # result = Normal(0., 0., 1.)
-    # if ray_dir * Vec(0., 0., 1.) < 0.0
-    #     result = Normal(0.,0.,-1.)
+    # result = Normal(0.f0, 0.f0, 1.f0)
+    # if ray_dir * Vec(0.f0, 0.f0, 1.f0) < 0.f0
+    #     result = Normal(0.f0,0.f0,-1.f0)
     # else 
     #     nothing
     # end
     # return result
     # dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
     # result = normalize(dir)
-    # if ray_dir.z > 0.0
+    # if ray_dir.z > 0.f0
     #     return Normal(result.x,result.y,result.z)
     # else
-    #     return Normal(-1.0*result.x,-1.0*result.y,-1.0*result.z)
+    #     return Normal(-1.f0*result.x,-1.f0*result.y,-1.f0*result.z)
     # end
 end
 
@@ -130,7 +130,7 @@ struct HitRecord
     world_point::Point
     normal::Normal
     surface_point::Vec2D
-    t::Float64
+    t::Float32
     ray::Ray
     shape::Shape
 end
@@ -187,7 +187,7 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     origin_vec = toVec(inverse_ray.origin)
     a = squared_norm(inverse_ray.dir)
     b = 2.0 * origin_vec * inverse_ray.dir
-    c = squared_norm(origin_vec) - 1.0
+    c = squared_norm(origin_vec) - 1.f0
     Δ = b * b - 4 * a * c
 
     if Δ<0

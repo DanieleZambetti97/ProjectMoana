@@ -20,10 +20,10 @@ When not specified in the constructor, a = 1 and T = Transformation(),
 where *a* is the aspect ratio and *T* a generic transformation.
 """
 struct OrthogonalCamera <: Camera
-    aspect_ratio::Float64
+    aspect_ratio::Float32
     transformation::Transformation
 
-    OrthogonalCamera( aspect_ratio=1.0, transformation=Transformation()) = new(aspect_ratio, transformation)
+    OrthogonalCamera( aspect_ratio=1.0f0, transformation=Transformation()) = new(aspect_ratio, transformation)
 end
 
 """
@@ -47,7 +47,7 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-1.0, (1.0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0, 0.0, 0.0))
+    Ray_StandardFrame = Ray( Point(-1.0f0, (1.0f0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0f0, 0.0f0, 0.0f0))
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -65,16 +65,16 @@ When not specified in the constructor, a = 1 and T = Transformation(),
 where *a* is the aspect ratio and *T* a generic transformation.
 """
 struct PerspectiveCamera <: Camera
-    aspect_ratio::Float64
+    aspect_ratio::Float32
     transformation::Transformation
-    distance::Float64
+    distance::Float32
 
-    PerspectiveCamera(aspect_ratio=1.0, transformation=Transformation(), distance=1.0) = new(aspect_ratio, transformation, distance )
+    PerspectiveCamera(aspect_ratio=1.0f0, transformation=Transformation(), distance=1.0f0) = new(aspect_ratio, transformation, distance )
 #    PerspectiveCamera(transformation=Transformation(), distance=1.0) = new(1.0, transformation, distance )
 end
 
 function fire_ray(camera::PerspectiveCamera, u, v)
-    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0, 0.0), Vec(camera.distance, (1.0-2*u)*camera.aspect_ratio, 2*v-1))
+    Ray_StandardFrame = Ray( Point(-camera.distance, 0.0f0, 0.0), Vec(camera.distance, (1.0f0-2*u)*camera.aspect_ratio, 2*v-1))
     return camera.transformation * Ray_StandardFrame
 end
 
@@ -101,7 +101,7 @@ struct ImageTracer
     ImageTracer(image::HdrImage, camera::Camera, ray_per_side::Int=1, pcg::PCG=PCG()) = new(image, camera, ray_per_side, pcg)
 end
 
-function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
+function fire_ray(im::ImageTracer, col, row, u_pixel=0.5f0, v_pixel=0.5f0)
     ray_vector = []
     for i in 1:im.ray_per_side
         for j in 1:im.ray_per_side
@@ -110,7 +110,7 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5, v_pixel=0.5)
                 v_pixel = (i - 1 + pcg_randf(im.pcg)) / im.ray_per_side
             end
             u = (col -1 + u_pixel)/(im.image.width)
-            v = 1.0 - (row -1 + v_pixel)/(im.image.height)
+            v = 1.0f0 - (row -1 + v_pixel)/(im.image.height)
             ray = fire_ray(im.camera, u, v)
             push!(ray_vector, ray)
         end
@@ -128,7 +128,7 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
     temp = -2
     for row ∈ 1:im.image.height
         for col ∈ 1:im.image.width
-            cum_color = RGB(0.,0.,0.)
+            cum_color = RGB(0.f0,0.f0,0.f0)
             rays_in_pixel= fire_ray(im, col, row)
 
             for ray in rays_in_pixel

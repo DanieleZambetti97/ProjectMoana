@@ -22,4 +22,4 @@ function pcg_rand(pcg::PCG)
     return UInt32((xorshifted >> rot) | (xorshifted << ((-rot) & UInt32(31))))
 end
 
-pcg_randf(pcg) = pcg_rand(pcg)/typemax(UInt32)
+pcg_randf(pcg) = Float32(pcg_rand(pcg)/typemax(UInt32))

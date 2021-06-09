@@ -10,7 +10,8 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S]" ,
+                               usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
+                                        [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]" ,
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
@@ -32,13 +33,13 @@ function parse_commandline()
         "--angle"
             help = "angle of the z-axis rotation applied to camera (in degrees)"
             required = false
-            default = 0.
-            arg_type = Float64
+            default = 0.f0
+            arg_type = Float32
         "--dist"
             help = "distance of a Perspective Camera"
             required = false
-            default = 1.
-            arg_type = Float64
+            default = 1.f0
+            arg_type = Float32
         "--file_out"
             help = "name of the output file (without extension)"
             required = false
@@ -52,13 +53,18 @@ function parse_commandline()
         "--a"
             help = "a_factor for normalizing image luminosity during the convertion"
             required = false
-            default = 1.
-            arg_type = Float64
+            default = 1.f0
+            arg_type = Float32
         "--seq"
             help = "sequence number for PCG generator"
             required = false
             default = 54
-            arg_type = Int 
+            arg_type = Int
+        "--nrays"
+            help = "Number of rays for antialasing"
+            required = false
+            default = 3
+            arg_type = Int
     end
 
     return parse_args(s)
@@ -67,11 +73,11 @@ end
 function main()
     params = parse_commandline()
 
-    w = params["width"]
-    h = params["height"]
+    w = params["w"]
+    h = params["h"]
     a = w/h
     d = params["dist"]
-    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
+    camera_tr = rotation_z(params["angle"]*π/180.0f0) * translation(Vec(-1.0f0,0.f0,0.f0))
     image = HdrImage(w, h)
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
@@ -81,32 +87,32 @@ function main()
 
 # Creating WORLD with sky, sun, checkered gorud, Mars, Jupiter and mirror
     world = World()
-    WHITE = RGB(1.,1.,1.)
-    BLACK = RGB(0.,0.,0.)
+    WHITE = RGB(1.f0,1.f0,1.f0)
+    BLACK = RGB(0.f0,0.f0,0.f0)
     
-    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.5,.99))), UniformPigment(BLACK))
-    sky = Plane(translation(Vec(0.,0.,100.)) * rotation_y( pi/6.), sky_color)
+    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1f0,.5f0,.99f0))), UniformPigment(BLACK))
+    sky = Plane(translation(Vec(0.f0,0.f0,100.f0)) * rotation_y( pi/6.f0), sky_color)
     add_shape(world, sky)
 
-    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(WHITE))
-    sun = Plane(translation(Vec(-100,0.,0.)) * rotation_y(pi/2.), sun_color )
+    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6f0,0.8f0,1.f0))), UniformPigment(WHITE))
+    sun = Plane(translation(Vec(-100.f0,0.f0,0.f0)) * rotation_y(pi/2.f0), sun_color )
     add_shape(world, sun)
 
-    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7,0.3,0.1), RGB(0.1,0.7,0.1), 10)))
-    ground = Plane(translation(Vec(0.,0.,-2.)) * rotation_y(pi/12.) * rotation_x(pi/24.) * scaling(Vec(10,10,10)), ground_color )
+    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7f0,0.3f0,0.1f0), RGB(0.1f0,0.7f0,0.1f0), 10.f0)))
+    ground = Plane(translation(Vec(0.f0,0.f0,-2.f0)) * rotation_y(pi/12.f0) * rotation_x(pi/24.f0) * scaling(Vec(10.f0,10.f0,10.f0)), ground_color )
     add_shape(world, ground)
 
-    mirror_color = Material(SpecularBRDF())
-    mirror = Sphere(translation(Vec(3,2,-1.5))*scaling(Vec(1.,1.,1.)), mirror_color)
-    add_shape(world, mirror)
+    # mirror_color = Material(SpecularBRDF())
+    # mirror = Sphere(translation(Vec(3.f0,2.f0,-1.5f0))*scaling(Vec(1.f0,1.f0,1.f0)), mirror_color)
+    # add_shape(world, mirror)
 
-    planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
-    planet2 = Sphere(translation(Vec(6.,-2.,4.)) * scaling(Vec(3.,3.,3.)), planet2_color)
-    add_shape(world, planet2)
+    # planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
+    # planet2 = Sphere(translation(Vec(6.f0,-2.f0,4.f0)) * scaling(Vec(3.f0,3.f0,3.f0)), planet2_color)
+    # add_shape(world, planet2)
 
-    planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
-    planet = Sphere(translation(Vec(2,-2.,-2.)) * scaling(Vec(1.,1.,1.)), planet_color)
-    add_shape(world, planet)
+    # planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
+    # planet = Sphere(translation(Vec(2.f0,-2.f0,-2.f0)) * scaling(Vec(1.f0,1.f0,1.f0)), planet_color)
+    # add_shape(world, planet)
 
     println("World objects created.")
 
@@ -120,18 +126,18 @@ function main()
 
 
 # Creating an ImageTracer object 
-    tracer = ImageTracer(image, camera, 3)
+    tracer = ImageTracer(image, camera, params["nrays"])
 
     println("Observer initialized.")
 
     print("Computing ray intersection ")
     if params["render_alg"] == "F"
         println("using Flat renderer")
-        renderer = Flat_Renderer(world, RGB(0.4,0.4,0.4))
+        renderer = Flat_Renderer(world, RGB(0.4f0,0.4f0,0.4f0))
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=3, russian_roulette_limit=2)
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=1, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
