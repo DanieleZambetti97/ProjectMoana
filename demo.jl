@@ -43,7 +43,7 @@ function parse_commandline()
             default = "demo" 
             arg_type = String  
         "--render_alg"
-            help = "type of rendering algortihm [O for On-Off, F for Flat, P for Path Tracer]"
+            help = "type of rendering algorithm [O for On-Off, F for Flat, P for Path Tracer]"
             required = false
             default = "P" 
             arg_type = String  
