@@ -20,7 +20,7 @@ end
 ## Flat render algorithm ######################################################
 struct Flat_Renderer <: Renderer
     world::World
-    background_color :: RGB 
+    background_color::RGB 
 
     Flat_Renderer(world::World, background_color::RGB=RGB(0.f0,0.f0,0.f0) ) = new(world, background_color) 
 end
@@ -73,7 +73,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     if ray.depth >= rend.russian_roulette_limit
         if pcg_randf(rend.pcg) > hit_color_lum
             # Keep the recursion going, but compensate for other potentially discarded rays
-            hit_color *= 1.f0 / (1.f0 - hit_color_lum)
+            hit_color *= Float32(1. / (1. - hit_color_lum))
         else
             # Terminate prematurely
             return emitted_radiance
@@ -92,5 +92,5 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     end
 
 
-    return emitted_radiance + cum_radiance * (1.f0 / rend.num_of_rays)
+    return (emitted_radiance + cum_radiance * (1.f0 / rend.num_of_rays))
 end

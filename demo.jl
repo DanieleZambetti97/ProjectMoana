@@ -8,6 +8,8 @@ import ColorTypes: RGB
 
 using ArgParse
 
+using ProfileView
+
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
                                usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
@@ -152,6 +154,8 @@ function main()
     write(file_out_pfm, tracer.image)
     println("$(file_out_pfm) has been written to disk.")
 
+    # print(tracer.image.pixels])
+
 
 # Automatic CONVERSION TO JPEG FILE 
     # normalize_image(tracer.image, params["a"])
@@ -165,6 +169,8 @@ function main()
       
 end
 
-main()  
+
+@profview main()  
+
 
 ############

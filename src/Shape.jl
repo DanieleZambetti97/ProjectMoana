@@ -49,7 +49,7 @@ end
 
 ## Hidden methods for sphere
 function _sphere_point_to_uv(point::Point)
-    u = atan(point.y, point.x) / (2.0f0 * pi)
+    u = Float32(atan(point.y, point.x) / (2.0f0 * pi))
     if u >= 0.f0 
         u = u
     else
@@ -58,7 +58,7 @@ function _sphere_point_to_uv(point::Point)
     if abs(point.z)>1.f0
         v=1.f0
     else
-        v=acos(point.z) / pi
+        v=Float32(acos(point.z) / pi)
     end
     return Vec2D( u , v )
 end
@@ -85,8 +85,8 @@ end
 
 ## Hidden methods for plane
 function _plane_point_to_uv(point::Point)
-    u = point.x - floor(point.x)
-    v = point.y - floor(point.y)
+    u = Float32(point.x - floor(point.x))
+    v = Float32(point.y - floor(point.y))
     return Vec2D(u,v)
 end
 
@@ -185,16 +185,16 @@ end
 function ray_intersection(sphere::Sphere, ray::Ray)
     inverse_ray= inverse(sphere.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
-    a = squared_norm(inverse_ray.dir)
-    b = 2.0 * origin_vec * inverse_ray.dir
-    c = squared_norm(origin_vec) - 1.f0
-    Δ = b * b - 4 * a * c
+    a = Float32(squared_norm(inverse_ray.dir))
+    b = FLoat32(2.0 * origin_vec * inverse_ray.dir)
+    c = Float32(squared_norm(origin_vec) - 1.f0)
+    Δ = Float32(b * b - 4 * a * c)
 
     if Δ<0
         return nothing
     else 
-        t_1 = ( -b - sqrt(Δ) ) / (2.0 * a)
-        t_2 = ( -b + sqrt(Δ) ) / (2.0 * a)
+        t_1 = Float32(( -b - sqrt(Δ) ) / (2.0 * a))
+        t_2 = Float32(( -b + sqrt(Δ) ) / (2.0 * a))
         if t_1 > inverse_ray.tmin && t_1 < inverse_ray.tmax
             first_hit_t = t_1
         elseif t_2 > inverse_ray.tmin && t_2 < inverse_ray.tmax
