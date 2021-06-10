@@ -21,6 +21,9 @@ export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
 
 export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTracer
 
+export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, Keyword, Token, InputStream, GrammarError, read_char, 
+       unread_char, skip_whitespaces_and_comments, read_token
+
 
 include("PCG.jl")
 include("Colors.jl")
@@ -30,6 +33,7 @@ include("Surface.jl")
 include("Shape.jl")
 include("Cameras.jl")
 include("Renderer.jl")
+include("Lexer.jl")
 
 greet(name) = println("Hello $(name)! Moana welcomes you!")
 greet() = println("Hello User! Moana welcomes you!")

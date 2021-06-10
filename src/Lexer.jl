@@ -2,11 +2,11 @@ WHITESPACE = " \t\n\r"
 SYMBOLS = "()<>[],*"
 
 struct SourceLocation
-    file_name::string
+    file_name::String
     line_num::Int
     col_num::Int
 
-    SourceLocation(file_name::string = "", line_num::Int32 = 0, col_num::Int32 = 0) = new(file_name, line_num, col_num)
+    SourceLocation(file_name::String = "", line_num::Int32 = Int32(0), col_num::Int32 = Int32(0)) = new(file_name, line_num, col_num)
 end
 struct Stop
     loc::SourceLocation
@@ -71,7 +71,7 @@ struct InputStream
     saved_location::SourceLocation
     tabulation::Int
 
-    InputStream( stream::Stream, location::SourceLocation = SourceLocation(), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
+    InputStream( stream::IOStream, location::SourceLocation = SourceLocation(), saved_char = '', saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
 end
 
 struct GrammarError <: Exception
@@ -81,12 +81,12 @@ struct GrammarError <: Exception
 end
 
 function _update_pos(stream::InputStream, ch::Char)
-    if ch == ""
+    if ch == ''
         return
-    elseif ch == "\n"
+    elseif ch == '\n'
         stream.location.line_num += 1
         stream.location.col_num = 1
-    elseif ch == "\t"
+    elseif ch == '\t'
         stream.location.col_num += stream.tabulations
     else
         stream.location.col_num += 1
@@ -95,9 +95,9 @@ end
 
 
 function read_char(stream::InputStream)
-    if stream.saved_char != ""
+    if stream.saved_char != ''
         ch = stream.saved_char
-        stream.saved_char = ""
+        stream.saved_char = ''
     else
         ch = read(stream.stream, Char)
     end
@@ -109,7 +109,7 @@ function read_char(stream::InputStream)
 end
 
 function unread_char(stream::InputStream, ch)
-    if stream.saved_char == ""
+    while stream.saved_char == ''
         break
     end
     stream.saved_char = ch
@@ -118,14 +118,14 @@ end
 
 function skip_whitespaces_and_comments(stream::InputStream)
     ch = read_char(stream)
-    while ch in WHITESPACE || ch == "#"
-        if ch == "#"
-            while (read_char(stream) in ["\r", "\n", ""]) == false
+    while ch in WHITESPACE || ch == '#'
+        if ch == '#'
+            while (read_char(stream) in ['\r', '\n', '']) == false
                 ch =read_char(stream)
             end
         end
 
-        if ch == "":
+        if ch == ''
             return
         end
     end
@@ -133,13 +133,13 @@ function skip_whitespaces_and_comments(stream::InputStream)
 end
 
 function _parse_string_token(stream, token_location::SourceLocation)
-    token = ""
+    token = ''
     while true
         ch =read_char(stream)
         if ch == '"'
             break
         end
-        if ch == ""
+        if ch == ''
             throw(GrammarError(token_location, "Unterminated string"))
         end
         token += ch
@@ -151,7 +151,7 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
     token = first_char
     while true
         ch = read_char(stream)
-        if (isdigit(ch) || ch == "." || ch in ["e", "E"]) == false
+        if (isdigit(ch) || ch == '.' || ch in ['e', 'E']) == false
             unread_char(stream, ch)
             break
         end
@@ -172,7 +172,7 @@ function _parse_keyword_or_identifier_token(stram, first_char::Char, token_locat
     while true
         ch = read_char(stream)
         # Note that here we do not call "isalpha" but "isalnum": digits are ok after the first character
-        if (isletter(ch) || isdigit(ch) || ch == "_") == false
+        if (isletter(ch) || isdigit(ch) || ch == '_') == false
             unread_char(stream, ch)
             break
         end
@@ -193,7 +193,7 @@ function read_token(stream::InputStream)
 
     # At this point we're sure that ch does *not* contain a whitespace character
     ch = read_char(stream)
-    if ch == ""
+    if ch == ''
         # No more characters in the file, so return a StopToken
         return Stop(stream.location)
     end
@@ -209,10 +209,10 @@ function read_token(stream::InputStream)
     elseif ch == '"'
         # A literal string (used for file names)
         return _parse_string_token(stream, token_location)
-    elseif isdigit(ch) || ch in ["+", "-", "."]
+    elseif isdigit(ch) || ch in ['+', '-', '.']
         # A floating-point number
         return _parse_float_token(stream, ch, token_location)
-    elseif isletter(ch) || ch == "_"
+    elseif isletter(ch) || ch == '_'
         # Since it begins with an alphabetic character, it must either be a keyword
         # or a identifier
         return _parse_keyword_or_identifier_token( stream, ch, token_location )
