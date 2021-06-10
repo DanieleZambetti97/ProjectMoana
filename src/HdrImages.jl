@@ -69,9 +69,7 @@ end
 struct InvalidPfmFileFormat <: Exception
     msg::String
     
-    function InvalidPfmFileFormat(msg::String)
-        new(msg)
-    end
+    InvalidPfmFileFormat(msg::String) = new(msg)
 end
 
 # Supporting function for read_pfm_image

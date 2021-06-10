@@ -74,6 +74,12 @@ struct InputStream
     InputStream( stream::Stream, location::SourceLocation = SourceLocation(), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
 end
 
+struct GrammarError <: Exception
+    msg::String
+    
+    GrammarError(loc::SourceLocation, msg::String) = new("$msg\n Stacktrace:\n in $(loca.file_name) at line $(loc.line_num) : $(loc.col_num)")
+end
+
 function _update_pos(stream::InputStream, ch::Char)
     if ch == ""
         return
@@ -132,7 +138,7 @@ function _parse_string_token(stream, token_location::SourceLocation)
             break
         end
         if ch == ""
-            ############raise GrammarError(token_location, "unterminated string")
+            throw(GrammarError(token_location, "Unterminated string"))
         end
         token += ch
     end
@@ -149,11 +155,13 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
         end
         token += ch
     end
+
     try
         value = Float32(token)
-        # except ValueError:
-        # raise GrammarError(token_location, f"'{token}' is an invalid floating-point number")
+    catch e
+        throw(GrammarError(token_location, "$(token) is an invalid floating-point number"))
     end
+
     return LiteralNumber(token_location, value)
 end
 
@@ -169,11 +177,11 @@ function _parse_keyword_or_identifier_token(stram, first_char::Char, token_locat
         token += ch
     end
     try
-    #     # If it is a keyword, it must be listed in the KEYWORDS dictionary
-    #     return KeywordToken(token_location, KEYWORDS[token])
-    # except KeyError
-    #     # If we got KeyError, it is not a keyword and thus it must be an identifier
-    #     return IdentifierToken(token_location, token)
+        # If it is a keyword, it must be listed in the KEYWORDS dictionary
+        return KeywordToken(token_location, KEYWORDS[token])
+    catch e
+        # If we got KeyError, it is not a keyword and thus it must be an identifier
+        return IdentifierToken(token_location, token)
     end
 end
 
@@ -183,9 +191,10 @@ function read_token(stream::InputStream)
 
     # At this point we're sure that ch does *not* contain a whitespace character
     ch = read_char(stream)
-    if ch == "":
+    if ch == ""
         # No more characters in the file, so return a StopToken
         return Stop(stream.location)
+    end
 
     # At this point we must check what kind of token begins with the "ch" character 
     # (which has been put back in the stream with self.unread_char). First,
@@ -205,9 +214,9 @@ function read_token(stream::InputStream)
         # Since it begins with an alphabetic character, it must either be a keyword
         # or a identifier
         return _parse_keyword_or_identifier_token( stream, ch, token_location )
-    else:
+    else
         # We got some weird character, like '@` or `&`
-        ###################################raise GrammarError(stream.location, f"Invalid character {ch}")
+        throw(GrammarError(stream.location, "Invalid character $ch"))
     end
 end
 
