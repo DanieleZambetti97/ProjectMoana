@@ -103,7 +103,9 @@ function read_char(stream::InputStream)
 end
 
 function unread_char(stream::InputStream, ch)
-    ########### assert stream.saved_char == ""
+    if stream.saved_char == ""
+        break
+    end
     stream.saved_char = ch
     stream.location = stream.saved_location
 end
