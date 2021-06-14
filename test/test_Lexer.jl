@@ -49,56 +49,57 @@ stream = InputStream(IOBuffer("abc   \nd\nef"))
 
 end
 
-######################################################################à
+######################################################################
 
-# function assert_is_keyword(token::Token, keyword::KeywordEnum) 
-#         isa(token.value, Keyword) || "Token '$(token.value)' is not a KeywordToken"
-#         token.value.keyword == keyword  || "Token '$(token.value)' is not equal to keyword '$(keyword)'"
-#    end
+function assert_is_keyword(token::Token, keyword::KeywordEnum) 
+        isa(token.value, Keyword) || "Token '$(token.value)' is not a KeywordToken"
+        token.value.keyword == keyword  || "Token '$(token.value)' is not equal to keyword '$(keyword)'"
+   end
    
-#    function assert_is_identifier(token::Token, identifier::String) 
-#         isa(token.value, Identifier) || "Token '$(token.value)' is not a IdentifierToken"
-#         token.value.identifier == identifier || "Expecting identifier '$(identifier)' instead of '$(token.value)'"
-#    end
+   function assert_is_identifier(token::Token, identifier::String) 
+        isa(token.value, Identifier) || "Token '$(token.value)' is not a IdentifierToken"
+        token.value.identifier == identifier || "Expecting identifier '$(identifier)' instead of '$(token.value)'"
+   end
    
-#    function assert_is_symbol(token::Token, symbol::String) 
-#         isa(token.value, Symbol) || "Token '$(token.value)' is not a SymbolToken"
-#         token.value.symbol == symbol || "Expecting symbol '$(symbol)' instead of '$(token.value)'"
-#    end
+   function assert_is_symbol(token::Token, symbol::String) 
+        isa(token.value, Symbol) || "Token '$(token.value)' is not a SymbolToken"
+        token.value.symbol == symbol || "Expecting symbol '$(symbol)' instead of '$(token.value)'"
+   end
    
-#    function assert_is_number(token::Token, number::Float64) 
-#         isa(token.value, LiteralNumber) || "Token '$(token.value)' is not a LiteralNumberToken"
-#         token.value.number == number || "Token '$(token.value)' is not equal to number '$(number)'"
-#    end
+   function assert_is_number(token::Token, number::Float64) 
+        isa(token.value, LiteralNumber) || "Token '$(token.value)' is not a LiteralNumberToken"
+        token.value.number == number || "Token '$(token.value)' is not equal to number '$(number)'"
+   end
    
-#    function assert_is_string(token::Token, string::String) 
-#         isa(token.value, LiteralString) || "Token '$(token.value)' is not a StringToken"
-#         token.value.string == string || "Token '$(token.value)' is not equal to string '$(string)'"
-#    end
+   function assert_is_string(token::Token, string::String) 
+        isa(token.value, LiteralString) || "Token '$(token.value)' is not a StringToken"
+        token.value.string == string || "Token '$(token.value)' is not equal to string '$(string)'"
+   end
 
 
-# @testset "Test SceneFiles: read token" begin
+
+stream2 = IOBuffer("""
+   # This is a comment
+   # This is another comment
+   NEW MATERIAL sky_material(
+       DIFFUSE(image("my file.pfm")),
+       <5.0, 500.0, 300.0>
+   ) # Comment at the end of the line
+""")
+
+infile = InputStream(stream2)
+
+@testset "Test SceneFiles: read token" begin
         
-#         stream = IOBuffer("""
-#         # This is a comment
-#         # This is another comment
-#         new material sky_material(
-#             diffuse(image("my file.pfm")),
-#             <5.0, 500.0, 300.0>
-#         ) # Comment at the end of the line
-# """)
-
-#         infile = InputStream(stream)
-
-#         @test assert_is_keyword(read_token(infile), KeywordEnum.NEW)
-#         @test assert_is_keyword(read_token(infile), KeywordEnum.MATERIAL)
-#         @test assert_is_identifier(read_token(infile), "sky_material")
-#         @test assert_is_symbol(read_token(infile), "(")
-#         @test assert_is_keyword(read_token(infile), KeywordEnum.DIFFUSE)
-#         @test assert_is_symbol(read_token(infile), "(")
-#         @test assert_is_keyword(read_token(infile), KeywordEnum.IMAGE)
-#         @test assert_is_symbol(read_token(infile), "(")
-#         @test assert_is_string(read_token(infile), "my file.pfm")
-#         @test assert_is_symbol(read_token(infile), ")")
-# end
+        @test assert_is_keyword(read_token(infile), KeywordEnum(1))
+        # @test assert_is_keyword(read_token(infile), KeywordEnum(2))
+        # @test assert_is_identifier(read_token(infile), "sky_material")
+        # @test assert_is_symbol(read_token(infile), "(")
+        # @test assert_is_keyword(read_token(infile), KeywordEnum.DIFFUSE)
+        # @test assert_is_symbol(read_token(infile), "(")
+        # @test assert_is_keyword(read_token(infile), KeywordEnum.IMAGE)
+        # @test assert_is_symbol(read_token(infile), "(")
+        # @test assert_is_string(read_token(infile), "my file.pfm")
+        # @test assert_is_symbol(read_token(infile), ")")
+end
 

@@ -155,7 +155,7 @@ function _parse_string_token(stream, token_location::SourceLocation)
         end
         token *= ch
     end
-    return LiteralString(token_location, token)
+    return Token(token_location, LiteralString(token_location, token))
 end
 
 function _parse_float_token(stream, first_char::String, token_location::SourceLocation)
@@ -175,27 +175,27 @@ function _parse_float_token(stream, first_char::String, token_location::SourceLo
         throw(GrammarError(token_location, "$(token) is an invalid floating-point number"))
     end
 
-    return LiteralNumber(token_location, value)
+    return Token(token_location, LiteralNumber(token_location, token))
 end
 
-function _parse_keyword_or_identifier_token(stram, first_char::String, token_location::SourceLocation)
+function _parse_keyword_or_identifier_token(stream, first_char::String, token_location::SourceLocation)
     token = first_char
     while true
         ch = read_char(stream)
-        # Note that here we do not call "isalpha" but "isalnum": digits are ok after the first character
+ 
         if (isletter(ch) || isdigit(ch) || ch == "_") == false
             unread_char(stream, ch)
             break
         end
         token *= ch
     end
-    try
-        # If it is a keyword, it must be listed in the KEYWORDS dictionary
-        return KeywordToken(token_location, KEYWORDS[token])
-    catch e
-        # If we got KeyError, it is not a keyword and thus it must be an identifier
-        return IdentifierToken(token_location, token)
-    end
+    
+    # If it is a keyword, it must be listed in the KEYWORDS dictionary
+    occursin(token, KeywordEnum) && return Token(token_location, Keyword(token_location, token))
+
+    # If we got KeyError, it is not a keyword and thus it must be an identifier
+    occursin(token, KeywordEnum) || return Token(token_location, Identifier(token_location, token))
+    
 end
 
 function read_token(stream::InputStream)
@@ -214,10 +214,12 @@ function read_token(stream::InputStream)
     # we save the position in the stream
     token_location = stream.location
 
-    if ch in SYMBOLS
+    println(ch)
+
+    if occursin(ch, SYMBOLS)
         # One-character symbol, like "(" or ","
         return Symbol(token_location, ch)
-    elseif ch == "\""
+    elseif ch == "\"" 
         # A literal string (used for file names)
         return _parse_string_token(stream, token_location)
     elseif isdigit(ch) || ch in ["+", "-", "."]
@@ -233,3 +235,24 @@ function read_token(stream::InputStream)
     end
 end
 
+
+
+function Base.isdigit(str::String)
+    for i in 1:length(str)
+        isdigit(str[i]) || return false
+    end
+    return true
+end
+
+function Base.isletter(str::String)
+    for i in 1:length(str)
+        isletter(str[i]) || return false
+    end
+    return true
+end
+
+function Base.occursin(str::String, key::Type{KeywordEnum})
+    for i in 1:19 #### ATTENZIONE ALLA LUNGHEZZA
+        occursin(str, string(key(i))) && return true
+    end
+end

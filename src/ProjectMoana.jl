@@ -22,7 +22,7 @@ export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
 export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTracer
 
 export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, Keyword, Token, InputStream, GrammarError, read_char, 
-       unread_char, skip_whitespaces_and_comments, read_token
+       unread_char, skip_whitespaces_and_comments, read_token, KeywordEnum, isdigit
 
 
 include("PCG.jl")
