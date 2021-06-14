@@ -1,33 +1,33 @@
 WHITESPACE = " \t\n\r"
 SYMBOLS = "()<>[],*"
 
-struct SourceLocation
+mutable struct SourceLocation
     file_name::String
     line_num::Int
     col_num::Int
 
     SourceLocation(file_name::String = "", line_num::Int32 = Int32(0), col_num::Int32 = Int32(0)) = new(file_name, line_num, col_num)
 end
-struct Stop
+mutable struct Stop
     loc::SourceLocation
 end
 
-struct Identifier
-    loc::SourceLocation
-    s::String
-end
-
-struct LiteralString
+mutable struct Identifier
     loc::SourceLocation
     s::String
 end
 
-struct LiteralNumber
+mutable struct LiteralString
+    loc::SourceLocation
+    s::String
+end
+
+mutable struct LiteralNumber
     loc::SourceLocation
     value::Float32
 end
 
-struct Symbol
+mutable struct Symbol
     loc::SourceLocation
     symbol::String
 end
@@ -54,24 +54,24 @@ end
     FLOAT = 19
 end
 
-struct Keyword
+mutable struct Keyword
     loc::SourceLocation
     keyword::KeywordEnum
 end
 
-struct Token
+mutable struct Token
     loc::SourceLocation
     value::Union{LiteralNumber, LiteralString, Keyword, Identifier, Symbol, Stop}
 end
 
-struct InputStream
-    stream::IOStream
+mutable struct InputStream
+    stream::IOBuffer
     location::SourceLocation
     saved_char::String
     saved_location::SourceLocation
     tabulation::Int
 
-    InputStream( stream::IOStream, location::SourceLocation = SourceLocation(), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
+    InputStream( stream::IOBuffer, location::SourceLocation = SourceLocation("", Int32(1), Int32(1)), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
 end
 
 struct GrammarError <: Exception
@@ -79,6 +79,11 @@ struct GrammarError <: Exception
     
     GrammarError(loc::SourceLocation, msg::String) = new("$msg\n Stacktrace:\n in $(loca.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
+
+
+copy(location::SourceLocation) = SourceLocation(location.file_name, Int32(location.line_num), Int32(location.col_num))
+
+
 
 function _update_pos(stream::InputStream, ch::String)
     if ch == ""
@@ -95,35 +100,41 @@ end
 
 
 function read_char(stream::InputStream)
+    
     if stream.saved_char != ""
         ch = stream.saved_char
         stream.saved_char = ""
+
+    elseif eof(stream.stream)
+        ch = ""  
     else
-        ch = read(stream.stream, String)
+        ch = String([read(stream.stream, UInt8)])
     end
 
-    stream.saved_location = stream.location
+    stream.saved_location = copy(stream.location)
     _update_pos(stream, ch)
 
     return ch
 end
 
 function unread_char(stream::InputStream, ch)
-    while stream.saved_char == ""
-        break
+    while true
+        stream.saved_char == "" && break
     end
     stream.saved_char = ch
-    stream.location = stream.saved_location
+    stream.location = copy(stream.saved_location)
 end
 
 function skip_whitespaces_and_comments(stream::InputStream)
     ch = read_char(stream)
-    while ch in WHITESPACE || ch == "#"
+    while occursin(ch, WHITESPACE) || ch == "#"
         if ch == "#"
             while (read_char(stream) in ["\r", "\n", ""]) == false
-                ch =read_char(stream)
+                nothing               
             end
         end
+
+        ch =read_char(stream)
 
         if ch == ""
             return
@@ -142,7 +153,7 @@ function _parse_string_token(stream, token_location::SourceLocation)
         if ch == ""
             throw(GrammarError(token_location, "Unterminated string"))
         end
-        token += ch
+        token *= ch
     end
     return LiteralString(token_location, token)
 end
@@ -176,7 +187,7 @@ function _parse_keyword_or_identifier_token(stram, first_char::String, token_loc
             unread_char(stream, ch)
             break
         end
-        token += ch
+        token *= ch
     end
     try
         # If it is a keyword, it must be listed in the KEYWORDS dictionary
