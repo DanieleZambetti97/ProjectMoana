@@ -86,12 +86,12 @@ copy(location::SourceLocation) = SourceLocation(location.file_name, Int32(locati
 
 
 function _update_pos(stream::InputStream, ch::String)
-    if ch == ""
+    if ch == '0'
         return
-    elseif ch == "\n"
+    elseif ch == '\n'
         stream.location.line_num += 1
         stream.location.col_num = 1
-    elseif ch == "\t"
+    elseif ch == '\t'
         stream.location.col_num += stream.tabulations
     else
         stream.location.col_num += 1
@@ -101,14 +101,14 @@ end
 
 function read_char(stream::InputStream)
     
-    if stream.saved_char != ""
+    if stream.saved_char != '0'
         ch = stream.saved_char
-        stream.saved_char = ""
+        stream.saved_char = '0'
 
     elseif eof(stream.stream)
-        ch = ""  
+        ch = '0'  
     else
-        ch = String([read(stream.stream, UInt8)])
+        ch = read(stream.stream, Char)
     end
 
     stream.saved_location = copy(stream.location)
@@ -119,7 +119,7 @@ end
 
 function unread_char(stream::InputStream, ch)
     while true
-        stream.saved_char == "" && break
+        stream.saved_char == '0' && break
     end
     stream.saved_char = ch
     stream.location = copy(stream.saved_location)
@@ -127,16 +127,16 @@ end
 
 function skip_whitespaces_and_comments(stream::InputStream)
     ch = read_char(stream)
-    while occursin(ch, WHITESPACE) || ch == "#"
-        if ch == "#"
-            while (read_char(stream) in ["\r", "\n", ""]) == false
+    while occursin(ch, WHITESPACE) || ch == '#'
+        if ch == '#'
+            while (read_char(stream) in ['\r', '\n', '0']) == false
                 nothing               
             end
         end
 
         ch =read_char(stream)
 
-        if ch == ""
+        if ch == '0'
             return
         end
     end
@@ -144,13 +144,13 @@ function skip_whitespaces_and_comments(stream::InputStream)
 end
 
 function _parse_string_token(stream, token_location::SourceLocation)
-    token = ""
+    token = '0'
     while true
         ch =read_char(stream)
-        if ch == "\""
+        if ch == '\"'
             break
         end
-        if ch == ""
+        if ch == '0'
             throw(GrammarError(token_location, "Unterminated string"))
         end
         token *= ch
@@ -162,11 +162,11 @@ function _parse_float_token(stream, first_char::String, token_location::SourceLo
     token = first_char
     while true
         ch = read_char(stream)
-        if (isdigit(ch) || ch == "." || ch in ["e", "E"]) == false
+        if (isdigit(ch) || ch == '.' || ch in ['e', 'E']) == false
             unread_char(stream, ch)
             break
         end
-        token += ch
+        token *= ch
     end
 
     try
@@ -183,7 +183,7 @@ function _parse_keyword_or_identifier_token(stream, first_char::String, token_lo
     while true
         ch = read_char(stream)
  
-        if (isletter(ch) || isdigit(ch) || ch == "_") == false
+        if (isletter(ch) || isdigit(ch) || ch == '_') == false
             unread_char(stream, ch)
             break
         end
@@ -204,7 +204,7 @@ function read_token(stream::InputStream)
 
     # At this point we"re sure that ch does *not* contain a whitespace character
     ch = read_char(stream)
-    if ch == ""
+    if ch == '0'
         # No more characters in the file, so return a StopToken
         return Stop(stream.location)
     end
@@ -219,13 +219,13 @@ function read_token(stream::InputStream)
     if occursin(ch, SYMBOLS)
         # One-character symbol, like "(" or ","
         return Symbol(token_location, ch)
-    elseif ch == "\"" 
+    elseif ch == '\"' 
         # A literal string (used for file names)
         return _parse_string_token(stream, token_location)
-    elseif isdigit(ch) || ch in ["+", "-", "."]
+    elseif isdigit(ch) || ch in ['+', '-', '.']
         # A floating-point number
         return _parse_float_token(stream, ch, token_location)
-    elseif isletter(ch) || ch == "_"
+    elseif isletter(ch) || ch == '_'
         # Since it begins with an alphabetic character, it must either be a keyword
         # or a identifier
         return _parse_keyword_or_identifier_token( stream, ch, token_location )
@@ -252,7 +252,7 @@ function Base.isletter(str::String)
 end
 
 function Base.occursin(str::String, key::Type{KeywordEnum})
-    for i in 1:19 #### ATTENZIONE ALLA LUNGHEZZA
+    for i in 1:19 #### ATTENZIONE ALLA LUNGHEZZA!!
         occursin(str, string(key(i))) && return true
     end
 end
