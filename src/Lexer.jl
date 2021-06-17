@@ -6,7 +6,10 @@ mutable struct SourceLocation
     line_num::Int
     col_num::Int
 
-    SourceLocation(file_name::String = "", line_num::Int32 = Int32(0), col_num::Int32 = Int32(0)) = new(file_name, line_num, col_num)
+    SourceLocation(file_name::String = "",
+                   line_num::Int32 = Int32(0),
+                   col_num::Int32 = Int32(0)) =
+                   new(file_name, line_num, col_num)
 end
 mutable struct Stop
     loc::SourceLocation
@@ -69,9 +72,16 @@ mutable struct InputStream
     location::SourceLocation
     saved_char::String
     saved_location::SourceLocation
+    saved_token::Token
     tabulation::Int
 
-    InputStream( stream::IOBuffer, location::SourceLocation = SourceLocation("", Int32(1), Int32(1)), saved_char = "", saved_location = location, tabulation = 8) = new(stream, location, saved_char, saved_location, tabulation)
+    InputStream( stream::IOBuffer,
+                 location::SourceLocation = SourceLocation("", Int32(1), Int32(1)),
+                 saved_char = "", 
+                 saved_location = location,
+                 saved_token = nothing,
+                 tabulation = 8) =
+                 new(stream, location, saved_char, saved_location, saved_token, tabulation)
 end
 
 struct GrammarError <: Exception
@@ -199,6 +209,11 @@ function _parse_keyword_or_identifier_token(stream, first_char::String, token_lo
 end
 
 function read_token(stream::InputStream)
+    if stream.saved_token != nothing
+        result = stream.saved_token
+        stream.saved_token = nothing
+        return result
+    end
 
     skip_whitespaces_and_comments(stream)
 
@@ -235,7 +250,12 @@ function read_token(stream::InputStream)
     end
 end
 
-
+function unread_token(stream::InputStream, token::Token)
+    """Pretend that `token` was never read from `input_file`"""
+    if stream.saved_token == nothing
+        stream.saved_token = token
+    end
+end
 
 function Base.isdigit(str::String)
     for i in 1:length(str)
