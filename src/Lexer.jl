@@ -17,22 +17,22 @@ end
 
 mutable struct Identifier
     loc::SourceLocation
-    s::String
+    s::Union{String, Char}
 end
 
 mutable struct LiteralString
     loc::SourceLocation
-    s::String
+    s::Union{String, Char}
 end
 
 mutable struct LiteralNumber
     loc::SourceLocation
-    value::Float32
+    number::Float32
 end
 
 mutable struct Symbol
     loc::SourceLocation
-    symbol::String
+    symbol::Union{String, Char}
 end
                    
 @enum KeywordEnum begin
@@ -70,7 +70,7 @@ end
 mutable struct InputStream
     stream::IOBuffer
     location::SourceLocation
-    saved_char::String
+    saved_char::Char
     saved_location::SourceLocation
     saved_token::Token
     tabulation::Int
@@ -95,7 +95,7 @@ copy(location::SourceLocation) = SourceLocation(location.file_name, Int32(locati
 
 
 
-function _update_pos(stream::InputStream, ch::String)
+function _update_pos(stream::InputStream, ch::Char)
     if ch == '0'
         return
     elseif ch == '\n'
@@ -168,7 +168,7 @@ function _parse_string_token(stream, token_location::SourceLocation)
     return Token(token_location, LiteralString(token_location, token))
 end
 
-function _parse_float_token(stream, first_char::String, token_location::SourceLocation)
+function _parse_float_token(stream, first_char::Char, token_location::SourceLocation)
     token = first_char
     while true
         ch = read_char(stream)
@@ -188,7 +188,7 @@ function _parse_float_token(stream, first_char::String, token_location::SourceLo
     return Token(token_location, LiteralNumber(token_location, token))
 end
 
-function _parse_keyword_or_identifier_token(stream, first_char::String, token_location::SourceLocation)
+function _parse_keyword_or_identifier_token(stream, first_char::Char, token_location::SourceLocation)
     token = first_char
     while true
         ch = read_char(stream)
@@ -201,10 +201,12 @@ function _parse_keyword_or_identifier_token(stream, first_char::String, token_lo
     end
     
     # If it is a keyword, it must be listed in the KEYWORDS dictionary
-    occursin(token, KeywordEnum) && return Token(token_location, Keyword(token_location, token))
+    for i in 1:length(instances(KeywordEnum))
+        token == string(KeywordEnum(i)) && return Token(token_location, Keyword(token_location, KeywordEnum(i)))   
+    end
 
     # If we got KeyError, it is not a keyword and thus it must be an identifier
-    occursin(token, KeywordEnum) || return Token(token_location, Identifier(token_location, token))
+    return Token(token_location, Identifier(token_location, token))
     
 end
 
@@ -250,29 +252,3 @@ function read_token(stream::InputStream)
     end
 end
 
-function unread_token(stream::InputStream, token::Token)
-    """Pretend that `token` was never read from `input_file`"""
-    if stream.saved_token == nothing
-        stream.saved_token = token
-    end
-end
-
-function Base.isdigit(str::String)
-    for i in 1:length(str)
-        isdigit(str[i]) || return false
-    end
-    return true
-end
-
-function Base.isletter(str::String)
-    for i in 1:length(str)
-        isletter(str[i]) || return false
-    end
-    return true
-end
-
-function Base.occursin(str::String, key::Type{KeywordEnum})
-    for i in 1:19 #### ATTENZIONE ALLA LUNGHEZZA!!
-        occursin(str, string(key(i))) && return true
-    end
-end

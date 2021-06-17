@@ -51,30 +51,25 @@ end
 
 ######################################################################
 
-function assert_is_keyword(token::Token, keyword::KeywordEnum) 
-        isa(token.value, Keyword) || "Token '$(token.value)' is not a KeywordToken"
-        token.value.keyword == string(keyword)  || "Token '$(token.value)' is not equal to keyword '$(keyword)'"
-   end
+function assert_is_keyword(token::Token, keyword::KeywordEnum)
+          return isa(token.value, Keyword) && token.value.keyword == keyword
+end
    
-   function assert_is_identifier(token::Token, identifier::String) 
-        isa(token.value, Identifier) || "Token '$(token.value)' is not a IdentifierToken"
-        token.value.identifier == identifier || "Expecting identifier '$(identifier)' instead of '$(token.value)'"
-   end
+   function assert_is_identifier(token::Token, identifier::Union{String, Char}) 
+        return isa(token.value, Identifier) && token.value.s == identifier 
+end
    
-   function assert_is_symbol(token::Token, symbol::String) 
-        isa(token.value, Symbol) || "Token '$(token.value)' is not a SymbolToken"
-        token.value.symbol == symbol || "Expecting symbol '$(symbol)' instead of '$(token.value)'"
-   end
+   function assert_is_symbol(token::Token, symbol::Union{String, Char}) 
+        return isa(token.value, Symbol) && token.value.symbol == symbol
+end
    
    function assert_is_number(token::Token, number::Float64) 
-        isa(token.value, LiteralNumber) || "Token '$(token.value)' is not a LiteralNumberToken"
-        token.value.number == number || "Token '$(token.value)' is not equal to number '$(number)'"
-   end
+        return isa(token.value, LiteralNumber) && token.value.number == number 
+end
    
-   function assert_is_string(token::Token, string::String) 
-        isa(token.value, LiteralString) || "Token '$(token.value)' is not a StringToken"
-        token.value.string == string || "Token '$(token.value)' is not equal to string '$(string)'"
-   end
+   function assert_is_string(token::Token, string::Union{String, Char}) 
+        return isa(token.value, LiteralString) && token.value.s == string 
+end
 
 
 
@@ -91,15 +86,15 @@ infile = InputStream(stream2)
 
 @testset "Test SceneFiles: read token" begin
         
-        @test assert_is_keyword(read_token(infile), KeywordEnum(1))
-        # @test assert_is_keyword(read_token(infile), KeywordEnum(2))
-        # @test assert_is_identifier(read_token(infile), "sky_material")
-        # @test assert_is_symbol(read_token(infile), "(")
-        # @test assert_is_keyword(read_token(infile), KeywordEnum.DIFFUSE)
-        # @test assert_is_symbol(read_token(infile), "(")
-        # @test assert_is_keyword(read_token(infile), KeywordEnum.IMAGE)
-        # @test assert_is_symbol(read_token(infile), "(")
-        # @test assert_is_string(read_token(infile), "my file.pfm")
-        # @test assert_is_symbol(read_token(infile), ")")
+        @test assert_is_keyword(read_token(infile), NEW)
+        @test assert_is_keyword(read_token(infile), MATERIAL)
+        @test assert_is_identifier(read_token(infile), "sky_material")
+        #@test assert_is_symbol(read_token(infile), '(')
+        @test assert_is_keyword(read_token(infile), DIFFUSE)
+        #@test assert_is_symbol(read_token(infile), '(')
+        @test assert_is_keyword(read_token(infile), IMAGE)
+        #@test assert_is_symbol(read_token(infile), '(')
+        @test assert_is_string(read_token(infile), "my file.pfm")
+        #@test assert_is_symbol(read_token(infile), ')')
 end
 
