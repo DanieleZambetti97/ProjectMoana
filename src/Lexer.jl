@@ -72,12 +72,12 @@ mutable struct InputStream
     location::SourceLocation
     saved_char::Char
     saved_location::SourceLocation
-    saved_token::Token
+    saved_token::Union{Token, Nothing}
     tabulation::Int
 
     InputStream( stream::IOBuffer,
                  location::SourceLocation = SourceLocation("", Int32(1), Int32(1)),
-                 saved_char = "", 
+                 saved_char = '0', 
                  saved_location = location,
                  saved_token = nothing,
                  tabulation = 8) =
@@ -157,7 +157,7 @@ function _parse_string_token(stream, token_location::SourceLocation)
     token = '0'
     while true
         ch =read_char(stream)
-        if ch == '\"'
+        if ch == '"'
             break
         end
         if ch == '0'
@@ -235,7 +235,7 @@ function read_token(stream::InputStream)
 
     if occursin(ch, SYMBOLS)
         # One-character symbol, like "(" or ","
-        return Symbol(token_location, ch)
+        return Token(token_location, Symbol(token_location, ch))
     elseif ch == '\"' 
         # A literal string (used for file names)
         return _parse_string_token(stream, token_location)
