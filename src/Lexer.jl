@@ -298,3 +298,12 @@ function read_token(stream::InputStream)
     
 end
 
+"""
+    unread(stream::InputStream, token::Token)
+
+Unread the token: *look-ahead* funtion (necessary in LL(1) grammars).
+"""
+function unread_token(stream::InputStream, token::Token)
+    token.saved_token == nothing || token.saved_token = token
+end
+

@@ -9,12 +9,16 @@ import ColorTypes: RGB
 using ArgParse
 
 function parse_commandline()
-    s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
-                               usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
+    s = ArgParseSettings(description = "This program generates an image reading a scene from a input file. Try me!",
+                               usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
                                         [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]" ,
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
+        "--scene"
+            help = "name of the input scene file"
+            required = true
+            arg_type = String
         "--w"
             help = "width of the image"
             required = false
@@ -83,6 +87,7 @@ function main()
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
     seq = convert(UInt64, params["seq"])
+    scene_file = params["scene"]
 
 
 # Creating WORLD with sky, sun, checkered gorud, Mars, Jupiter and mirror
