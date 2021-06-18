@@ -186,7 +186,7 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     inverse_ray= inverse(sphere.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
     a = Float32(squared_norm(inverse_ray.dir))
-    b = FLoat32(2.0 * origin_vec * inverse_ray.dir)
+    b = Float32(2.0 * origin_vec * inverse_ray.dir)
     c = Float32(squared_norm(origin_vec) - 1.f0)
     Δ = Float32(b * b - 4 * a * c)
 

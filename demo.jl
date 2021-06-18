@@ -8,8 +8,6 @@ import ColorTypes: RGB
 
 using ArgParse
 
-using ProfileView
-
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image of 10 spheres. Try me!",
                                usage = "usage: [--help] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
@@ -170,7 +168,7 @@ function main()
 end
 
 
-@profview main()  
+main()  
 
 
 ############

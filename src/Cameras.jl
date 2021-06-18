@@ -48,7 +48,7 @@ If not specified *u_pixel* = *v_pixel* = 0.5.
 """
 function fire_ray( camera::OrthogonalCamera, u, v)
     Ray_StandardFrame = Ray( Point(-1.0f0, (1.0f0-2*u)*camera.aspect_ratio, 2*v-1), Vec(1.0f0, 0.0f0, 0.0f0))
-    return Float32(camera.transformation * Ray_StandardFrame)
+    return (camera.transformation * Ray_StandardFrame)
 end
 
 """

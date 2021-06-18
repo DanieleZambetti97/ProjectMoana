@@ -19,7 +19,7 @@ end
 @testset "Cameras: Camera tests" begin
 
     ray = Ray( Point(1.0, 2.0, 3.0), Vec(6.0, 5.0, 4.0))
-    transformation = translation( Vec(10.0, 11.0, 12.0) ) * rotation_x(pi/2.0)
+    transformation = translation( Vec(10.0, 11.0, 12.0) ) * rotation_x(pi/2.0f0)
     transformed = transformation * ray
     
     @test isapprox( Point(11.0, 8.0, 14.0), transformed.origin)
@@ -40,7 +40,7 @@ end
     @test isapprox( at(ray3,1.0), Point(0.0, 2.0, 1.0) )
     @test isapprox( at(ray4,1.0), Point(0.0, -2.0, 1.0 ))
 
-    cam = OrthogonalCamera(1.0, translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0))
+    cam = OrthogonalCamera(1.0, translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0f0))
     ray = fire_ray(cam, 0.5, 0.5)
 
     @test isapprox( at(ray, 1.0), Point(0.0, -2.0, 0.0))
