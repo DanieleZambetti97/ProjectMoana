@@ -1,6 +1,10 @@
+## Code for the LEXICAL analysis ###################################################################################
+
 WHITESPACE = " \t\n\r"
 SYMBOLS = "()<>[],*"
 
+
+# location of a single Char:
 mutable struct SourceLocation
     file_name::String
     line_num::Int
@@ -11,6 +15,9 @@ mutable struct SourceLocation
                    col_num::Int32 = Int32(0)) =
                    new(file_name, line_num, col_num)
 end
+
+
+# different types of Tokens:
 mutable struct Stop
     loc::SourceLocation
 end
@@ -62,11 +69,29 @@ mutable struct Keyword
     keyword::KeywordEnum
 end
 
+# generic Token:
 mutable struct Token
     loc::SourceLocation
     value::Union{LiteralNumber, LiteralString, Keyword, Identifier, Symbol, Stop}
 end
 
+"""
+    InputStream(stream,
+                location,
+                saved_char,
+                save_location,
+                saved_token,
+                tabulation)
+It creates a Input Stream, that can be passed to the READ FUNCTION.
+
+## Arguments:
+- `stream` is the text read (IOBuffer!);
+- `location` is the SourceLocation;
+- `saved_char` is the currently read **Char** (default = '0');
+- `save_location` is the location of the saved_char;
+- `saved_token` is the Token associated to the saved_char (it can be a **Token** or the default value **Nothing**);
+- `tabulation` is the number of spaces that form a tabulation (default = 8).
+"""
 mutable struct InputStream
     stream::IOBuffer
     location::SourceLocation
@@ -84,6 +109,8 @@ mutable struct InputStream
                  new(stream, location, saved_char, saved_location, saved_token, tabulation)
 end
 
+
+# new error message to dislpay when something went wrong:
 struct GrammarError <: Exception
     msg::String
     
@@ -91,10 +118,13 @@ struct GrammarError <: Exception
 end
 
 
+# function to create a copy of a SourceLocation:
 copy(location::SourceLocation) = SourceLocation(location.file_name, Int32(location.line_num), Int32(location.col_num))
 
 
+## FUNCTIONS ####################################################################################################################
 
+# increment the positional indexes:
 function _update_pos(stream::InputStream, ch::Char)
     if ch == '0'
         return
@@ -108,7 +138,11 @@ function _update_pos(stream::InputStream, ch::Char)
     end
 end
 
+"""
+    read_char(stream::InputStream)
 
+It reads Char one by one, updating the positional indexes.
+"""
 function read_char(stream::InputStream)
     
     if stream.saved_char != '0'
@@ -127,6 +161,11 @@ function read_char(stream::InputStream)
     return ch
 end
 
+"""
+    unread_char(stream::InputStream, ch::Char)
+
+After reading the Char, it has to be unread, saving the location.
+"""
 function unread_char(stream::InputStream, ch)
     while true
         stream.saved_char == '0' && break
@@ -135,6 +174,7 @@ function unread_char(stream::InputStream, ch)
     stream.location = copy(stream.saved_location)
 end
 
+# ignore all the whitespaces and comments:
 function skip_whitespaces_and_comments(stream::InputStream)
     ch = read_char(stream)
     while occursin(ch, WHITESPACE) || ch == '#'
@@ -153,6 +193,7 @@ function skip_whitespaces_and_comments(stream::InputStream)
     unread_char(stream, ch)
 end
 
+# is it a STRING?
 function _parse_string_token(stream, token_location::SourceLocation)
     token = ""
     while true
@@ -165,9 +206,10 @@ function _parse_string_token(stream, token_location::SourceLocation)
         end
         token *= ch
     end
-    return Token(token_location, LiteralString(token_location, token))
+    return Token(token_location, LiteralString(token_location, token)) ## it returns a TOKEN!
 end
 
+# is it a FLOAT?
 function _parse_float_token(stream, first_char::Char, token_location::SourceLocation)
     token = first_char
     while true
@@ -185,9 +227,10 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
         throw(GrammarError(token_location, "$(token) is an invalid floating-point number"))
     end
 
-    return Token(token_location, LiteralNumber(token_location, token))
+    return Token(token_location, LiteralNumber(token_location, token)) ## it returns a TOKEN!
 end
 
+# is it a KEYWORD of a IDENTIFIER?
 function _parse_keyword_or_identifier_token(stream, first_char::Char, token_location::SourceLocation)
     token = first_char
     while true
@@ -200,16 +243,21 @@ function _parse_keyword_or_identifier_token(stream, first_char::Char, token_loca
         token *= ch
     end
     
-    # If it is a keyword, it must be listed in the KEYWORDS dictionary
+    # If it is a keyword, it must be listed in the KEYWORDS enum:
     for i in 1:length(instances(KeywordEnum))
         token == string(KeywordEnum(i)) && return Token(token_location, Keyword(token_location, KeywordEnum(i)))   
     end
 
-    # If we got KeyError, it is not a keyword and thus it must be an identifier
-    return Token(token_location, Identifier(token_location, token))
+    # If not it must be an IDENTIFIER:
+    return Token(token_location, Identifier(token_location, token)) ## it returns a TOKEN!
     
 end
 
+"""
+    read_token(stream::InputStream)
+
+It reads all the stream, searching for the **TOKENS**!
+"""
 function read_token(stream::InputStream)
     if stream.saved_token != nothing
         result = stream.saved_token
@@ -217,36 +265,36 @@ function read_token(stream::InputStream)
         return result
     end
 
-    skip_whitespaces_and_comments(stream)
+    skip_whitespaces_and_comments(stream) # now there aren't spaces or comments!
 
-    # At this point we"re sure that ch does *not* contain a whitespace character
     ch = read_char(stream)
     if ch == '0'
-        # No more characters in the file, so return a StopToken
-        return Stop(stream.location)
+        return Stop(stream.location) # there's nothing in the file => Stop!
     end
 
-    # At this point we must check what kind of token begins with the "ch" character 
-    # (which has been put back in the stream with self.unread_char). First,
-    # we save the position in the stream
+    # Now it searches for any Token that star with the Char ch! (after saving its location)
     token_location = stream.location
 
     if occursin(ch, SYMBOLS)
-        # One-character symbol, like "(" or ","
+        # It's a one-character symbol, like "(" or ","
         return Token(token_location, Symbol(token_location, ch))
+
     elseif ch == '"' 
-        # A literal string (used for file names)
+        # it's a literal string (used for FILE NAMES)
         return _parse_string_token(stream, token_location)
+
     elseif isdigit(ch) || ch in ['+', '-', '.']
-        # A floating-point number
+        # It's a floating-point number
         return _parse_float_token(stream, ch, token_location)
+
     elseif isletter(ch) || ch == '_'
-        # Since it begins with an alphabetic character, it must either be a keyword
-        # or a identifier
+        # It can be both a KEYWORD or a IDENTIFIER, thus:
         return _parse_keyword_or_identifier_token( stream, ch, token_location )
+
     else
-        # We got some weird character, like "@` or `&`
+        # It's some weird character, like "@` or `&`
         throw(GrammarError(stream.location, "Invalid character $ch"))
     end
+    
 end
 
