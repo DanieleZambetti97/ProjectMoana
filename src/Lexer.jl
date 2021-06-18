@@ -154,7 +154,7 @@ function skip_whitespaces_and_comments(stream::InputStream)
 end
 
 function _parse_string_token(stream, token_location::SourceLocation)
-    token = '0'
+    token = ""
     while true
         ch =read_char(stream)
         if ch == '"'
@@ -231,12 +231,10 @@ function read_token(stream::InputStream)
     # we save the position in the stream
     token_location = stream.location
 
-    println(ch)
-
     if occursin(ch, SYMBOLS)
         # One-character symbol, like "(" or ","
         return Token(token_location, Symbol(token_location, ch))
-    elseif ch == '\"' 
+    elseif ch == '"' 
         # A literal string (used for file names)
         return _parse_string_token(stream, token_location)
     elseif isdigit(ch) || ch in ['+', '-', '.']

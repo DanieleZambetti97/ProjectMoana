@@ -17,4 +17,4 @@ include("test_Renderer.jl")
 
 include("test_PCG.jl")
 
-# include("test_Lexer.jl")
+include("test_Lexer.jl")

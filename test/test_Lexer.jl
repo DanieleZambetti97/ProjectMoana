@@ -52,7 +52,7 @@
 ######################################################################
 
 function assert_is_keyword(token::Token, keyword::KeywordEnum)
-          return isa(token.value, Keyword) && token.value.keyword == keyword
+        return isa(token.value, Keyword) && token.value.keyword == keyword
 end
    
 function assert_is_identifier(token::Token, identifier::Union{String, Char}) 
