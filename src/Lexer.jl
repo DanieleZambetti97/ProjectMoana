@@ -1,5 +1,5 @@
 ## Code for the LEXICAL analysis ###################################################################################
-
+import ColorTypes: RGB
 WHITESPACE = " \t\n\r"
 SYMBOLS = "()<>[],*"
 
@@ -114,7 +114,9 @@ end
 struct GrammarError <: Exception
     msg::String
     
-    GrammarError(loc::SourceLocation, msg::String) = new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
+    GrammarError(loc::SourceLocation = SourceLocation(),
+                 msg::String) =
+                 new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
 
 
@@ -398,176 +400,180 @@ end
 #     return token.identifier
 
 
-# function parse_vector(input_file: InputStream, scene: Scene) -> Vec:
-#     expect_symbol(input_file, "[")
-#     x = expect_number(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     y = expect_number(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     z = expect_number(input_file, scene)
-#     expect_symbol(input_file, "]")
+function parse_vector(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, "[")
+    x = expect_number(input_file, scene)
+    expect_symbol(input_file, ",")
+    y = expect_number(input_file, scene)
+    expect_symbol(input_file, ",")
+    z = expect_number(input_file, scene)
+    expect_symbol(input_file, "]")
 
-#     return Vec(x, y, z)
+    return Vec(x, y, z)
+end
 
+function parse_color(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, "<")
+    red = expect_number(input_file, scene)
+    expect_symbol(input_file, ",")
+    green = expect_number(input_file, scene)
+    expect_symbol(input_file, ",")
+    blue = expect_number(input_file, scene)
+    expect_symbol(input_file, ">")
 
-# function parse_color(input_file: InputStream, scene: Scene) -> Color:
-#     expect_symbol(input_file, "<")
-#     red = expect_number(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     green = expect_number(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     blue = expect_number(input_file, scene)
-#     expect_symbol(input_file, ">")
-
-#     return Color(red, green, blue)
-
-
-# function parse_pigment(input_file: InputStream, scene: Scene) -> Pigment:
-#     keyword = expect_keywords(input_file, [KeywordEnum.UNIFORM, KeywordEnum.CHECKERED, KeywordEnum.IMAGE])
-
-#     expect_symbol(input_file, "(")
-#     if keyword == KeywordEnum.UNIFORM:
-#         color = parse_color(input_file, scene)
-#         result = UniformPigment(color=color)
-#     elif keyword == KeywordEnum.CHECKERED:
-#         color1 = parse_color(input_file, scene)
-#         expect_symbol(input_file, ",")
-#         color2 = parse_color(input_file, scene)
-#         expect_symbol(input_file, ",")
-#         num_of_steps = int(expect_number(input_file, scene))
-#         result = CheckeredPigment(color1=color1, color2=color2, num_of_steps=num_of_steps)
-#     elif keyword == KeywordEnum.IMAGE:
-#         file_name = expect_string(input_file)
-#         with open(file_name, "rb") as image_file:
-#             image = read_pfm_image(image_file)
-#         result = ImagePigment(image=image)
-#     else:
-#         assert False, "This line should be unreachable"
-
-#     expect_symbol(input_file, ")")
-#     return result
+    return RGB(red, green, blue)
 
 
-# function parse_brdf(input_file: InputStream, scene: Scene) -> BRDF:
-#     brdf_keyword = expect_keywords(input_file, [KeywordEnum.DIFFUSE, KeywordEnum.SPECULAR])
-#     expect_symbol(input_file, "(")
-#     pigment = parse_pigment(input_file, scene)
-#     expect_symbol(input_file, ")")
+function parse_pigment(input_file::InputStream, scene::Scene)
+    keyword = expect_keywords(input_file, [KeywordEnum.UNIFORM, KeywordEnum.CHECKERED, KeywordEnum.IMAGE])
 
-#     if brdf_keyword == KeywordEnum.DIFFUSE:
-#         return DiffuseBRDF(pigment=pigment)
-#     elif brdf_keyword == KeywordEnum.SPECULAR:
-#         return SpecularBRDF(pigment=pigment)
+    expect_symbol(input_file, "(")
+    if keyword == KeywordEnum.UNIFORM
+        color = parse_color(input_file, scene)
+        result = UniformPigment(color)
+    elseif keyword == KeywordEnum.CHECKERED
+        color1 = parse_color(input_file, scene)
+        expect_symbol(input_file, ",")
+        color2 = parse_color(input_file, scene)
+        expect_symbol(input_file, ",")
+        num_of_steps = int(expect_number(input_file, scene))
+        result = CheckeredPigment(color1, color2, num_of_steps)
+    elseif keyword == KeywordEnum.IMAGE
+        file_name = expect_string(input_file)
+        image_file = open(file_name, "rb")
+        image = read_pfm_image(image_file)
+        result = ImagePigment(image)
+    else
+        throw(GrammarError("This line should be unreachable"))
+    end
+    expect_symbol(input_file, ")")
+    return result
+end
 
-#     assert False, "This line should be unreachable"
+function parse_brdf(input_file::InputStream, scene::Scene)
+    brdf_keyword = expect_keywords(input_file, [KeywordEnum.DIFFUSE, KeywordEnum.SPECULAR])
+    expect_symbol(input_file, "(")
+    pigment = parse_pigment(input_file, scene)
+    expect_symbol(input_file, ")")
 
+    if brdf_keyword == KeywordEnum.DIFFUSE
+        return DiffuseBRDF(pigment)
+    elseif brdf_keyword == KeywordEnum.SPECULAR
+        return SpecularBRDF(pigment)
+    else
+        throw(GrammarError("This line should be unreachable"))
+    end
+end
 
-# function parse_material(input_file: InputStream, scene: Scene) -> Tuple[str, Material]:
-#     name = expect_identifier(input_file)
+function parse_material(input_file::InputStream, scene::Scene)
+    name = expect_identifier(input_file)
+    expect_symbol(input_file, "(")
+    brdf = parse_brdf(input_file, scene)
+    expect_symbol(input_file, ",")
+    emitted_radiance = parse_pigment(input_file, scene)
+    expect_symbol(input_file, ")")
 
-#     expect_symbol(input_file, "(")
-#     brdf = parse_brdf(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     emitted_radiance = parse_pigment(input_file, scene)
-#     expect_symbol(input_file, ")")
-
-#     return name, Material(brdf=brdf, emitted_radiance=emitted_radiance)
-
-
-# function parse_transformation(input_file, scene: Scene):
-#     result = Transformation()
-
-#     while True:
-#         transformation_kw = expect_keywords(input_file, [
-#             KeywordEnum.IDENTITY,
-#             KeywordEnum.TRANSLATION,
-#             KeywordEnum.ROTATION_X,
-#             KeywordEnum.ROTATION_Y,
-#             KeywordEnum.ROTATION_Z,
-#             KeywordEnum.SCALING,
-#         ])
-
-#         if transformation_kw == KeywordEnum.IDENTITY:
-#             pass  # Do nothing (this is a primitive form of optimization!)
-#         elif transformation_kw == KeywordEnum.TRANSLATION:
-#             expect_symbol(input_file, "(")
-#             result *= translation(parse_vector(input_file, scene))
-#             expect_symbol(input_file, ")")
-#         elif transformation_kw == KeywordEnum.ROTATION_X:
-#             expect_symbol(input_file, "(")
-#             result *= rotation_x(expect_number(input_file, scene))
-#             expect_symbol(input_file, ")")
-#         elif transformation_kw == KeywordEnum.ROTATION_Y:
-#             expect_symbol(input_file, "(")
-#             result *= rotation_y(expect_number(input_file, scene))
-#             expect_symbol(input_file, ")")
-#         elif transformation_kw == KeywordEnum.ROTATION_Z:
-#             expect_symbol(input_file, "(")
-#             result *= rotation_z(expect_number(input_file, scene))
-#             expect_symbol(input_file, ")")
-#         elif transformation_kw == KeywordEnum.SCALING:
-#             expect_symbol(input_file, "(")
-#             result *= scaling(parse_vector(input_file, scene))
-#             expect_symbol(input_file, ")")
-
-#         # We must peek the next token to check if there is another transformation that is being
-#         # chained or if the sequence ends. Thus, this is a LL(1) parser.
-#         next_kw = input_file.read_token()
-#         if (not isinstance(next_kw, SymbolToken)) or (next_kw.symbol != "*"):
-#             # Pretend you never read this token and put it back!
-#             input_file.unread_token(next_kw)
-#             break
-
-#     return result
+    return name, Material(brdf, emitted_radiance)
+end
 
 
-# function parse_sphere(input_file: InputStream, scene: Scene) -> Sphere:
-#     expect_symbol(input_file, "(")
+function parse_transformation(input_file::InputStream, scene::Scene)
+    result = Transformation()
 
-#     material_name = expect_identifier(input_file)
-#     if material_name not in scene.materials.keys():
-#         # We raise the exception here because input_file is pointing to the end of the wrong identifier
-#         raise GrammarError(input_file.location, f"unknown material {material_name}")
+    while true
+        transformation_kw = expect_keywords(input_file, [
+            KeywordEnum.IDENTITY,
+            KeywordEnum.TRANSLATION,
+            KeywordEnum.ROTATION_X,
+            KeywordEnum.ROTATION_Y,
+            KeywordEnum.ROTATION_Z,
+            KeywordEnum.SCALING,
+        ])
 
-#     expect_symbol(input_file, ",")
-#     transformation = parse_transformation(input_file, scene)
-#     expect_symbol(input_file, ")")
+        if transformation_kw == KeywordEnum.IDENTITY:
+            pass  # Do nothing (this is a primitive form of optimization!)
+        elseif transformation_kw == KeywordEnum.TRANSLATION
+            expect_symbol(input_file, "(")
+            result *= translation(parse_vector(input_file, scene))
+            expect_symbol(input_file, ")")
+        elseif transformation_kw == KeywordEnum.ROTATION_X
+            expect_symbol(input_file, "(")
+            result *= rotation_x(expect_number(input_file, scene))
+            expect_symbol(input_file, ")")
+        elseif transformation_kw == KeywordEnum.ROTATION_Y
+            expect_symbol(input_file, "(")
+            result *= rotation_y(expect_number(input_file, scene))
+            expect_symbol(input_file, ")")
+        elseif transformation_kw == KeywordEnum.ROTATION_Z
+            expect_symbol(input_file, "(")
+            result *= rotation_z(expect_number(input_file, scene))
+            expect_symbol(input_file, ")")
+        elseif transformation_kw == KeywordEnum.SCALING
+            expect_symbol(input_file, "(")
+            result *= scaling(parse_vector(input_file, scene))
+            expect_symbol(input_file, ")")
+        end
 
-#     return Sphere(transformation=transformation, material=scene.materials[material_name])
+        # We must peek the next token to check if there is another transformation that is being
+        # chained or if the sequence ends. Thus, this is a LL(1) parser.
+        next_kw = read_token(input_file)
+        if (isa(next_kw, SymbolToken) && (next_kw.symbol == "*")) == false
+            # Pretend you never read this token and put it back!
+            input_file.unread_token(next_kw)
+            break
+        end
+    end
+    return result
+end
 
 
-# function parse_plane(input_file: InputStream, scene: Scene) -> Plane:
-#     expect_symbol(input_file, "(")
+function parse_sphere(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, "(")
 
-#     material_name = expect_identifier(input_file)
-#     if material_name not in scene.materials.keys():
-#         # We raise the exception here because input_file is pointing to the end of the wrong identifier
-#         raise GrammarError(input_file.location, f"unknown material {material_name}")
+    material_name = expect_identifier(input_file)
+    if haskey(scene.materials, material_name) == false
+        # We raise the exception here because input_file is pointing to the end of the wrong identifier
+        throw(GrammarError(input_file.location, "unknown material $material_name"))
+    end
+    expect_symbol(input_file, ",")
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ")")
 
-#     expect_symbol(input_file, ",")
-#     transformation = parse_transformation(input_file, scene)
-#     expect_symbol(input_file, ")")
+    return Sphere(transformation, scene.materials[material_name])
+end
 
-#     return Plane(transformation=transformation, material=scene.materials[material_name])
+function parse_plane(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, "(")
+
+    material_name = expect_identifier(input_file)
+    if haskey(scene.materials, material_name) == false
+        # We raise the exception here because input_file is pointing to the end of the wrong identifier
+        throw(GrammarError(input_file.location, "unknown material $material_name"))
+    end
+    expect_symbol(input_file, ",")
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ")")
+
+    return Plane(transformation, scene.materials[material_name])
 
 
-# function parse_camera(input_file: InputStream, scene) -> Camera:
-#     expect_symbol(input_file, "(")
-#     type_kw = expect_keywords(input_file, [KeywordEnum.PERSPECTIVE, KeywordEnum.ORTHOGONAL])
-#     expect_symbol(input_file, ",")
-#     transformation = parse_transformation(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     aspect_ratio = expect_number(input_file, scene)
-#     expect_symbol(input_file, ",")
-#     distance = expect_number(input_file, scene)
-#     expect_symbol(input_file, ")")
+function parse_camera(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, "(")
+    type_kw = expect_keywords(input_file, [KeywordEnum.PERSPECTIVE, KeywordEnum.ORTHOGONAL])
+    expect_symbol(input_file, ",")
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ",")
+    aspect_ratio = expect_number(input_file, scene)
+    expect_symbol(input_file, ",")
+    distance = expect_number(input_file, scene)
+    expect_symbol(input_file, ")")
 
-#     if type_kw == KeywordEnum.PERSPECTIVE:
-#         result = PerspectiveCamera(screen_distance=distance, aspect_ratio=aspect_ratio, transformation=transformation)
-#     elif type_kw == KeywordEnum.ORTHOGONAL:
-#         result = OrthogonalCamera(aspect_ratio=aspect_ratio, transformation=transformation)
+    if type_kw == KeywordEnum.PERSPECTIVE
+        result = PerspectiveCamera(distance, aspect_ratio, transformation)
+    elseif type_kw == KeywordEnum.ORTHOGONAL
+        result = OrthogonalCamera(aspect_ratio, transformation)
 
-#     return result
+    return result
 
 
 # function parse_scene(input_file: InputStream, variables: Dict[str, float] = {}) -> Scene:
