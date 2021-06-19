@@ -311,6 +311,7 @@ function unread_token(stream::InputStream, token::Token)
 end
 
 ## PARSER #########################################################################################
+
 # auxiliary functions
 assert_is_keyword(token::Token, keyword::KeywordEnum)= isa(token.value, Keyword) && token.value.keyword == keyword
 
@@ -323,7 +324,7 @@ assert_is_number(token::Token, number::Float64) = isa(token.value, LiteralNumber
 assert_is_string(token::Token, string::Union{String, Char}) = isa(token.value, LiteralString) && token.value.s == string 
 
 mutable struct Scene
-    """A scene read from a scene file"""
+
     materials::Dict
     world::World
     camera::Union
@@ -350,7 +351,7 @@ end
 function expect_keywords(input_file::InputStream, keywords::Array{KeywordEnum})
     token = read_token(input_file)
     try
-        assert_is_keyword(token.value, keywords)
+        isa(token.value, Keyword)
     catch e
         throw(GrammarError(token.location, "expected a keyword instead of $token"))
     end 
@@ -363,41 +364,52 @@ function expect_keywords(input_file::InputStream, keywords::Array{KeywordEnum})
 end
 
 function expect_number(input_file::InputStream, scene::Scene)
-    """Read a token from `input_file` and check that it is either a literal number or a variable in `scene`.
-    Return the number as a ``float``."""
+    
     token = read_token(input_file)
-    if assert_is_number(token, token.value.number)
-        return token.value
-    elseif assert_is_identifier(token, IdentifierToken)
-        variable_name = token.identifier
-        if variable_name not in scene.float_variables
+
+    try 
+        assert_is_number(token, token.value.number) && return token.value
+
+        assert_is_identifier(token, IdentifierToken) && variable_name = token.identifier
+
+        try
+            scene.float_variables[variable_name]
+        catch e
             throw(GrammarError(token.location, "unknown variable $token"))
         end
-        return scene.float_variables[variable_name]
-    else
+
+        return token.identifier
+    catch e
         throw(GrammarError(token.location, "got $token instead of a number"))
     end
 end
 
 
-# function expect_string(input_file: InputStream) -> str:
-#     """Read a token from `input_file` and check that it is a literal string.
-#     Return the value of the string (a ``str``)."""
-#     token = input_file.read_token()
-#     if not isinstance(token, StringToken):
-#         raise GrammarError(token.location, f"got $token instead of a string")
+function expect_string(input_file: InputStream)
 
-#     return token.string
+    token = input_file.read_token()
+
+    try 
+        isa(token, LiteralString) == false  
+    catch e
+        throw(GrammarError(token.location, "got $token instead of a string"))
+
+    return token.string
+    end
+end
 
 
-# function expect_identifier(input_file: InputStream) -> str:
-#     """Read a token from `input_file` and check that it is an identifier.
-#     Return the name of the identifier."""
-#     token = input_file.read_token()
-#     if not isinstance(token, IdentifierToken):
-#         raise GrammarError(token.location, f"got $token instead of an identifier")
+function expect_identifier(input_file: InputStream)
 
-#     return token.identifier
+    token = input_file.read_token()
+
+    try
+        isa(token, Identifier)
+    catch e
+        throw(GrammarError(token.location, f"got $token instead of an identifier"))
+    end
+    
+end
 
 
 function parse_vector(input_file::InputStream, scene::Scene)
