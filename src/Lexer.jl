@@ -29,7 +29,7 @@ end
 
 mutable struct LiteralString
     loc::SourceLocation
-    s::Union{String, Char}
+    s::String
 end
 
 mutable struct LiteralNumber
@@ -39,7 +39,7 @@ end
 
 mutable struct Symbol
     loc::SourceLocation
-    symbol::Union{String, Char}
+    symbol::Char
 end
                    
 @enum KeywordEnum begin
@@ -87,10 +87,10 @@ It creates a Input Stream, that can be passed to the READ FUNCTION.
 ## Arguments:
 - `stream` is the text read (IOBuffer!);
 - `location` is the SourceLocation;
-- `saved_char` is the currently read **Char** (default = '0');
+- `saved_char` is the currently read **Char** (functionault = '0');
 - `save_location` is the location of the saved_char;
-- `saved_token` is the Token associated to the saved_char (it can be a **Token** or the default value **Nothing**);
-- `tabulation` is the number of spaces that form a tabulation (default = 8).
+- `saved_token` is the Token associated to the saved_char (it can be a **Token** or the functionault value **Nothing**);
+- `tabulation` is the number of spaces that form a tabulation (functionault = 8).
 """
 mutable struct InputStream
     stream::IOBuffer
@@ -114,7 +114,7 @@ end
 struct GrammarError <: Exception
     msg::String
     
-    GrammarError(loc::SourceLocation, msg::String) = new("$msg\n Stacktrace:\n in $(loca.file_name) at line $(loc.line_num) : $(loc.col_num)")
+    GrammarError(loc::SourceLocation, msg::String) = new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
 
 
@@ -222,11 +222,10 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
     end
 
     try
-        value = Float32(token)
+        token = parse(Float32, token)
     catch e
         throw(GrammarError(token_location, "$(token) is an invalid floating-point number"))
     end
-
     return Token(token_location, LiteralNumber(token_location, token)) ## it returns a TOKEN!
 end
 
@@ -304,6 +303,316 @@ end
 Unread the token: *look-ahead* funtion (necessary in LL(1) grammars).
 """
 function unread_token(stream::InputStream, token::Token)
-    token.saved_token == nothing || token.saved_token = token
+    if stream.saved_token == nothing 
+        stream.saved_token = token
+    end
 end
 
+## PARSER #########################################################################################
+# auxiliary functions
+assert_is_keyword(token::Token, keyword::KeywordEnum)= isa(token.value, Keyword) && token.value.keyword == keyword
+
+assert_is_identifier(token::Token, identifier::Union{String, Char}) = isa(token.value, Identifier) && token.value.s == identifier 
+
+assert_is_symbol(token::Token, symbol::Union{String, Char}) = occursin(symbol, SYMBOLS) && isa(token.value, ProjectMoana.Symbol) && token.value.symbol == symbol
+
+assert_is_number(token::Token, number::Float64) = isa(token.value, LiteralNumber) && token.value.number == number 
+
+assert_is_string(token::Token, string::Union{String, Char}) = isa(token.value, LiteralString) && token.value.s == string 
+
+mutable struct Scene
+    """A scene read from a scene file"""
+    materials::Dict
+    world::World
+    camera::Union
+    float_variables::Dict
+    overridden_variables::Set
+
+    Scene(materials::Dict{String, Material} = Dict{String, Material}(),
+          world::World = World(),
+          camera::Union{Camera, Nothing} = nothing,
+          float_variables::Dict{String, Float32} = Dict{String, Float}(),
+          overridden_variables::Set{String} = Set{String}() ) =
+          new(materials, world, camera,float_variables, overridden_variables)
+end
+
+function expect_symbol(input_file::InputStream, symbol::Char)
+    token = read_token(input_file)
+    try
+        assert_is_symbol(token, symbol)
+    catch e
+        throw(GrammarError(token.location, "got $token instead of $symbol"))
+    end
+end
+
+function expect_keywords(input_file::InputStream, keywords::Array{KeywordEnum})
+    token = read_token(input_file)
+    try
+        assert_is_keyword(token.value, keywords)
+    catch e
+        throw(GrammarError(token.location, "expected a keyword instead of $token"))
+    end 
+    try
+        token.keyword in keywords
+    catch
+        throw(GrammarError(token.location, "expected one of the keywords $keywords instead of $token"))
+    end
+    return token.keyword
+end
+
+function expect_number(input_file::InputStream, scene::Scene)
+    """Read a token from `input_file` and check that it is either a literal number or a variable in `scene`.
+    Return the number as a ``float``."""
+    token = read_token(input_file)
+    if assert_is_number(token, token.value.number)
+        return token.value
+    elseif assert_is_identifier(token, IdentifierToken)
+        variable_name = token.identifier
+        if variable_name not in scene.float_variables
+            throw(GrammarError(token.location, "unknown variable $token"))
+        end
+        return scene.float_variables[variable_name]
+    else
+        throw(GrammarError(token.location, "got $token instead of a number"))
+    end
+end
+
+
+# function expect_string(input_file: InputStream) -> str:
+#     """Read a token from `input_file` and check that it is a literal string.
+#     Return the value of the string (a ``str``)."""
+#     token = input_file.read_token()
+#     if not isinstance(token, StringToken):
+#         raise GrammarError(token.location, f"got $token instead of a string")
+
+#     return token.string
+
+
+# function expect_identifier(input_file: InputStream) -> str:
+#     """Read a token from `input_file` and check that it is an identifier.
+#     Return the name of the identifier."""
+#     token = input_file.read_token()
+#     if not isinstance(token, IdentifierToken):
+#         raise GrammarError(token.location, f"got $token instead of an identifier")
+
+#     return token.identifier
+
+
+# function parse_vector(input_file: InputStream, scene: Scene) -> Vec:
+#     expect_symbol(input_file, "[")
+#     x = expect_number(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     y = expect_number(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     z = expect_number(input_file, scene)
+#     expect_symbol(input_file, "]")
+
+#     return Vec(x, y, z)
+
+
+# function parse_color(input_file: InputStream, scene: Scene) -> Color:
+#     expect_symbol(input_file, "<")
+#     red = expect_number(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     green = expect_number(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     blue = expect_number(input_file, scene)
+#     expect_symbol(input_file, ">")
+
+#     return Color(red, green, blue)
+
+
+# function parse_pigment(input_file: InputStream, scene: Scene) -> Pigment:
+#     keyword = expect_keywords(input_file, [KeywordEnum.UNIFORM, KeywordEnum.CHECKERED, KeywordEnum.IMAGE])
+
+#     expect_symbol(input_file, "(")
+#     if keyword == KeywordEnum.UNIFORM:
+#         color = parse_color(input_file, scene)
+#         result = UniformPigment(color=color)
+#     elif keyword == KeywordEnum.CHECKERED:
+#         color1 = parse_color(input_file, scene)
+#         expect_symbol(input_file, ",")
+#         color2 = parse_color(input_file, scene)
+#         expect_symbol(input_file, ",")
+#         num_of_steps = int(expect_number(input_file, scene))
+#         result = CheckeredPigment(color1=color1, color2=color2, num_of_steps=num_of_steps)
+#     elif keyword == KeywordEnum.IMAGE:
+#         file_name = expect_string(input_file)
+#         with open(file_name, "rb") as image_file:
+#             image = read_pfm_image(image_file)
+#         result = ImagePigment(image=image)
+#     else:
+#         assert False, "This line should be unreachable"
+
+#     expect_symbol(input_file, ")")
+#     return result
+
+
+# function parse_brdf(input_file: InputStream, scene: Scene) -> BRDF:
+#     brdf_keyword = expect_keywords(input_file, [KeywordEnum.DIFFUSE, KeywordEnum.SPECULAR])
+#     expect_symbol(input_file, "(")
+#     pigment = parse_pigment(input_file, scene)
+#     expect_symbol(input_file, ")")
+
+#     if brdf_keyword == KeywordEnum.DIFFUSE:
+#         return DiffuseBRDF(pigment=pigment)
+#     elif brdf_keyword == KeywordEnum.SPECULAR:
+#         return SpecularBRDF(pigment=pigment)
+
+#     assert False, "This line should be unreachable"
+
+
+# function parse_material(input_file: InputStream, scene: Scene) -> Tuple[str, Material]:
+#     name = expect_identifier(input_file)
+
+#     expect_symbol(input_file, "(")
+#     brdf = parse_brdf(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     emitted_radiance = parse_pigment(input_file, scene)
+#     expect_symbol(input_file, ")")
+
+#     return name, Material(brdf=brdf, emitted_radiance=emitted_radiance)
+
+
+# function parse_transformation(input_file, scene: Scene):
+#     result = Transformation()
+
+#     while True:
+#         transformation_kw = expect_keywords(input_file, [
+#             KeywordEnum.IDENTITY,
+#             KeywordEnum.TRANSLATION,
+#             KeywordEnum.ROTATION_X,
+#             KeywordEnum.ROTATION_Y,
+#             KeywordEnum.ROTATION_Z,
+#             KeywordEnum.SCALING,
+#         ])
+
+#         if transformation_kw == KeywordEnum.IDENTITY:
+#             pass  # Do nothing (this is a primitive form of optimization!)
+#         elif transformation_kw == KeywordEnum.TRANSLATION:
+#             expect_symbol(input_file, "(")
+#             result *= translation(parse_vector(input_file, scene))
+#             expect_symbol(input_file, ")")
+#         elif transformation_kw == KeywordEnum.ROTATION_X:
+#             expect_symbol(input_file, "(")
+#             result *= rotation_x(expect_number(input_file, scene))
+#             expect_symbol(input_file, ")")
+#         elif transformation_kw == KeywordEnum.ROTATION_Y:
+#             expect_symbol(input_file, "(")
+#             result *= rotation_y(expect_number(input_file, scene))
+#             expect_symbol(input_file, ")")
+#         elif transformation_kw == KeywordEnum.ROTATION_Z:
+#             expect_symbol(input_file, "(")
+#             result *= rotation_z(expect_number(input_file, scene))
+#             expect_symbol(input_file, ")")
+#         elif transformation_kw == KeywordEnum.SCALING:
+#             expect_symbol(input_file, "(")
+#             result *= scaling(parse_vector(input_file, scene))
+#             expect_symbol(input_file, ")")
+
+#         # We must peek the next token to check if there is another transformation that is being
+#         # chained or if the sequence ends. Thus, this is a LL(1) parser.
+#         next_kw = input_file.read_token()
+#         if (not isinstance(next_kw, SymbolToken)) or (next_kw.symbol != "*"):
+#             # Pretend you never read this token and put it back!
+#             input_file.unread_token(next_kw)
+#             break
+
+#     return result
+
+
+# function parse_sphere(input_file: InputStream, scene: Scene) -> Sphere:
+#     expect_symbol(input_file, "(")
+
+#     material_name = expect_identifier(input_file)
+#     if material_name not in scene.materials.keys():
+#         # We raise the exception here because input_file is pointing to the end of the wrong identifier
+#         raise GrammarError(input_file.location, f"unknown material {material_name}")
+
+#     expect_symbol(input_file, ",")
+#     transformation = parse_transformation(input_file, scene)
+#     expect_symbol(input_file, ")")
+
+#     return Sphere(transformation=transformation, material=scene.materials[material_name])
+
+
+# function parse_plane(input_file: InputStream, scene: Scene) -> Plane:
+#     expect_symbol(input_file, "(")
+
+#     material_name = expect_identifier(input_file)
+#     if material_name not in scene.materials.keys():
+#         # We raise the exception here because input_file is pointing to the end of the wrong identifier
+#         raise GrammarError(input_file.location, f"unknown material {material_name}")
+
+#     expect_symbol(input_file, ",")
+#     transformation = parse_transformation(input_file, scene)
+#     expect_symbol(input_file, ")")
+
+#     return Plane(transformation=transformation, material=scene.materials[material_name])
+
+
+# function parse_camera(input_file: InputStream, scene) -> Camera:
+#     expect_symbol(input_file, "(")
+#     type_kw = expect_keywords(input_file, [KeywordEnum.PERSPECTIVE, KeywordEnum.ORTHOGONAL])
+#     expect_symbol(input_file, ",")
+#     transformation = parse_transformation(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     aspect_ratio = expect_number(input_file, scene)
+#     expect_symbol(input_file, ",")
+#     distance = expect_number(input_file, scene)
+#     expect_symbol(input_file, ")")
+
+#     if type_kw == KeywordEnum.PERSPECTIVE:
+#         result = PerspectiveCamera(screen_distance=distance, aspect_ratio=aspect_ratio, transformation=transformation)
+#     elif type_kw == KeywordEnum.ORTHOGONAL:
+#         result = OrthogonalCamera(aspect_ratio=aspect_ratio, transformation=transformation)
+
+#     return result
+
+
+# function parse_scene(input_file: InputStream, variables: Dict[str, float] = {}) -> Scene:
+#     """Read a scene description from a stream and return a :class:`.Scene` object"""
+#     scene = Scene()
+#     scene.float_variables = copy(variables)
+#     scene.overridden_variables = set(variables.keys())
+
+#     while True:
+#         what = input_file.read_token()
+#         if isinstance(what, StopToken):
+#             break
+
+#         if not isinstance(what, KeywordToken):
+#             raise GrammarError(what.location, f"expected a keyword instead of $what")
+
+#         if what.keyword == KeywordEnum.FLOAT:
+#             variable_name = expect_identifier(input_file)
+
+#             # Save this for the error message
+#             variable_loc = input_file.location
+
+#             expect_symbol(input_file, "(")
+#             variable_value = expect_number(input_file, scene)
+#             expect_symbol(input_file, ")")
+
+#             if (variable_name in scene.float_variables) and not (variable_name in scene.overridden_variables):
+#                 raise GrammarError(location=variable_loc, message=f"variable «{variable_name}» cannot be refunctionined")
+
+#             if variable_name not in scene.overridden_variables:
+#                 # Only functionine the variable if it was not functionined by the user *outside* the scene file
+#                 # (e.g., from the command line)
+#                 scene.float_variables[variable_name] = variable_value
+
+#         elif what.keyword == KeywordEnum.SPHERE:
+#             scene.world.add_shape(parse_sphere(input_file, scene))
+#         elif what.keyword == KeywordEnum.PLANE:
+#             scene.world.add_shape(parse_plane(input_file, scene))
+#         elif what.keyword == KeywordEnum.CAMERA:
+#             if scene.camera:
+#                 raise GrammarError(what.location, "You cannot functionine more than one camera")
+
+#             scene.camera = parse_camera(input_file, scene)
+#         elif what.keyword == KeywordEnum.MATERIAL:
+#             name, material = parse_material(input_file, scene)
+#             scene.materials[name] = material
+
+#     return scene

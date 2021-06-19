@@ -51,41 +51,24 @@ end
 
 ##############################################################################################
 
-# auxiliary functions: only used for testing:
-function assert_is_keyword(token::Token, keyword::KeywordEnum)
-        return isa(token.value, Keyword) && token.value.keyword == keyword
-end
-   
-function assert_is_identifier(token::Token, identifier::Union{String, Char}) 
-        return isa(token.value, Identifier) && token.value.s == identifier 
-end
-   
-function assert_is_symbol(token::Token, symbol::Union{String, Char}) 
-        return isa(token.value, ProjectMoana.Symbol) && token.value.symbol == symbol
-end
-   
-function assert_is_number(token::Token, number::Float64) 
-        return isa(token.value, LiteralNumber) && token.value.number == number 
-end
-   
-function assert_is_string(token::Token, string::Union{String, Char}) 
-        return isa(token.value, LiteralString) && token.value.s == string 
-end
-
-
 stream2 = IOBuffer("""
    # This is a comment
    # This is another comment
+   FLOAT a (13.0) 
    NEW MATERIAL sky_material(
        DIFFUSE(IMAGE("my file.pfm")),
        <5.0, 500.0, 300.0>
-   ) # Comment at the end of the line
+   )# Comment at the end of the line
 """)
 
 infile = InputStream(stream2)
 
 @testset "Test SceneFiles: read token" begin
-        
+        @test assert_is_keyword(read_token(infile), FLOAT)
+        @test assert_is_identifier(read_token(infile), 'a')
+        @test assert_is_symbol(read_token(infile), '(')
+        @test assert_is_number(read_token(infile), 13.)
+        @test assert_is_symbol(read_token(infile), ')')
         @test assert_is_keyword(read_token(infile), NEW)
         @test assert_is_keyword(read_token(infile), MATERIAL)
         @test assert_is_identifier(read_token(infile), "sky_material")
@@ -94,8 +77,7 @@ infile = InputStream(stream2)
         @test assert_is_symbol(read_token(infile), '(')
         @test assert_is_keyword(read_token(infile), IMAGE)
         @test assert_is_symbol(read_token(infile), '(')
-        @test assert_is_string(read_token(infile), "my file.pfm") ## il problema è che nel Buffer originale "my file.pfm" è dentro le "" due volte!
-                                                                  ## quindi il programma legge solo le sue " e si ferma.
+        @test assert_is_string(read_token(infile), "my file.pfm") 
         @test assert_is_symbol(read_token(infile), ')')
 end
 
