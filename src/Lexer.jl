@@ -365,15 +365,19 @@ function expect_number(input_file::InputStream, scene::Scene)
     
     token = read_token(input_file)
 
-    if assert_is_number(token, token.value.number)
-        return token.value
-    elseif assert_is_identifier(token, IdentifierToken)
-        variable_name = token.identifier
-        if variable_name in scene.float_variables == false
+    try 
+        assert_is_number(token, token.value.number) && return token.value
+
+        assert_is_identifier(token, IdentifierToken) && variable_name = token.identifier
+
+        try
+            scene.float_variables[variable_name]
+        catch e
             throw(GrammarError(token.location, "unknown variable $token"))
         end
-        return scene.float_variables[variable_name]
-    else
+
+        return token.identifier
+    catch e
         throw(GrammarError(token.location, "got $token instead of a number"))
     end
 end
