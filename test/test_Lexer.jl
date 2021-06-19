@@ -83,7 +83,7 @@ end
 
 ## Testing PARSER ##############################################################################################################à
 
-stream = IOBuffer("""
+stream3 = IOBuffer("""
         float clock(150)
 
         material sky_material(
@@ -112,7 +112,7 @@ stream = IOBuffer("""
         camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
         """)
 
-scene = parse_scene(input_file=InputStream(stream))
+scene = parse_scene(input_file=InputStream(stream3))
 
 # Check that the float variables are ok
 
@@ -132,7 +132,7 @@ sky_material = scene.materials["sky_material"]
 ground_material = scene.materials["ground_material"]
 
 
-@testset "Test SceneFiles: Parser" begin
+@testset "Test SceneFiles: Parser -> materials" begin
         @test occursin(sky_material.brdf, DiffuseBRDF)
         @test occursin(sky_material.brdf.pigment, UniformPigment)
         @test sky_material.brdf.pigment.color ≈ RGB(Float32(0), Float32(0), Float32(0))
@@ -143,69 +143,66 @@ ground_material = scene.materials["ground_material"]
         @test ground_material.brdf.pigment.color2 ≈ (RGB(0.1f0, 0.2f0, 0.5f0))
         @test ground_material.brdf.pigment.num_of_steps == 4
 
-        
+        @test occursin(sphere_material.brdf, SpecularBRDF)
+        @test occursin(sphere_material.brdf.pigment, UniformPigment)
+        @test sphere_material.brdf.pigment.color ≈ (RGB(0.5f0, 0.5f0, 0.5f0))
+
+        @test occursin(sky_material.emitted_radiance, UniformPigment)
+        @test sky_material.emitted_radiance.color ≈ (RGB(0.7f0, 0.5f0, 1.0f0))
+        @test occursin(ground_material.emitted_radiance, UniformPigment)
+        @test ground_material.emitted_radiance.color ≈ (RGB(0.f0, 0.f0, 0.f0))
+        @test occursin(sphere_material.emitted_radiance, UniformPigment)
+        @test sphere_material.emitted_radiance.color ≈ (RGB(0.f0, 0.f0, 0.f0))
+
 end
 
 
+@testset "Test SceneFiles: Parser -> shapes" begin
+        @test length(scene.world.shapes) == 3
+        @test occursin(scene.world.shapes[0], Plane)
+        @test scene.world.shapes[0].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0))
+        @test occursin(scene.world.shapes[1], Plane)
+        @test scene.world.shapes[1].transformation ≈ (Transformation())
+        @test occursin(scene.world.shapes[2], Sphere)
+        @test scene.world.shapes[2].transformation ≈ (translation(Vec(0, 0, 1)))
+        
+end
+
+@testset "Test SceneFiles: Parser -> camera: " begin
+        @test occursin(scene.camera, PerspectiveCamera)
+        @test scene.camera.transformation ≈ (rotation_z(30.f0) * translation(Vec(-4, 0, 1)))
+        @test scene.camera.aspect_ratio ≈ 1.f0
+        @test scene.camera.screen_distance ≈ 2.f0
+
+end
 
 
+# stream = StringIO("""
+# plane(this_material_does_not_exist, identity)
+# """)
 
+# @testset "Test SceneFiles: Parser -> unkown material: " begin
+        
+# end
 
+# def test_parser_undefined_material(self):
+# # Check that unknown materials raises a GrammarError
 
+# try:
+#         _ = parse_scene(input_file=InputStream(stream))
+#         @test False, "the code did not throw an exception"
+# except GrammarError:
+#         pass
 
+# def test_parser_double_camera(self):
+# # Check that defining two cameras in the same file raises a GrammarError
+# stream = StringIO("""
+# camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 1.0)
+# camera(orthogonal, identity, 1.0, 1.0)
+# """)
 
-
-
-
-@test isinstance(sphere_material.brdf, SpecularBRDF)
-@test isinstance(sphere_material.brdf.pigment, UniformPigment)
-@test sphere_material.brdf.pigment.color \approx (Color(0.5, 0.5, 0.5))
-
-@test isinstance(sky_material.emitted_radiance, UniformPigment)
-@test sky_material.emitted_radiance.color \approx (Color(0.7, 0.5, 1.0))
-@test isinstance(ground_material.emitted_radiance, UniformPigment)
-@test ground_material.emitted_radiance.color \approx (Color(0, 0, 0))
-@test isinstance(sphere_material.emitted_radiance, UniformPigment)
-@test sphere_material.emitted_radiance.color \approx (Color(0, 0, 0))
-
-# Check that the shapes are ok
-
-@test len(scene.world.shapes) == 3
-@test isinstance(scene.world.shapes[0], Plane)
-@test scene.world.shapes[0].transformation \approx (translation(Vec(0, 0, 100)) * rotation_y(150.0))
-@test isinstance(scene.world.shapes[1], Plane)
-@test scene.world.shapes[1].transformation \approx (Transformation())
-@test isinstance(scene.world.shapes[2], Sphere)
-@test scene.world.shapes[2].transformation \approx (translation(Vec(0, 0, 1)))
-
-# Check that the camera is ok
-
-@test isinstance(scene.camera, PerspectiveCamera)
-@test scene.camera.transformation \approx (rotation_z(30) * translation(Vec(-4, 0, 1)))
-@test pytest.approx(1.0) == scene.camera.aspect_ratio
-@test pytest.approx(2.0) == scene.camera.screen_distance
-
-def test_parser_undefined_material(self):
-# Check that unknown materials raises a GrammarError
-stream = StringIO("""
-plane(this_material_does_not_exist, identity)
-""")
-
-try:
-        _ = parse_scene(input_file=InputStream(stream))
-        @test False, "the code did not throw an exception"
-except GrammarError:
-        pass
-
-def test_parser_double_camera(self):
-# Check that defining two cameras in the same file raises a GrammarError
-stream = StringIO("""
-camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 1.0)
-camera(orthogonal, identity, 1.0, 1.0)
-""")
-
-try:
-        _ = parse_scene(input_file=InputStream(stream))
-        @test False, "the code did not throw an exception"
-except GrammarError:
-        pass
+# try:
+#         _ = parse_scene(input_file=InputStream(stream))
+#         @test False, "the code did not throw an exception"
+# except GrammarError:
+#         pass

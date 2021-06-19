@@ -23,7 +23,8 @@ export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTra
 
 export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, Keyword, Token, InputStream, GrammarError, read_char, 
        unread_char, skip_whitespaces_and_comments, read_token, KeywordEnum, isdigit, NEW, MATERIAL, PLANE, SPHERE, DIFFUSE, SPECULAR, 
-       UNIFORM, CHECKERED, IMAGE, IDENTITY, TRANSLATION, ROTATION_X, ROTATION_Y, ROTATION_Z, SCALING, CAMERA, ORTHOGONAL, PERSPECTIVE, FLOAT
+       UNIFORM, CHECKERED, IMAGE, IDENTITY, TRANSLATION, ROTATION_X, ROTATION_Y, ROTATION_Z, SCALING, CAMERA, ORTHOGONAL, PERSPECTIVE, 
+       FLOAT, assert_is_identifier, assert_is_keyword, assert_is_number, assert_is_string, assert_is_symbol
       
        
 
