@@ -74,6 +74,28 @@ function parse_commandline()
     return parse_args(s)
 end
 
+function build_variable_table(definitions::String)
+
+    variables = Dict()
+    for declaration in definitions
+        parts = split(declaration, ":")
+        if length(parts) != 2
+            println("error, the definition «$declaration» does not follow the pattern NAME:VALUE")
+            exit(1)
+
+        name, value = parts
+        try
+            value = Float32(value)
+        catch e
+            println("invalid floating-point value «$value» in definition «$declaration»")
+
+        variables[name] = value
+        end
+    end
+
+    return variables
+end
+
 function main()
     params = parse_commandline()
 
