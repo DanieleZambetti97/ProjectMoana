@@ -10,14 +10,18 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image reading a scene from a input file. Try me!",
-                               usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
-                                        [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]" ,
+                               usage = "usage: [--help] [--scene SCENE_FILE] [--declare_float ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
+                                        [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
         "--scene"
             help = "name of the input scene file"
             required = true
+            arg_type = String
+        "--declare_float"
+            help = ="Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
+            required = false
             arg_type = String
         "--w"
             help = "width of the image"
@@ -82,45 +86,32 @@ function main()
     a = w/h
     d = params["dist"]
     camera_tr = rotation_z(params["angle"]*π/180.0f0) * translation(Vec(-1.0f0,0.f0,0.f0))
-    image = HdrImage(w, h)
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
+    sample_per_pixel = params["nrays"]
+    animation_var = params["animation_var"]
 
+    semples_per_side = sqrt(sample_per_pixel)
+    if samples_per_side ** 2 != samples_per_pixel:
+        print("Error, the number of rays per pixel ($samples_per_pixel) must be a perfect square")
+        return
+    end
 
-# Creating WORLD with sky, sun, checkered gorud, Mars, Jupiter and mirror
-    world = World()
-    WHITE = RGB(1.f0,1.f0,1.f0)
-    BLACK = RGB(0.f0,0.f0,0.f0)
-    
-    sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1f0,.5f0,.99f0))), UniformPigment(BLACK))
-    sky = Plane(translation(Vec(0.f0,0.f0,100.f0)) * rotation_y( pi/6.f0), sky_color)
-    add_shape(world, sky)
+    variables = build_variable_table(animation_var)
 
-    sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6f0,0.8f0,1.f0))), UniformPigment(WHITE))
-    sun = Plane(translation(Vec(-100.f0,0.f0,0.f0)) * rotation_y(pi/2.f0), sun_color )
-    add_shape(world, sun)
-
-    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7f0,0.3f0,0.1f0), RGB(0.1f0,0.7f0,0.1f0), 10.f0)))
-    ground = Plane(translation(Vec(0.f0,0.f0,-2.f0)) * rotation_y(pi/12.f0) * rotation_x(pi/24.f0) * scaling(Vec(10.f0,10.f0,10.f0)), ground_color )
-    add_shape(world, ground)
-
-    # mirror_color = Material(SpecularBRDF())
-    # mirror = Sphere(translation(Vec(3.f0,2.f0,-1.5f0))*scaling(Vec(1.f0,1.f0,1.f0)), mirror_color)
-    # add_shape(world, mirror)
-
-    # planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
-    # planet2 = Sphere(translation(Vec(6.f0,-2.f0,4.f0)) * scaling(Vec(3.f0,3.f0,3.f0)), planet2_color)
-    # add_shape(world, planet2)
-
-    # planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
-    # planet = Sphere(translation(Vec(2.f0,-2.f0,-2.f0)) * scaling(Vec(1.f0,1.f0,1.f0)), planet_color)
-    # add_shape(world, planet)
-
+    input_file = open(scene_file, "rs")
+        try 
+            scene = parse_scene(InputStream(input_file, scene_file), variables)
+        catch e
+            throw("e") ################ noooooooooo
+        end
     println("World objects created.")
-
+    
+    image = HdrImage(w, h)
+    print("Generating a $w×$h image")
 
 # Creating a Perspective of Orthogonal CAMERA
     if params["camera"] == "O"
@@ -128,7 +119,6 @@ function main()
     elseif params["camera"] == "P"
         camera = PerspectiveCamera(a, camera_tr, d)
     end
-
 
 # Creating an ImageTracer object 
     tracer = ImageTracer(image, camera, params["nrays"])

@@ -114,8 +114,8 @@ end
 struct GrammarError <: Exception
     msg::String
     
-    GrammarError(loc::SourceLocation = SourceLocation(),
-                 msg::String) =
+    GrammarError(msg::String,
+                 loc::SourceLocation = SourceLocation() ) =
                  new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
 
@@ -325,11 +325,11 @@ assert_is_string(token::Token, string::Union{String, Char}) = isa(token.value, L
 
 mutable struct Scene
 
-    materials::Dict
+    materials::Dict{String, Material}
     world::World
-    camera::Union
-    float_variables::Dict
-    overridden_variables::Set
+    camera::Union{camera, Nothing}
+    float_variables::Dict{String, Float32}
+    overridden_variables::Set{String}
 
     Scene(materials::Dict{String, Material} = Dict{String, Material}(),
           world::World = World(),
@@ -588,49 +588,53 @@ function parse_camera(input_file::InputStream, scene::Scene)
     return result
 
 
-# function parse_scene(input_file: InputStream, variables: Dict[str, float] = {}) -> Scene:
-#     """Read a scene description from a stream and return a :class:`.Scene` object"""
-#     scene = Scene()
-#     scene.float_variables = copy(variables)
-#     scene.overridden_variables = set(variables.keys())
+function parse_scene(input_file::InputStream, variables::Dict{String, Float32} = Dict{String, Float32}() )
+    """Read a scene description from a stream and return a :class:`.Scene` object"""
+    scene = Scene()
+    scene.float_variables = copy(variables)
+    scene.overridden_variables = set() ################## nooooooooooo
 
-#     while True:
-#         what = input_file.read_token()
-#         if isinstance(what, StopToken):
-#             break
+    while true
+        what = read_token(input_file)
+        if isa(what, StopToken)
+            break
+        end
+        if is(what, KeywordToken) == false
+            throw(GrammarError(what.location, "expected a keyword instead of $what"))
+        end
+        if what.keyword == KeywordEnum.FLOAT
+            variable_name = expect_identifier(input_file)
 
-#         if not isinstance(what, KeywordToken):
-#             raise GrammarError(what.location, f"expected a keyword instead of $what")
+            # Save this for the error message
+            variable_loc = input_file.location
 
-#         if what.keyword == KeywordEnum.FLOAT:
-#             variable_name = expect_identifier(input_file)
+            expect_symbol(input_file, "(")
+            variable_value = expect_number(input_file, scene)
+            expect_symbol(input_file, ")")
 
-#             # Save this for the error message
-#             variable_loc = input_file.location
+            if (variable_name in scene.float_variables) == true && (variable_name in scene.overridden_variables) == false
+                throw(GrammarError(variable_loc, "variable «$variable_name» cannot be refunctionined"))
+            end
+            if (variable_name in scene.overridden_variables) == false
+                # Only functionine the variable if it was not functionined by the user *outside* the scene file
+                # (e.g., from the command line)
+                scene.float_variables[variable_name] = variable_value
+            end
 
-#             expect_symbol(input_file, "(")
-#             variable_value = expect_number(input_file, scene)
-#             expect_symbol(input_file, ")")
+        elseif what.keyword == KeywordEnum.SPHERE
+            scene.world.add_shape(parse_sphere(input_file, scene))
+        elseif what.keyword == KeywordEnum.PLANE
+            scene.world.add_shape(parse_plane(input_file, scene))
+        elseif what.keyword == KeywordEnum.CAMERA
+            if scene.camera != nothing
+                raise GrammarError(what.location, "You cannot functionine more than one camera")
+            end
+            scene.camera = parse_camera(input_file, scene)
+        elseif what.keyword == KeywordEnum.MATERIAL
+            name, material = parse_material(input_file, scene)
+            scene.materials[name] = material
+        end
+    end
 
-#             if (variable_name in scene.float_variables) and not (variable_name in scene.overridden_variables):
-#                 raise GrammarError(location=variable_loc, message=f"variable «{variable_name}» cannot be refunctionined")
-
-#             if variable_name not in scene.overridden_variables:
-#                 # Only functionine the variable if it was not functionined by the user *outside* the scene file
-#                 # (e.g., from the command line)
-#                 scene.float_variables[variable_name] = variable_value
-
-#         elif what.keyword == KeywordEnum.SPHERE:
-#             scene.world.add_shape(parse_sphere(input_file, scene))
-#         elif what.keyword == KeywordEnum.PLANE:
-#             scene.world.add_shape(parse_plane(input_file, scene))
-#         elif what.keyword == KeywordEnum.CAMERA:
-#             if scene.camera:
-#                 raise GrammarError(what.location, "You cannot functionine more than one camera")
-
-#             scene.camera = parse_camera(input_file, scene)
-#         elif what.keyword == KeywordEnum.MATERIAL:
-#             name, material = parse_material(input_file, scene)
-#             scene.materials[name] = material
-
-#     return scene
+    return scene
+end
