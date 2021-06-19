@@ -83,7 +83,7 @@ end
 
 ## Testing PARSER ##############################################################################################################à
 
-stream = IOBuffer("""
+stream3 = IOBuffer("""
         float clock(150)
 
         material sky_material(
@@ -112,7 +112,7 @@ stream = IOBuffer("""
         camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
         """)
 
-scene = parse_scene(input_file=InputStream(stream))
+scene = parse_scene(input_file=InputStream(stream3))
 
 # Check that the float variables are ok
 

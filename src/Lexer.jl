@@ -114,8 +114,8 @@ end
 struct GrammarError <: Exception
     msg::String
     
-    GrammarError(loc::SourceLocation = SourceLocation(),
-                 msg::String) =
+    GrammarError(msg::String,
+                 loc::SourceLocation = SourceLocation()) =
                  new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
 
@@ -370,7 +370,9 @@ function expect_number(input_file::InputStream, scene::Scene)
     try 
         assert_is_number(token, token.value.number) && return token.value
 
-        assert_is_identifier(token, IdentifierToken) && variable_name = token.identifier
+        if assert_is_identifier(token, IdentifierToken) == true
+            variable_name = token.identifier
+        end
 
         try
             scene.float_variables[variable_name]
@@ -385,7 +387,7 @@ function expect_number(input_file::InputStream, scene::Scene)
 end
 
 
-function expect_string(input_file: InputStream)
+function expect_string(input_file::InputStream)
 
     token = input_file.read_token()
 
@@ -399,14 +401,14 @@ function expect_string(input_file: InputStream)
 end
 
 
-function expect_identifier(input_file: InputStream)
+function expect_identifier(input_file::InputStream)
 
     token = input_file.read_token()
 
     try
         isa(token, Identifier)
     catch e
-        throw(GrammarError(token.location, f"got $token instead of an identifier"))
+        throw(GrammarError(token.location, "got $token instead of an identifier"))
     end
     
 end
@@ -434,6 +436,7 @@ function parse_color(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, ">")
 
     return RGB(red, green, blue)
+end
 
 
 function parse_pigment(input_file::InputStream, scene::Scene)
@@ -502,7 +505,7 @@ function parse_transformation(input_file::InputStream, scene::Scene)
             KeywordEnum.SCALING,
         ])
 
-        if transformation_kw == KeywordEnum.IDENTITY:
+        if transformation_kw == KeywordEnum.IDENTITY
             pass  # Do nothing (this is a primitive form of optimization!)
         elseif transformation_kw == KeywordEnum.TRANSLATION
             expect_symbol(input_file, "(")
@@ -567,6 +570,7 @@ function parse_plane(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, ")")
 
     return Plane(transformation, scene.materials[material_name])
+end
 
 
 function parse_camera(input_file::InputStream, scene::Scene)
@@ -586,6 +590,8 @@ function parse_camera(input_file::InputStream, scene::Scene)
         result = OrthogonalCamera(aspect_ratio, transformation)
 
     return result
+    end
+end
 
 
 # function parse_scene(input_file: InputStream, variables: Dict[str, float] = {}) -> Scene:
