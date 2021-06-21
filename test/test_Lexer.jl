@@ -45,7 +45,7 @@ stream = InputStream(IOBuffer("abc   \nd\nef"))
         @test stream.location.line_num == 3
         @test stream.location.col_num == 3
 
-        @test read_char(stream) == '0'
+        @test read_char(stream) == '€'
 
 end
 
@@ -54,7 +54,7 @@ end
 stream2 = IOBuffer("""
    # This is a comment
    # This is another comment
-   FLOAT a (13.0) 
+   FLOAT a (0.) 
    NEW MATERIAL sky_material(
        DIFFUSE(IMAGE("my file.pfm")),
        <5.0, 500.0, 300.0>
@@ -67,7 +67,7 @@ infile = InputStream(stream2)
         @test assert_is_keyword(read_token(infile), FLOAT)
         @test assert_is_identifier(read_token(infile), 'a')
         @test assert_is_symbol(read_token(infile), '(')
-        @test assert_is_number(read_token(infile), 13.)
+        @test assert_is_number(read_token(infile), 0.)
         @test assert_is_symbol(read_token(infile), ')')
         @test assert_is_keyword(read_token(infile), NEW)
         @test assert_is_keyword(read_token(infile), MATERIAL)
@@ -87,7 +87,7 @@ stream3 = IOBuffer("""
         FLOAT clock(150)
 
         MATERIAL sky_material(
-                DIFFUSE(UNIFORM(<0, 0, 0>)),
+                DIFFUSE(UNIFORM(<0., 0., 0.>)),
                 UNIFORM(<0.7, 0.5, 1>)
         )
 

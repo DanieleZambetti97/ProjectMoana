@@ -88,7 +88,7 @@ It creates a Input Stream, that can be passed to the READ FUNCTION.
 ## Arguments:
 - `stream` is the text read (IOBuffer!);
 - `location` is the SourceLocation;
-- `saved_char` is the currently read **Char** (functionault = '0');
+- `saved_char` is the currently read **Char** (functionault = '€');
 - `save_location` is the location of the saved_char;
 - `saved_token` is the Token associated to the saved_char (it can be a **Token** or the functionault value **Nothing**);
 - `tabulation` is the number of spaces that form a tabulation (functionault = 8).
@@ -103,7 +103,7 @@ mutable struct InputStream
 
     InputStream( stream::IOBuffer,
                  location::SourceLocation = SourceLocation("", Int32(1), Int32(1)),
-                 saved_char = '0', 
+                 saved_char = '€', 
                  saved_location = location,
                  saved_token = nothing,
                  tabulation = 8) =
@@ -129,7 +129,7 @@ copy(location::SourceLocation) = SourceLocation(location.file_name, Int32(locati
 
 # increment the positional indexes:
 function _update_pos(stream::InputStream, ch::Char)
-    if ch == '0'
+    if ch == '€'
         return
     elseif ch == '\n'
         stream.location.line_num += 1
@@ -148,12 +148,12 @@ It reads Char one by one, updating the positional indexes.
 """
 function read_char(stream::InputStream)
     
-    if stream.saved_char != '0'
+    if stream.saved_char != '€'
         ch = stream.saved_char
-        stream.saved_char = '0'
+        stream.saved_char = '€'
 
     elseif eof(stream.stream)
-        ch = '0'  
+        ch = '€'  
     else
         ch = read(stream.stream, Char)
     end
@@ -171,7 +171,7 @@ After reading the Char, it has to be unread, saving the location.
 """
 function unread_char(stream::InputStream, ch)
     while true
-        stream.saved_char == '0' && break
+        stream.saved_char == '€' && break
     end
     stream.saved_char = ch
     stream.location = copy(stream.saved_location)
@@ -182,14 +182,14 @@ function skip_whitespaces_and_comments(stream::InputStream)
     ch = read_char(stream)
     while occursin(ch, WHITESPACE) || ch == '#'
         if ch == '#'
-            while (read_char(stream) in ['\r', '\n', '0']) == false
+            while (read_char(stream) in ['\r', '\n', '€']) == false
                 nothing               
             end
         end
 
         ch =read_char(stream)
 
-        if ch == '0'
+        if ch == '€'
             return
         end
     end
@@ -204,8 +204,8 @@ function _parse_string_token(stream, token_location::SourceLocation)
         if ch == '"'
             break
         end
-        if ch == '0'
-            throw(GrammarError(token_location, "Unterminated string"))
+        if ch == '€'
+            throw(GrammarError("Unterminated string", token_location))
         end
         token *= ch
     end
@@ -225,9 +225,10 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
     end
 
     try
+        println(token)
         token = parse(Float32, token)
     catch e
-        throw(GrammarError(token_location, "$(token) is an invalid floating-point number"))
+        throw(GrammarError("$(token) is an invalid floating-point number", token_location))
     end
     return Token(token_location, LiteralNumber(token_location, token)) ## it returns a TOKEN!
 end
@@ -270,7 +271,7 @@ function read_token(stream::InputStream)
     skip_whitespaces_and_comments(stream) # now there aren't spaces or comments!
 
     ch = read_char(stream)
-    if ch == '0'
+    if ch == '€'
         return Stop(stream.location) # there's nothing in the file => Stop!
     end
 
@@ -367,7 +368,6 @@ end
 
 function expect_number(input_file::InputStream, scene::Scene)
     token = read_token(input_file)
-
     if isa(token.value, LiteralNumber)
         return token.value.number
     elseif isa(token.value, Identifier)
@@ -435,8 +435,8 @@ end
 
 function parse_pigment(input_file::InputStream, scene::Scene)
     keyword = expect_keywords(input_file, [UNIFORM, CHECKERED, IMAGE])
-
     expect_symbol(input_file, '(')
+
     if keyword == UNIFORM
         color = parse_color(input_file, scene)
         result = UniformPigment(color)
@@ -461,9 +461,10 @@ end
 
 function parse_brdf(input_file::InputStream, scene::Scene)
     brdf_keyword = expect_keywords(input_file, [DIFFUSE, SPECULAR])
-    println(brdf_keyword)
+    println(brdf_keyword)############################
     expect_symbol(input_file, '(')
     pigment = parse_pigment(input_file, scene)
+    println(pigment)
     expect_symbol(input_file, ')')
 
     if brdf_keyword == DIFFUSE
