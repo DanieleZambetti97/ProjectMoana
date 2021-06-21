@@ -225,7 +225,6 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
     end
 
     try
-        println(token)
         token = parse(Float32, string(token))
     catch e
         throw(GrammarError("$(token) is an invalid floating-point number", token_location))
@@ -245,12 +244,10 @@ function _parse_keyword_or_identifier_token(stream, first_char::Char, token_loca
         end
         token *= ch
     end
-    
     # If it is a keyword, it must be listed in the KEYWORDS enum:
     for i in 1:length(instances(KeywordEnum))
         token == string(KeywordEnum(i)) && return Token(token_location, Keyword(token_location, KeywordEnum(i)))   
     end
-
     # If not it must be an IDENTIFIER:
     return Token(token_location, Identifier(token_location, token)) ## it returns a TOKEN!
     
@@ -371,7 +368,7 @@ function expect_number(input_file::InputStream, scene::Scene)
     if isa(token.value, LiteralNumber)
         return token.value.number
     elseif isa(token.value, Identifier)
-        variable_name = token.value.identifier
+        variable_name = token.value.s
         if haskey(scene.float_variables, variable_name) == false
             throw(GrammarError("unknown variable $token", token.loc))
         end
@@ -404,7 +401,7 @@ function expect_identifier(input_file::InputStream)
     catch e
         throw(GrammarError("got $token instead of an identifier", token.loc))
     end
-    
+    return token.value.s
 end
 
 
@@ -445,7 +442,7 @@ function parse_pigment(input_file::InputStream, scene::Scene)
         expect_symbol(input_file, ',')
         color2 = parse_color(input_file, scene)
         expect_symbol(input_file, ',')
-        num_of_steps = int(expect_number(input_file, scene))
+        num_of_steps = Int32(expect_number(input_file, scene))
         result = CheckeredPigment(color1, color2, num_of_steps)
     elseif keyword == IMAGE
         file_name = expect_string(input_file)
@@ -461,10 +458,8 @@ end
 
 function parse_brdf(input_file::InputStream, scene::Scene)
     brdf_keyword = expect_keywords(input_file, [DIFFUSE, SPECULAR])
-    println(brdf_keyword)############################
     expect_symbol(input_file, '(')
     pigment = parse_pigment(input_file, scene)
-    println(pigment)
     expect_symbol(input_file, ')')
 
     if brdf_keyword == DIFFUSE
@@ -483,7 +478,6 @@ function parse_material(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, ',')
     emitted_radiance = parse_pigment(input_file, scene)
     expect_symbol(input_file, ')')
-
     return name, Material(brdf, emitted_radiance)
 end
 
@@ -502,7 +496,7 @@ function parse_transformation(input_file::InputStream, scene::Scene)
         ])
 
         if transformation_kw == IDENTITY
-            pass  # Do nothing (this is a primitive form of optimization!)
+            nothing  # Do nothing (this is a primitive form of optimization!)
         elseif transformation_kw == TRANSLATION
             expect_symbol(input_file, '(')
             result *= translation(parse_vector(input_file, scene))
@@ -528,9 +522,9 @@ function parse_transformation(input_file::InputStream, scene::Scene)
         # We must peek the next token to check if there is another transformation that is being
         # chained or if the sequence ends. Thus, this is a LL(1) parser.
         next_kw = read_token(input_file)
-        if (isa(next_kw, SymbolToken) && (next_kw.symbol == "*")) == false
+        if (isa(next_kw.value, Symbol) && (next_kw.value.symbol == '*')) == false
             # Pretend you never read this token and put it back!
-            input_file.unread_token(next_kw)
+            unread_token(input_file, next_kw)
             break
         end
     end
@@ -581,7 +575,7 @@ function parse_camera(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, ')')
 
     if type_kw == PERSPECTIVE
-        result = PerspectiveCamera(distance, aspect_ratio, transformation)
+        result = PerspectiveCamera(aspect_ratio, transformation, distance)
     elseif type_kw == ORTHOGONAL
         result = OrthogonalCamera(aspect_ratio, transformation)
 
@@ -598,7 +592,6 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
 
     while true
         what = read_token(input_file)
-        println(" $what ")
         if isa(what, Stop)
             break
         end
@@ -618,16 +611,17 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             if haskey(scene.float_variables, variable_name) == true && haskey(scene.overridden_variables, variable_name) == false
                 throw(GrammarError(variable_loc, "variable «$variable_name» cannot be refunctionined"))
             end
-            if variable_name in scene.overridden_variables == false
+
+            if (variable_name in scene.overridden_variables) == false
                 # Only functionine the variable if it was not functionined by the user *outside* the scene file
                 # (e.g., from the command line)
                 scene.float_variables[variable_name] = variable_value
             end
 
         elseif what.value.keyword == SPHERE
-            scene.world.add_shape(parse_sphere(input_file, scene))
+            add_shape(scene.world,parse_sphere(input_file, scene))
         elseif what.value.keyword == PLANE
-            scene.world.add_shape(parse_plane(input_file, scene))
+            add_shape(scene.world, parse_plane(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError(what.location, "You cannot functionine more than one camera"))
