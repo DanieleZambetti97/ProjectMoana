@@ -1,6 +1,6 @@
 ## Testing LEXER ###################################################################################################
 import ColorTypes:RGB
-stream = InputStream(IOBuffer("abc   \nd\nef"))
+stream = InputStream(IO("abc   \nd\nef"))
 
 @testset "Test SceneFiles: input file" begin 
  
@@ -51,7 +51,7 @@ end
 
 ##############################################################################################
 
-stream2 = IOBuffer("""
+stream2 = IO("""
    # This is a comment
    # This is another comment
    FLOAT a (0.) 
@@ -83,7 +83,7 @@ end
 
 ## Testing PARSER ##############################################################################################################à
 
-stream3 = IOBuffer("""
+stream3 = IO("""
         FLOAT clock(150)
 
         MATERIAL sky_material(
@@ -177,7 +177,7 @@ end
 end
 
 
-stream4 = IOBuffer("""
+stream4 = IO("""
 PLANE(this_material_does_not_exist, IDENTITY)
 """)
 
@@ -191,7 +191,7 @@ end
 
 
 # Check that defining two cameras in the same file raises a GrammarError
-stream5 = IOBuffer("""
+stream5 = IO("""
         CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 1.0)
         CAMERA(ORTHOGONAL, IDENTITY, 1.0, 1.0)
         """)
