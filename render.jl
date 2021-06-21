@@ -20,7 +20,7 @@ function parse_commandline()
             required = true
             arg_type = String
         "--declare_float"
-            help = ="Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
+            help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
             required = false
             arg_type = String
         "--w"
@@ -86,6 +86,7 @@ function build_variable_table(definitions::String)
         if length(parts) != 2
             println("error, the definition «$declaration» does not follow the pattern NAME:VALUE")
             exit(1)
+        end
 
         name, value = parts
         try
@@ -113,11 +114,11 @@ function main()
     algorithm = params["render_alg"]
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
-    sample_per_pixel = params["nrays"]
-    animation_var = params["animation_var"]
+    samples_per_pixel = params["nrays"]
+    # animation_var = params["animation_var"] ???
 
-    semples_per_side = sqrt(sample_per_pixel)
-    if samples_per_side ** 2 != samples_per_pixel:
+    samples_per_side = sqrt(sample_per_pixel)
+    if samples_per_side^2 != samples_per_pixel
         print("Error, the number of rays per pixel ($samples_per_pixel) must be a perfect square")
         return
     end
