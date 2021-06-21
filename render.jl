@@ -10,7 +10,7 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image reading a scene from a input file. Try me!",
-                               usage = "usage: [--help] [--scene SCENE_FILE] [--declare_float ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
+                               usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
                                         [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
                               epilog = "Let's try again!")
 
@@ -22,6 +22,7 @@ function parse_commandline()
         "--anim_var"
             help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
             required = false
+            default = ""
             arg_type = String
         "--w"
             help = "width of the image"
@@ -80,7 +81,7 @@ end
 
 function build_variable_table(definitions::String)
 
-    variables = Dict()
+    variables = Dict{String, Float32}()
     for declaration in definitions
         parts = split(declaration, ":")
         if length(parts) != 2
@@ -115,7 +116,7 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["nrays"]
-    animation_var = params["anim_var"]
+    variables = build_variable_table("$(params["anim_var"])")
 
     samples_per_side = sqrt(samples_per_pixel)
     if samples_per_side^2 != samples_per_pixel
@@ -123,18 +124,13 @@ function main()
         return
     end
 
-    variables = build_variable_table(animation_var)
+    input_file = open(scene_file, "r")
+    scene = parse_scene(InputStream(input_file), variables)
 
-    input_file = open(scene_file, "rs")
-        try 
-            scene = parse_scene(InputStream(input_file, scene_file), variables)
-        catch e
-            throw("e") ################ noooooooooo
-        end
     println("World objects created.")
     
     image = HdrImage(w, h)
-    print("Generating a $w×$h image")
+    println("Generating a $w×$h image")
 
 # Creating a Perspective of Orthogonal CAMERA
     if params["camera"] == "O"
@@ -151,15 +147,15 @@ function main()
     print("Computing ray intersection ")
     if params["render_alg"] == "F"
         println("using Flat renderer")
-        renderer = Flat_Renderer(world, RGB(0.4f0,0.4f0,0.4f0))
+        renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=1, russian_roulette_limit=2)
+        renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=1, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
-        renderer = OnOff_Renderer(world)
+        renderer = OnOff_Renderer(scene.world)
         fire_all_rays(tracer, OnOff, renderer)
     end
 

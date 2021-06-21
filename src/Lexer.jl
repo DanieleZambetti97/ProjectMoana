@@ -94,14 +94,14 @@ It creates a Input Stream, that can be passed to the READ FUNCTION.
 - `tabulation` is the number of spaces that form a tabulation (functionault = 8).
 """
 mutable struct InputStream
-    stream::IOBuffer
+    stream::IO
     location::SourceLocation
     saved_char::Char
     saved_location::SourceLocation
     saved_token::Union{Token, Nothing}
     tabulation::Int
 
-    InputStream( stream::IOBuffer,
+    InputStream( stream::IO,
                  location::SourceLocation = SourceLocation("", Int32(1), Int32(1)),
                  saved_char = '€', 
                  saved_location = location,
