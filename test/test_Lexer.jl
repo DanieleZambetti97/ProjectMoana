@@ -118,7 +118,7 @@ scene = parse_scene(InputStream(stream3))
 
 @testset "Test Scenefiles: Parser:" begin
         @test length(scene.float_variables) == 1
-        @test "clock" in scene.float_variables
+        @test haskey(scene.float_variables, "clock")
         @test scene.float_variables["clock"] == 150.0
         @test length(scene.materials) == 3
 

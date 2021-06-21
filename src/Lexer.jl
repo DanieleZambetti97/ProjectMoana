@@ -226,7 +226,7 @@ function _parse_float_token(stream, first_char::Char, token_location::SourceLoca
 
     try
         println(token)
-        token = parse(Float32, token)
+        token = parse(Float32, string(token))
     catch e
         throw(GrammarError("$(token) is an invalid floating-point number", token_location))
     end
