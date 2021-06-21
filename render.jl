@@ -10,7 +10,7 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program generates an image reading a scene from a input file. Try me!",
-                               usage = "usage: [--help] [--scene SCENE_FILE] [--declare_float ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
+                               usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
                                         [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
                               epilog = "Let's try again!")
 
@@ -22,6 +22,7 @@ function parse_commandline()
         "--anim_var"
             help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
             required = false
+            default = ""
             arg_type = String
         "--w"
             help = "width of the image"
@@ -115,7 +116,7 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["nrays"]
-    animation_var = params["anim_var"]
+    animation_var = build_variable_table(params["anim_var"])
 
     samples_per_side = sqrt(samples_per_pixel)
     if samples_per_side^2 != samples_per_pixel
