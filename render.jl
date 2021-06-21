@@ -19,7 +19,7 @@ function parse_commandline()
             help = "name of the input scene file"
             required = true
             arg_type = String
-        "--declare_float"
+        "--anim_var"
             help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
             required = false
             arg_type = String
@@ -71,7 +71,7 @@ function parse_commandline()
         "--nrays"
             help = "Number of rays for antialasing"
             required = false
-            default = 3
+            default = 9
             arg_type = Int
     end
 
@@ -115,11 +115,11 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["nrays"]
-    # animation_var = params["animation_var"] ???
+    animation_var = params["anim_var"]
 
-    samples_per_side = sqrt(sample_per_pixel)
+    samples_per_side = sqrt(samples_per_pixel)
     if samples_per_side^2 != samples_per_pixel
-        print("Error, the number of rays per pixel ($samples_per_pixel) must be a perfect square")
+        println("Error, the number of rays per pixel ($samples_per_pixel) must be a perfect square")
         return
     end
 
