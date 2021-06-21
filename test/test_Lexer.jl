@@ -84,40 +84,40 @@ end
 ## Testing PARSER ##############################################################################################################à
 
 stream3 = IOBuffer("""
-        float clock(150)
+        FLOAT clock(150)
 
-        material sky_material(
-                diffuse(uniform(<0, 0, 0>)),
-                uniform(<0.7, 0.5, 1>)
+        MATERIAL sky_material(
+                DIFFUSE(UNIFORM(<0, 0, 0>)),
+                UNIFORM(<0.7, 0.5, 1>)
         )
 
         # Here is a comment
 
-        material ground_material(
-                diffuse(checkered(<0.3, 0.5, 0.1>,
+        MATERIAL ground_material(
+                DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
                                 <0.1, 0.2, 0.5>, 4)),
-                uniform(<0, 0, 0>)
+                UNIFORM(<0, 0, 0>)
         )
 
-        material sphere_material(
-                specular(uniform(<0.5, 0.5, 0.5>)),
-                uniform(<0, 0, 0>)
+        MATERIAL sphere_material(
+                SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+                UNIFORM(<0, 0, 0>)
         )
 
-        plane (sky_material, translation([0, 0, 100]) * rotation_y(clock))
-        plane (ground_material, identity)
+        PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Y(clock))
+        PLANE (ground_material, IDENTITY)
 
-        sphere(sphere_material, translation([0, 0, 1]))
+        SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 
-        camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
+        camera(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)
         """)
 
-scene = parse_scene(input_file=InputStream(stream3))
+scene = parse_scene(InputStream(stream3))
 
 # Check that the float variables are ok
 
 @testset "Test Scenefiles: Parser:" begin
-        @test len(scene.float_variables) == 1
+        @test length(scene.float_variables) == 1
         @test "clock" in scene.float_variables
         @test scene.float_variables["clock"] == 150.0
         @test length(scene.materials) == 3
