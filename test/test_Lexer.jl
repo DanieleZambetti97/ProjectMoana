@@ -1,5 +1,5 @@
 ## Testing LEXER ###################################################################################################
-
+import ColorTypes:RGB
 stream = InputStream(IOBuffer("abc   \nd\nef"))
 
 @testset "Test SceneFiles: input file" begin 
@@ -109,7 +109,7 @@ stream3 = IOBuffer("""
 
         SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 
-        camera(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+        CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)
         """)
 
 scene = parse_scene(InputStream(stream3))
@@ -118,7 +118,7 @@ scene = parse_scene(InputStream(stream3))
 
 @testset "Test Scenefiles: Parser:" begin
         @test length(scene.float_variables) == 1
-        @test "clock" in scene.float_variables
+        @test haskey(scene.float_variables, "clock")
         @test scene.float_variables["clock"] == 150.0
         @test length(scene.materials) == 3
 
@@ -133,25 +133,25 @@ ground_material = scene.materials["ground_material"]
 
 
 @testset "Test SceneFiles: Parser -> materials" begin
-        @test occursin(sky_material.brdf, DiffuseBRDF)
-        @test occursin(sky_material.brdf.pigment, UniformPigment)
+        @test isa(sky_material.brdf, DiffuseBRDF)
+        @test isa(sky_material.brdf.pigment, UniformPigment)
         @test sky_material.brdf.pigment.color ≈ RGB(Float32(0), Float32(0), Float32(0))
 
-        @test occursin(ground_material.brdf, DiffuseBRDF)
-        @test occursin(ground_material.brdf.pigment, CheckeredPigment)
+        @test isa(ground_material.brdf, DiffuseBRDF)
+        @test isa(ground_material.brdf.pigment, CheckeredPigment)
         @test ground_material.brdf.pigment.color1 ≈ (RGB(0.3f0, 0.5f0, 0.1f0))
         @test ground_material.brdf.pigment.color2 ≈ (RGB(0.1f0, 0.2f0, 0.5f0))
-        @test ground_material.brdf.pigment.num_of_steps == 4
+        @test ground_material.brdf.pigment.n_steps == 4
 
-        @test occursin(sphere_material.brdf, SpecularBRDF)
-        @test occursin(sphere_material.brdf.pigment, UniformPigment)
+        @test isa(sphere_material.brdf, SpecularBRDF)
+        @test isa(sphere_material.brdf.pigment, UniformPigment)
         @test sphere_material.brdf.pigment.color ≈ (RGB(0.5f0, 0.5f0, 0.5f0))
 
-        @test occursin(sky_material.emitted_radiance, UniformPigment)
+        @test isa(sky_material.emitted_radiance, UniformPigment)
         @test sky_material.emitted_radiance.color ≈ (RGB(0.7f0, 0.5f0, 1.0f0))
-        @test occursin(ground_material.emitted_radiance, UniformPigment)
+        @test isa(ground_material.emitted_radiance, UniformPigment)
         @test ground_material.emitted_radiance.color ≈ (RGB(0.f0, 0.f0, 0.f0))
-        @test occursin(sphere_material.emitted_radiance, UniformPigment)
+        @test isa(sphere_material.emitted_radiance, UniformPigment)
         @test sphere_material.emitted_radiance.color ≈ (RGB(0.f0, 0.f0, 0.f0))
 
 end
@@ -159,50 +159,47 @@ end
 
 @testset "Test SceneFiles: Parser -> shapes" begin
         @test length(scene.world.shapes) == 3
-        @test occursin(scene.world.shapes[0], Plane)
-        @test scene.world.shapes[0].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0))
-        @test occursin(scene.world.shapes[1], Plane)
-        @test scene.world.shapes[1].transformation ≈ (Transformation())
-        @test occursin(scene.world.shapes[2], Sphere)
-        @test scene.world.shapes[2].transformation ≈ (translation(Vec(0, 0, 1)))
+        @test isa(scene.world.shapes[1], Plane)
+        @test scene.world.shapes[1].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0))
+        @test isa(scene.world.shapes[2], Plane)
+        @test scene.world.shapes[2].transformation ≈ (Transformation())
+        @test isa(scene.world.shapes[3], Sphere)
+        @test scene.world.shapes[3].transformation ≈ (translation(Vec(0, 0, 1)))
         
 end
 
 @testset "Test SceneFiles: Parser -> camera: " begin
-        @test occursin(scene.camera, PerspectiveCamera)
+        @test isa(scene.camera, PerspectiveCamera)
         @test scene.camera.transformation ≈ (rotation_z(30.f0) * translation(Vec(-4, 0, 1)))
         @test scene.camera.aspect_ratio ≈ 1.f0
-        @test scene.camera.screen_distance ≈ 2.f0
+        @test scene.camera.distance ≈ 2.f0
 
 end
 
 
-# stream = StringIO("""
-# plane(this_material_does_not_exist, identity)
-# """)
+stream4 = IOBuffer("""
+PLANE(this_material_does_not_exist, IDENTITY)
+""")
 
-# @testset "Test SceneFiles: Parser -> unkown material: " begin
-        
-# end
+@testset "Test SceneFiles: Parser -> unkown material: " begin
+        try 
+                parse_scene(InputStream(stream4))
+        catch e
+                @test true #######################......
+        end
+end
 
-# def test_parser_undefined_material(self):
-# # Check that unknown materials raises a GrammarError
 
-# try:
-#         _ = parse_scene(input_file=InputStream(stream))
-#         @test False, "the code did not throw an exception"
-# except GrammarError:
-#         pass
+# Check that defining two cameras in the same file raises a GrammarError
+stream5 = IOBuffer("""
+        CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 1.0)
+        CAMERA(ORTHOGONAL, IDENTITY, 1.0, 1.0)
+        """)
 
-# def test_parser_double_camera(self):
-# # Check that defining two cameras in the same file raises a GrammarError
-# stream = StringIO("""
-# camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 1.0)
-# camera(orthogonal, identity, 1.0, 1.0)
-# """)
-
-# try:
-#         _ = parse_scene(input_file=InputStream(stream))
-#         @test False, "the code did not throw an exception"
-# except GrammarError:
-#         pass
+@testset "Test SceneFiles: Parser -> double camera: " begin
+        try
+                parse_scene(InputStream(stream5))
+        catch e 
+                @test true
+        end
+end
