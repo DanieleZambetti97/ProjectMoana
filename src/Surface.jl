@@ -108,7 +108,9 @@ struct DiffuseBRDF <: BRDF
     pigment::Pigment
     reflectance::Number
 
-    DiffuseBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)), reflectance::Number=1. ) = new(pigment, reflectance)
+    DiffuseBRDF(pigment::Pigment = UniformPigment(RGB(1.,1.,1.)),
+                reflectance::Number = 1. ) =
+                new(pigment, reflectance)
 end
 Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigment && brdf1.reflectance ≈ brdf2.reflectance
 
@@ -133,7 +135,7 @@ If not defined:
 struct SpecularBRDF <: BRDF   
     pigment::Pigment
 
-    SpecularBRDF(pigment::Pigment=UniformPigment(RGB(1.,1.,1.)) ) = new(pigment)    
+    SpecularBRDF(pigment::Pigment = UniformPigment(RGB(1.,1.,1.)) ) = new(pigment)    
 end
 Base.:≈(brdf1::SpecularBRDF, brdf2::SpecularBRDF) = brdf1.pigment ≈ brdf2.pigment
 

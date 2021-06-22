@@ -1,7 +1,7 @@
 FLOAT clock(150)
 
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        DIFFUSE(UNIFORM(<0.1, 0.1, 0.1>)),
         UNIFORM(<0.7, 0.5, 1>)
 )
 
