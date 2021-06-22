@@ -84,12 +84,12 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     @test is_consistent(prod)
     @test isapprox(expected, prod)
 
-    @test is_consistent(rotation_x(0.1))
-    @test is_consistent(rotation_y(0.1))
-    @test is_consistent(rotation_z(0.1))
-    @test isapprox( (rotation_x( pi/2 ) * Vec(0.0, 1.0, 0.0)) , (Vec(0.0, 0.0, 1.0)) )
-    @test isapprox( (rotation_y( pi/2 ) * Vec(0.0, 0.0, 1.0)) , (Vec(1.0, 0.0, 0.0)) )
-    @test isapprox( (rotation_z( pi/2 ) * Vec(1.0, 0.0, 0.0)) , (Vec(0.0, 1.0, 0.0)) )
+    @test is_consistent(rotation_x(0.1f0))
+    @test is_consistent(rotation_y(0.1f0))
+    @test is_consistent(rotation_z(0.1f0))
+    @test isapprox( (rotation_x( pi/Float32(2) ) * Vec(0.0, 1.0, 0.0)) , (Vec(0.0, 0.0, 1.0)) )
+    @test isapprox( (rotation_y( pi/Float32(2) ) * Vec(0.0, 0.0, 1.0)) , (Vec(1.0, 0.0, 0.0)) )
+    @test isapprox( (rotation_z( pi/Float32(2) ) * Vec(1.0, 0.0, 0.0)) , (Vec(0.0, 1.0, 0.0)) )
    
     translation_1 = scaling(Vec(2.0, 5.0, 10.0))
     translation_2 = scaling(Vec(3.0, 2.0, 4.0))
@@ -112,12 +112,12 @@ pcg = PCG()
 
         @test e3 ≈ normal
 
-        @test isapprox(1.0 , squared_norm(e1), atol = 10^-15)
-        @test isapprox(1.0 , squared_norm(e2), atol = 10^-15)
-        @test isapprox(1.0 , squared_norm(e3), atol = 10^-15)
+        @test isapprox(1.0f0 , squared_norm(e1), atol = 5f-7)
+        @test isapprox(1.0f0 , squared_norm(e2), atol = 5f-7)
+        @test isapprox(1.0f0 , squared_norm(e3), atol = 5f-7)
 
-        @test isapprox(0.0 , e1 * e2, atol = 10^-15)
-        @test isapprox(0.0 , e2 * e3, atol = 10^-15)
-        @test isapprox(0.0 , e3 * e1, atol = 10^-15)
+        @test isapprox(0.0f0 , e1 * e2, atol = 5f-7)
+        @test isapprox(0.0f0 , e2 * e3, atol = 5f-7)
+        @test isapprox(0.0f0 , e3 * e1, atol = 5f-7)
     end
 end

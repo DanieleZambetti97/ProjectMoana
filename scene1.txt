@@ -1,0 +1,26 @@
+FLOAT clock(150)
+
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.7, 0.5, 1>)
+)
+
+# Here is a comment
+
+MATERIAL ground_material(
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
+        UNIFORM(<0, 0, 0>)
+)
+
+MATERIAL sphere_material(
+        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        UNIFORM(<0, 0, 0>)
+)
+
+PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Y(clock))
+PLANE (ground_material, IDENTITY)
+
+SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
+
+CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)

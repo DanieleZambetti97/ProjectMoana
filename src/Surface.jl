@@ -93,7 +93,7 @@ end
 ## Code for BRDF type and its sons #####################################################
 
 abstract type BRDF end
-eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0., 0., 0.)
+eval(brdf::BRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return RGB(0.f0, 0.f0, 0.f0)
 scatter_ray(brdf::BRDF, pcg::PCG, incoming_dir::Vec, interaction_point::Point, normal::Normal, depth) = return "Abstract method, not implemented"
 
 """
@@ -127,7 +127,7 @@ end
 
 It creates a Diffuse BRDF, where _r_ is the reflectance of the surface.
 If not defined:
-- pigment = UniformPigment(RGB(1.,1.,1.));
+- pigment = UniformPigment(RGB(1.f0,1.f0,1.f0));
 - r = 1.
 """
 struct SpecularBRDF <: BRDF   
@@ -156,13 +156,13 @@ end
 It creates a Material, where brdf is a generic BRDF and e_r is the emitted radiance of the surface (Pigment type).
 If not defined:
 - brdf = DiffuseBRDF();
-- e_r = UniformPigment(RGB(0.,0.,0.)).
+- e_r = UniformPigment(RGB(0.f0,0.f0,0.f0)).
 """
 struct Material
     brdf::BRDF
     emitted_radiance::Pigment
 
-    Material(brdf::BRDF=DiffuseBRDF(), emitted_radiance::Pigment=UniformPigment(RGB(0.,0.,0.)) ) = new(brdf, emitted_radiance)
+    Material(brdf::BRDF=DiffuseBRDF(), emitted_radiance::Pigment=UniformPigment(RGB(0.f0,0.f0,0.f0)) ) = new(brdf, emitted_radiance)
 end 
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance
 

@@ -1,27 +1,27 @@
 # Implementation of new type Vec
 struct Vec
-    x::Float64
-    y::Float64
-    z::Float64
+    x::Float32
+    y::Float32
+    z::Float32
 end
 
 # Implementation of new type Point
 struct Point
-    x::Float64
-    y::Float64
-    z::Float64
+    x::Float32
+    y::Float32
+    z::Float32
 end
 
 # Implementation of new type Normal
 struct Normal
-    x::Float64
-    y::Float64
-    z::Float64
+    x::Float32
+    y::Float32
+    z::Float32
 end
 
 struct Vec2D
-    u::Float64
-    v::Float64
+    u::Float32
+    v::Float32
 end
 
 # Implementation of new type Transformation
@@ -32,25 +32,25 @@ end
 It creates a **Transformation**.
 
 ## Arguments
-- *m* -> matrix of type Array{Array{Float64}};
+- *m* -> matrix of type Array{Array{Float32}};
 - *invm* -> inverse matrix.
 
 If not specified, both of the matrixes are the Identity matrix (4x4).
 """
 mutable struct Transformation
-    m::Array{Array{Float64}}
-    invm::Array{Array{Float64}}
+    m::Array{Array{Float32}}
+    invm::Array{Array{Float32}}
 
     Transformation(m=ID4x4, invm=ID4x4) = new(m, invm)
 end
 
 # Supporting methods for Transformation
 function _matr_prod(a, b)
-    result = [[0.0 for i in 1:4] for j in 1:4]
+    result = [[0.0f0 for i in 1:4] for j in 1:4]
     for i in 1:4
         for j in 1:4
             for k in 1:4
-                result[i][j] += a[i][k] * b[k][j]
+                result[i][j] += Float32(a[i][k] * b[k][j])
             end
         end
     end
@@ -63,17 +63,17 @@ function is_consistent(T::Transformation)
 end
 
 
-ID4x4 = [[1.0, 0.0, 0.0, 0.0],
-         [0.0, 1.0, 0.0, 0.0],
-         [0.0, 0.0, 1.0, 0.0],
-         [0.0, 0.0, 0.0, 1.0]]
+ID4x4 = [[1.0f0, 0.0f0, 0.0f0, 0.0f0],
+         [0.0f0, 1.0f0, 0.0f0, 0.0f0],
+         [0.0f0, 0.0f0, 1.0f0, 0.0f0],
+         [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
 
 
 ## BASIC OPERATIONS between Vecs, Normals, Points and Scalars ###############################################################
 
-Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.x,V2.x, atol = 10^-15) && Base.isapprox(V1.y,V2.y, atol = 10^-15) && Base.isapprox(V1.z,V2.z, atol = 10^-15)
+Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.x,V2.x, atol = 5f-5) && Base.isapprox(V1.y,V2.y, atol = 5f-5) && Base.isapprox(V1.z,V2.z, atol = 5f-5)
 
-Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 10^-15) && Base.isapprox(n1.y,n2.y, atol = 10^-15) && Base.isapprox(n1.z,n2.z, atol = 10^-15)
+Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 5f-5) && Base.isapprox(n1.y,n2.y, atol = 5f-5) && Base.isapprox(n1.z,n2.z, atol = 5f-5)
 
 Base.:+(V1::Vec , V2::Vec )  = Vec((V1.x+V2.x), (V1.y+V2.y), (V1.z+V2.z))
 
@@ -85,7 +85,7 @@ Base.:*(scalar::Real, V1::Vec )   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.x*V2.x)+(V1.y*V2.y)+(V1.z*V2.z)
 
-Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 10^-15)  && isapprox(V1.v, V2.v, atol = 10^-15)
+Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 5f-5)  && isapprox(V1.v, V2.v, atol = 5f-5)
 
 # Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.y * V2.z - V1.z * V2.y), (V1.z * V2.x - V1.x * V2.z), (V1.x * V2.y - V1.y * V2.x) )
@@ -98,7 +98,7 @@ norm(V1::Vec) = sqrt(squared_norm(V1))
 normalize(V1::Vec) = Vec( (V1.x/norm(V1)), (V1.y/norm(V1)), (V1.z/norm(V1)) )
 
 # Aprroximation for two Point
-Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 10^-15) && Base.isapprox(P1.y,P2.y, atol = 10^-15) && Base.isapprox(P1.z,P2.z, atol = 10^-15) 
+Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 5f-5) && Base.isapprox(P1.y,P2.y, atol = 5f-5) && Base.isapprox(P1.z,P2.z, atol = 5f-5) 
 
 # Sum Point + Vector returning a Point
 Base.:+(P::Point, V::Vec) = Point(P.x + V.x, P.y + V.y, P.z + V.z)
@@ -158,28 +158,28 @@ end
 
 # Defining translation, scaling and rotation
 function translation(vec)
-    m = [[1.0, 0.0, 0.0, vec.x],
-         [0.0, 1.0, 0.0, vec.y],
-         [0.0, 0.0, 1.0, vec.z],
-         [0.0, 0.0, 0.0, 1.0]]
-    invm = [[1.0, 0.0, 0.0, -vec.x],
-            [0.0, 1.0, 0.0, -vec.y],
-            [0.0, 0.0, 1.0, -vec.z],
-            [0.0, 0.0, 0.0, 1.0]]
+    m = [[1.0f0, 0.0f0, 0.0f0, vec.x],
+         [0.0f0, 1.0f0, 0.0f0, vec.y],
+         [0.0f0, 0.0f0, 1.0f0, vec.z],
+         [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
+    invm = [[1.0f0, 0.0f0, 0.0f0, -vec.x],
+            [0.0f0, 1.0f0, 0.0f0, -vec.y],
+            [0.0f0, 0.0f0, 1.0f0, -vec.z],
+            [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
     
     return Transformation(m, invm)
 end
 
    
 function scaling(vec)
-    m = [[vec.x, 0.0, 0.0, 0.0],
-         [0.0, vec.y, 0.0, 0.0],
-         [0.0, 0.0, vec.z, 0.0],
-         [0.0, 0.0, 0.0, 1.0]]
-    invm = [[1 / vec.x, 0.0, 0.0, 0.0],
-            [0.0, 1 / vec.y, 0.0, 0.0],
-            [0.0, 0.0, 1 / vec.z, 0.0],
-            [0.0, 0.0, 0.0, 1.0]]
+    m = [[vec.x, 0.0f0, 0.0f0, 0.0f0],
+         [0.0f0, vec.y, 0.0f0, 0.0f0],
+         [0.0f0, 0.0f0, vec.z, 0.0f0],
+         [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
+    invm = [[1 / vec.x, 0.0f0, 0.0f0, 0.0f0],
+            [0.0f0, 1 / vec.y, 0.0f0, 0.0f0],
+            [0.0f0, 0.0f0, 1 / vec.z, 0.0f0],
+            [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
     
     return Transformation(m, invm)
 end
@@ -190,16 +190,16 @@ end
 
 It defines a rotation around the x axis of an angle α (in RADIANTS!!).
 """  
-function rotation_x(angle_rad::Float64)
+function rotation_x(angle_rad::Float32)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
-    m = [[1.0, 0.0, 0.0, 0.0],
-         [0.0, cosang, -sinang, 0.0],
-         [0.0, sinang, cosang, 0.0],
-         [0.0, 0.0, 0.0, 1.0]]
-    invm = [[1.0, 0.0, 0.0, 0.0],
-            [0.0, cosang, sinang, 0.0],
-            [0.0, -sinang, cosang, 0.0],
-            [0.0, 0.0, 0.0, 1.0]]
+    m = [[1.0f0, 0.0f0, 0.0f0, 0.0f0],
+         [0.0f0, cosang, -sinang, 0.0f0],
+         [0.0f0, sinang, cosang, 0.0f0],
+         [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
+    invm = [[1.0f0, 0.0f0, 0.0f0, 0.0f0],
+            [0.0f0, cosang, sinang, 0.0f0],
+            [0.0f0, -sinang, cosang, 0.0f0],
+            [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
     
     return Transformation(m, invm)
 end
@@ -209,16 +209,16 @@ end
 
 It defines a rotation around the y axis of an angle α (in RADIANTS!!).
 """  
-function rotation_y(angle_rad::Float64)
+function rotation_y(angle_rad::Float32)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
-    m = [[cosang, 0.0, sinang, 0.0],
-        [0.0, 1.0, 0.0, 0.0],
-        [-sinang, 0.0, cosang, 0.0],
-        [0.0, 0.0, 0.0, 1.0]]
-    invm = [[cosang, 0.0, -sinang, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [sinang, 0.0, cosang, 0.0],
-            [0.0, 0.0, 0.0, 1.0]]   
+    m = [[cosang, 0.0f0, sinang, 0.0f0],
+        [0.0f0, 1.0f0, 0.0f0, 0.0f0],
+        [-sinang, 0.0f0, cosang, 0.0f0],
+        [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
+    invm = [[cosang, 0.0f0, -sinang, 0.0f0],
+            [0.0f0, 1.0f0, 0.0f0, 0.0f0],
+            [sinang, 0.0f0, cosang, 0.0f0],
+            [0.0f0, 0.0f0, 0.0f0, 1.0f0]]   
         
     return Transformation(m, invm)
 end
@@ -228,16 +228,16 @@ end
 
 It defines a rotation around the z axis of an angle α (in RADIANTS!!).
 """      
-function rotation_z(angle_rad::Float64)
+function rotation_z(angle_rad::Float32)
     sinang, cosang = sin(angle_rad), cos(angle_rad)
-    m = [[cosang, -sinang, 0.0, 0.0],
-         [sinang, cosang, 0.0, 0.0],
-         [0.0, 0.0, 1.0, 0.0],
-         [0.0, 0.0, 0.0, 1.0]]
-    invm = [[cosang, sinang, 0.0, 0.0],
-            [-sinang, cosang, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0]]
+    m = [[cosang, -sinang, 0.0f0, 0.0f0],
+         [sinang, cosang, 0.0f0, 0.0f0],
+         [0.0f0, 0.0f0, 1.0f0, 0.0f0],
+         [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
+    invm = [[cosang, sinang, 0.0f0, 0.0f0],
+            [-sinang, cosang, 0.0f0, 0.0f0],
+            [0.0f0, 0.0f0, 1.0f0, 0.0f0],
+            [0.0f0, 0.0f0, 0.0f0, 1.0f0]]
     
     return Transformation(m, invm)
 end
@@ -245,11 +245,11 @@ end
 ###############################################################################
 function create_onb(normal_passed::Union{Normal,Vec})
     normal = normalize(toVec(normal_passed))
-    sign = copysign(1.0,normal.z)
-    a = -1.0 / (sign + normal.z)
+    sign = copysign(1.0f0,normal.z)
+    a = -1.0f0 / (sign + normal.z)
     b = normal.x * normal.y * a
 
-    e1 = Vec(1.0 + sign * normal.x * normal.x * a, sign * b, -sign * normal.x)
+    e1 = Vec(1.0f0 + sign * normal.x * normal.x * a, sign * b, -sign * normal.x)
     e2 = Vec(b, sign + normal.y * normal.y * a, -normal.y)
 
     return e1, e2, Vec(normal.x, normal.y, normal.z)

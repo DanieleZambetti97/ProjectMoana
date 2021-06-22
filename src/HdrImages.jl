@@ -69,9 +69,7 @@ end
 struct InvalidPfmFileFormat <: Exception
     msg::String
     
-    function InvalidPfmFileFormat(msg::String)
-        new(msg)
-    end
+    InvalidPfmFileFormat(msg::String) = new(msg)
 end
 
 # Supporting function for read_pfm_image
@@ -168,15 +166,15 @@ end
 
 ## SAVE an LdrImage on an output file #############################################################################à
 function average_luminosity(img::HdrImage, delta)
-    sum = 0.0
+    sum = 0.0f0
     for pixel in img.pixels
         sum += log10(delta + luminosity(pixel))
     end
-    return 10^(sum/length(img.pixels))
+    return Float32(10^(sum/length(img.pixels)))
 end
 
 function average_luminosity(img::HdrImage)
-    return average_luminosity(img, 10^(-10))
+    return average_luminosity(img, Float32(10^(-10)))
 end
 
 # Normalizing the luminosity of a image
