@@ -95,6 +95,5 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
         end
     end
 
-
     return (emitted_radiance + cum_radiance * (1.f0 / rend.num_of_rays))
 end

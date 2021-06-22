@@ -11,7 +11,7 @@ renderer = OnOff_Renderer(world)
 
 fire_all_rays(tracer, OnOff, renderer)
 
-@testset "Renderer: Test OnOff renderer                  " begin
+@testset "Renderer: OnOff renderer" begin
     for i ∈ 1:3
         for j ∈ 1:3
             image.pixels[get_pixel(image, i, j)] == RGB(1.f0,1.f0,1.f0)
@@ -43,7 +43,7 @@ renderer = Flat_Renderer(world)
 
 fire_all_rays(tracer, Flat, renderer)
 
-@testset "Renderer: Test Flat renderer                   " begin
+@testset "Renderer: Flat renderer" begin
     @test image.pixels[get_pixel(image,1, 1)]≈RGB(0.f0,0.f0,0.f0)
     @test image.pixels[get_pixel(image,2, 1)]≈RGB(0.f0,0.f0,0.f0)
     @test image.pixels[get_pixel(image,3, 1)]≈RGB(0.f0,0.f0,0.f0)
@@ -59,7 +59,7 @@ end
 
 
 
-@testset "Renderer: Furnace test for Path Tracer renderer" begin
+@testset "Renderer: Furnace test" begin
     pcg = PCG()
 
     for i in 1:10^3

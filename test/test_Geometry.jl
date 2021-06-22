@@ -3,7 +3,7 @@
 a = Vec(1.0,2.0,3.0)
 b = Vec(4.0,6.0,8.0)
 
-@testset "Geometry: Vec tests            " begin
+@testset "Geometry: Vecs" begin
 	@test isapprox(a,a)
 	@test false ≈ isapprox(a,b)
 	@test isapprox(a+b ,Vec(5.0,8.0,11.0) )
@@ -17,7 +17,7 @@ end
 a = Point(1.0, 2.0, 3.0)
 b = Point(4.0, 6.0, 8.0)
 
-@testset "Geometry: Point tests          " begin
+@testset "Geometry: Point" begin
 	@test isapprox(a,a) ≈ true
 	@test isapprox(a,b) ≈ false
 	@test isapprox((a * 2.), Point(2.0, 4.0, 6.0)) ≈ true
@@ -47,7 +47,7 @@ V_expected = Vec(14.0, 38.0, 51.0)
 P_expected = Point(18.0, 46.0, 58.0)
 N_expected = Normal(-8.75, 7.75, -3.0)
 
-@testset "Geometry: Transofrmation tests " begin
+@testset "Geometry: Transformation" begin
 
     @test is_consistent(T1)
     @test isapprox(T1, T1_same)
@@ -84,12 +84,12 @@ N_expected = Normal(-8.75, 7.75, -3.0)
     @test is_consistent(prod)
     @test isapprox(expected, prod)
 
-    @test is_consistent(rotation_x(0.1f0))
-    @test is_consistent(rotation_y(0.1f0))
-    @test is_consistent(rotation_z(0.1f0))
-    @test isapprox( (rotation_x( pi/Float32(2) ) * Vec(0.0, 1.0, 0.0)) , (Vec(0.0, 0.0, 1.0)) )
-    @test isapprox( (rotation_y( pi/Float32(2) ) * Vec(0.0, 0.0, 1.0)) , (Vec(1.0, 0.0, 0.0)) )
-    @test isapprox( (rotation_z( pi/Float32(2) ) * Vec(1.0, 0.0, 0.0)) , (Vec(0.0, 1.0, 0.0)) )
+    @test is_consistent(rotation_x(0.1))
+    @test is_consistent(rotation_y(0.1))
+    @test is_consistent(rotation_z(0.1))
+    @test isapprox( (rotation_x( pi/2 ) * Vec(0.0, 1.0, 0.0)) , (Vec(0.0, 0.0, 1.0)) )
+    @test isapprox( (rotation_y( pi/2 ) * Vec(0.0, 0.0, 1.0)) , (Vec(1.0, 0.0, 0.0)) )
+    @test isapprox( (rotation_z( pi/2 ) * Vec(1.0, 0.0, 0.0)) , (Vec(0.0, 1.0, 0.0)) )
    
     translation_1 = scaling(Vec(2.0, 5.0, 10.0))
     translation_2 = scaling(Vec(3.0, 2.0, 4.0))
@@ -103,7 +103,7 @@ end
 
 pcg = PCG()
 
-@testset "Geometry: Orthonormal Base test" begin
+@testset "Geometry: Orthonormal bases" begin
 
     for i in range(1, length=10^3)
         normal = Vec(pcg_randf(pcg), pcg_randf(pcg), pcg_randf(pcg))
@@ -112,12 +112,12 @@ pcg = PCG()
 
         @test e3 ≈ normal
 
-        @test isapprox(1.0f0 , squared_norm(e1), atol = 5f-7)
-        @test isapprox(1.0f0 , squared_norm(e2), atol = 5f-7)
-        @test isapprox(1.0f0 , squared_norm(e3), atol = 5f-7)
+        @test isapprox(1.0f0 , squared_norm(e1), atol = 5f-6)
+        @test isapprox(1.0f0 , squared_norm(e2), atol = 5f-6)
+        @test isapprox(1.0f0 , squared_norm(e3), atol = 5f-6)
 
-        @test isapprox(0.0f0 , e1 * e2, atol = 5f-7)
-        @test isapprox(0.0f0 , e2 * e3, atol = 5f-7)
-        @test isapprox(0.0f0 , e3 * e1, atol = 5f-7)
+        @test isapprox(0.0f0 , e1 * e2, atol = 5f-6)
+        @test isapprox(0.0f0 , e2 * e3, atol = 5f-6)
+        @test isapprox(0.0f0 , e3 * e1, atol = 5f-6)
     end
 end

@@ -2,7 +2,7 @@ using ProjectMoana
 using ColorTypes
 ## TESTING RAY METHODS ###############################################
 
-@testset "Cameras: Ray tests   " begin
+@testset "Cameras: Ray" begin
     ray1 = Ray(Point(1.0, 2.0, 3.0), Vec(5.0, 4.0, -1.0))
     ray2 = Ray(Point(1.0, 2.0, 3.0), Vec(5.0, 4.0, -1.0))
     ray3 = Ray(Point(5.0, 1.0, 4.0), Vec(3.0, 9.0, 4.0))
@@ -16,10 +16,10 @@ using ColorTypes
 
 end
 
-@testset "Cameras: Camera tests" begin
+@testset "Cameras: Camera" begin
 
     ray = Ray( Point(1.0, 2.0, 3.0), Vec(6.0, 5.0, 4.0))
-    transformation = translation( Vec(10.0, 11.0, 12.0) ) * rotation_x(pi/2.0f0)
+    transformation = translation( Vec(10.0, 11.0, 12.0) ) * rotation_x(pi/2)
     transformed = transformation * ray
     
     @test isapprox( Point(11.0, 8.0, 14.0), transformed.origin)
@@ -40,7 +40,7 @@ end
     @test isapprox( at(ray3,1.0), Point(0.0, 2.0, 1.0) )
     @test isapprox( at(ray4,1.0), Point(0.0, -2.0, 1.0 ))
 
-    cam = OrthogonalCamera(1.0, translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2.0f0))
+    cam = OrthogonalCamera(1.0, translation(Vec(0.0,-1.0,0.0)*2.0)*rotation_z(pi/2))
     ray = fire_ray(cam, 0.5, 0.5)
 
     @test isapprox( at(ray, 1.0), Point(0.0, -2.0, 0.0))
@@ -60,7 +60,7 @@ fire_all_rays(tracer, ray -> RGB(1.0, 2.0, 3.0 ))
 top_left_ray = fire_ray(tracer, 1, 1, 0.0, 0.0)
 bottom_right_ray = fire_ray(tracer, 4, 2, 1.0, 1.0)
 
-@testset "Cameras: ImageTracer tests" begin
+@testset "Cameras: ImageTracer" begin
     # uv submapping
     @test isapprox(ray1[1], ray2[1])
     

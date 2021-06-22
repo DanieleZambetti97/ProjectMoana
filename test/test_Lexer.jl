@@ -2,7 +2,7 @@
 import ColorTypes:RGB
 stream = InputStream(IOBuffer("abc   \nd\nef"))
 
-@testset "Test SceneFiles: input file" begin 
+@testset "SceneFiles: input file" begin 
  
         @test stream.location.line_num == 1
         @test stream.location.col_num == 1
@@ -63,7 +63,7 @@ stream2 = IOBuffer("""
 
 infile = InputStream(stream2)
 
-@testset "Test SceneFiles: read token" begin
+@testset "SceneFiles: Read token " begin
         @test assert_is_keyword(read_token(infile), FLOAT)
         @test assert_is_identifier(read_token(infile), 'a')
         @test assert_is_symbol(read_token(infile), '(')
@@ -114,9 +114,8 @@ stream3 = IOBuffer("""
 
 scene = parse_scene(InputStream(stream3))
 
-# Check that the float variables are ok
-
-@testset "Test Scenefiles: Parser:" begin
+# Check that the variables are ok
+@testset "Scenefiles: Parser " begin
         @test length(scene.float_variables) == 1
         @test haskey(scene.float_variables, "clock")
         @test scene.float_variables["clock"] == 150.0
@@ -132,7 +131,7 @@ sky_material = scene.materials["sky_material"]
 ground_material = scene.materials["ground_material"]
 
 
-@testset "Test SceneFiles: Parser -> materials" begin
+@testset "SceneFiles: Parser -> materials " begin
         @test isa(sky_material.brdf, DiffuseBRDF)
         @test isa(sky_material.brdf.pigment, UniformPigment)
         @test sky_material.brdf.pigment.color ≈ RGB(Float32(0), Float32(0), Float32(0))
@@ -157,7 +156,7 @@ ground_material = scene.materials["ground_material"]
 end
 
 
-@testset "Test SceneFiles: Parser -> shapes" begin
+@testset "SceneFiles: Parser -> shapes " begin
         @test length(scene.world.shapes) == 3
         @test isa(scene.world.shapes[1], Plane)
         @test scene.world.shapes[1].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0))
@@ -168,7 +167,7 @@ end
         
 end
 
-@testset "Test SceneFiles: Parser -> camera: " begin
+@testset "SceneFiles: Parser -> camera " begin
         @test isa(scene.camera, PerspectiveCamera)
         @test scene.camera.transformation ≈ (rotation_z(30.f0) * translation(Vec(-4, 0, 1)))
         @test scene.camera.aspect_ratio ≈ 1.f0
@@ -181,7 +180,7 @@ stream4 = IOBuffer("""
 PLANE(this_material_does_not_exist, IDENTITY)
 """)
 
-@testset "Test SceneFiles: Parser -> unkown material: " begin
+@testset "SceneFiles: Parser -> unkown material " begin
         try 
                 parse_scene(InputStream(stream4))
         catch e
@@ -196,7 +195,7 @@ stream5 = IOBuffer("""
         CAMERA(ORTHOGONAL, IDENTITY, 1.0, 1.0)
         """)
 
-@testset "Test SceneFiles: Parser -> double camera: " begin
+@testset "SceneFiles: Parser -> double camera" begin
         try
                 parse_scene(InputStream(stream5))
         catch e 

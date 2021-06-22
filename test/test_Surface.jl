@@ -34,7 +34,7 @@ pigment3 = CheckeredPigment(color1, color2, 2)
         #              (0.5, 1)
 
 
-@testset "Surface: Test Pigments" begin
+@testset "Surface: Pigment tests" begin
     ## testing UniformPigment
     @test get_color(pigment, Vec2D(0.0, 0.0)) ≈ color    
     @test get_color(pigment, Vec2D(1.0, 0.0)) ≈ color
