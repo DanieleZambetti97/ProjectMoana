@@ -51,14 +51,14 @@ function is_consistent(T::Transformation)
 end
 
 
-ID4x4 = Matrix{Float64}(I, 4, 4)
+ID4x4 = Matrix{Float32}(I, 4, 4)
 
 
 ## BASIC OPERATIONS between Vecs, Normals, Points and Scalars ###############################################################
 
-Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.x,V2.x, atol = 5f-5) && Base.isapprox(V1.y,V2.y, atol = 5f-5) && Base.isapprox(V1.z,V2.z, atol = 5f-5)
+Base.:isapprox(V1::Vec, V2::Vec) = Base.isapprox(V1.x,V2.x, atol = 5f-15) && Base.isapprox(V1.y,V2.y, atol = 5f-15) && Base.isapprox(V1.z,V2.z, atol = 5f-15)
 
-Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 5f-5) && Base.isapprox(n1.y,n2.y, atol = 5f-5) && Base.isapprox(n1.z,n2.z, atol = 5f-5)
+Base.:isapprox(n1::Normal, n2::Normal) = Base.isapprox(n1.x,n2.x, atol = 5f-15) && Base.isapprox(n1.y,n2.y, atol = 5f-15) && Base.isapprox(n1.z,n2.z, atol = 5f-15)
 
 Base.:+(V1::Vec , V2::Vec )  = Vec((V1.x+V2.x), (V1.y+V2.y), (V1.z+V2.z))
 
@@ -70,7 +70,7 @@ Base.:*(scalar::Real, V1::Vec )   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 
 Base.:*(V1::Vec , V2::Vec )   = (V1.x*V2.x)+(V1.y*V2.y)+(V1.z*V2.z)
 
-Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 5f-5)  && isapprox(V1.v, V2.v, atol = 5f-5)
+Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 5f-15)  && isapprox(V1.v, V2.v, atol = 5f-15)
 
 # Cross product Vecs
 cross(V1::Vec, V2::Vec) = Vec( (V1.y * V2.z - V1.z * V2.y), (V1.z * V2.x - V1.x * V2.z), (V1.x * V2.y - V1.y * V2.x) )
@@ -83,7 +83,7 @@ norm(V1::Vec) = sqrt(squared_norm(V1))
 normalize(V1::Vec) = Vec( (V1.x/norm(V1)), (V1.y/norm(V1)), (V1.z/norm(V1)) )
 
 # Aprroximation for two Point
-Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 5f-5) && Base.isapprox(P1.y,P2.y, atol = 5f-5) && Base.isapprox(P1.z,P2.z, atol = 5f-5) 
+Base.:isapprox(P1::Point, P2::Point) = Base.isapprox(P1.x,P2.x, atol = 5f-15) && Base.isapprox(P1.y,P2.y, atol = 5f-15) && Base.isapprox(P1.z,P2.z, atol = 5f-15) 
 
 # Sum Point + Vector returning a Point
 Base.:+(P::Point, V::Vec) = Point(P.x + V.x, P.y + V.y, P.z + V.z)
@@ -220,8 +220,8 @@ end
 function create_onb(normal_passed::Union{Normal,Vec})
     normal = normalize(toVec(normal_passed))
     sign = copysign(1.0f0, normal.z)
-    a = -1.0f0 / (sign + normal.z)
-    b = normal.x * normal.y * a
+    a = Float32(-1. / (sign + normal.z))
+    b = Float32(normal.x * normal.y * a)
 
     e1 = Vec(1.0f0 + sign * normal.x * normal.x * a, sign * b, -sign * normal.x)
     e2 = Vec(b, sign + normal.y * normal.y * a, -normal.y)
