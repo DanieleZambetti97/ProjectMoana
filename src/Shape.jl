@@ -43,7 +43,9 @@ It creates a **Sphere**, where T is a generic ``Transformation`` applied to the 
 struct Sphere <: Shape
     transformation::Transformation
     material::Material
-    Sphere(transformation=Transformation(), material=Material() ) = new(transformation, material)
+    Sphere(transformation::Transformation = Transformation(),
+           material::Material = Material()) =
+           new(transformation, material)
 #    Sphere() = new(Tansformation(), Material())
 end
 
@@ -80,7 +82,10 @@ It creates a **Plane**, where T is a generic ``Transformation`` applied to the X
 struct Plane <: Shape
     transformation::Transformation
     material::Material
-    Plane(transformation::Transformation=Transformation(), material::Material=Material() ) = new(transformation, material)
+
+    Plane(transformation::Transformation=Transformation(),
+          material::Material=Material()) =
+          new(transformation, material)
 end
 
 ## Hidden methods for plane
@@ -171,9 +176,9 @@ function ray_intersection(world::World, ray::Ray)
     for i ∈ 1:length(world.shapes)
         intersection = ray_intersection(world.shapes[i], ray)
 
-        if intersection == nothing
+        if intersection === nothing
             continue
-        elseif closest == nothing  || (intersection.t < closest.t)
+        elseif closest === nothing  || (intersection.t < closest.t)
             closest = intersection
         end
     

@@ -46,11 +46,11 @@ struct PathTracer_Renderer <: Renderer
     russian_roulette_limit::Int
 
     PathTracer_Renderer(world::World; 
-                        background_color=RGB(0.f0,0.f0,0.f0), 
-                        pcg=PCG(), 
-                        num_of_rays=10, 
-                        max_depth=2, 
-                        russian_roulette_limit=3) = 
+                        background_color::RGB = RGB(0.f0,0.f0,0.f0), 
+                        pcg::PCG = PCG(), 
+                        num_of_rays::Int = 10, 
+                        max_depth::Int = 2, 
+                        russian_roulette_limit::Int = 3 ) = 
                         new(world, background_color, pcg, num_of_rays, max_depth, russian_roulette_limit)
 end
 
@@ -59,21 +59,19 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
         return RGB(0.f0, 0.f0, 0.f0)
     end
     
-
     hit_record = ray_intersection(rend.world, ray)
     if hit_record === nothing
         return rend.background_color
     end
 
-#    println(hit_record)
-
     hit_material = hit_record.shape.material
     hit_color = get_color(hit_material.brdf.pigment, hit_record.surface_point)
-    emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)
-
-
+    if hit_material.is_light_source == true
+        emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)
+    else 
+        emitted_radiance = RGB(0.f0, 0.f0, 0.f0)
+    end
     hit_color_lum = max(hit_color.r, hit_color.g, hit_color.b)
-
 
     # Russian roulette
     if ray.depth >= rend.russian_roulette_limit

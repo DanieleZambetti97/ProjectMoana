@@ -17,7 +17,8 @@ function parse_commandline()
     @add_arg_table s begin
         "--scene"
             help = "name of the input scene file"
-            required = true
+            required = false
+            default = "scene1.txt"
             arg_type = String
         "--anim_var"
             help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
@@ -151,7 +152,8 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=1, russian_roulette_limit=2)
+        renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq),
+                                       num_of_rays=3, max_depth=3, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
