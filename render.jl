@@ -110,7 +110,8 @@ function main()
     h = params["h"]
     a = w/h
     d = params["dist"]
-    camera_tr = rotation_z(params["angle"]*π/180.0f0) * translation(Vec(-1.0f0,0.f0,0.f0))
+#    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
+    camera_tr = rotation_z(30.f0*π/180.0f0) * translation(Vec(-4.0f0,0.f0,1.f0))
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
@@ -127,6 +128,21 @@ function main()
 
     input_file = open(scene_file, "r")
     scene = parse_scene(InputStream(input_file), variables)
+    # scene = Scene()
+    # WHITE = RGB(1.,1.,1.)
+    # BLACK = RGB(0.,0.,0.)
+    
+    # sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.1,.1))), UniformPigment(RGB(0.7, 0.5, 1)))
+    # sky = Plane(translation(Vec(0.,0.,100.)) * rotation_y( 150. ), sky_color)
+    # add_shape(scene.world, sky)
+
+    # ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.3, 0.5, 0.1), RGB(0.1, 0.2, 0.5), 4)))
+    # ground = Plane( Transformation(), ground_color )
+    # add_shape(scene.world, ground)
+
+    # mirror_color = Material(SpecularBRDF(UniformPigment(RGB(0.5,0.5,0.5))))
+    # mirror = Sphere(translation(Vec(0,0,1)), mirror_color)
+    # add_shape(scene.world, mirror)
 
     println("World objects created.")
     
@@ -137,11 +153,13 @@ function main()
     if params["camera"] == "O"
         camera = OrthogonalCamera(a, camera_tr)
     elseif params["camera"] == "P"
-        camera = PerspectiveCamera(a, camera_tr, d)
+        #camera = PerspectiveCamera(a, camera_tr, d)
+        camera = PerspectiveCamera(1., camera_tr, 2.)
     end
 
 # Creating an ImageTracer object 
-    tracer = ImageTracer(image, camera, params["nrays"])
+    #tracer = ImageTracer(image, camera, params["nrays"])
+    tracer = ImageTracer(image, scene.camera, params["nrays"])
 
     println("Observer initialized.")
 
@@ -153,7 +171,7 @@ function main()
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
         renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq),
-                                       num_of_rays=3, max_depth=3, russian_roulette_limit=2)
+                                       num_of_rays=2, max_depth=3, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")

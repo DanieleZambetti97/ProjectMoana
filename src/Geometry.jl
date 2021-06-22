@@ -46,7 +46,7 @@ end
 
 # Supporting methods for Transformation
 function is_consistent(T::Transformation)
-    prod = _matr_prod(T.m, T.invm)
+    prod = T.m * T.invm
     return isapprox(prod, ID4x4)
 end
 
@@ -164,7 +164,7 @@ end
 
 It defines a rotation around the x axis of an angle α (in RADIANTS!!).
 """  
-function rotation_x(angle_rad::Float32)
+function rotation_x(angle_rad)
     sinang, cosang = Float32(sin(angle_rad)), Float32(cos(angle_rad))
     m = [1.0f0 0.0f0 0.0f0 0.0f0;
          0.0f0 cosang -sinang 0.0f0;
@@ -183,7 +183,7 @@ end
 
 It defines a rotation around the y axis of an angle α (in RADIANTS!!).
 """  
-function rotation_y(angle_rad::Float32)
+function rotation_y(angle_rad)
     sinang, cosang = Float32(sin(angle_rad)), Float32(cos(angle_rad))
     m = [cosang 0.0f0 sinang 0.0f0;
         0.0f0 1.0f0 0.0f0 0.0f0;
@@ -202,7 +202,7 @@ end
 
 It defines a rotation around the z axis of an angle α (in RADIANTS!!).
 """      
-function rotation_z(angle_rad::Float32)
+function rotation_z(angle_rad)
     sinang, cosang = Float32(sin(angle_rad)), Float32(cos(angle_rad))
     m = [cosang -sinang 0.0f0 0.0f0;
          sinang cosang 0.0f0 0.0f0;
