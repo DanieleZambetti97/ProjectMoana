@@ -1,8 +1,8 @@
 FLOAT clock(150)
 
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0.1, 0.1, 0.1>)),
-        UNIFORM(<0.7, 0.5, 1>)
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
 )
 
 # Here is a comment
@@ -18,9 +18,15 @@ MATERIAL sphere_material(
         UNIFORM(<0, 0, 0>)
 )
 
+MATERIAL planet_material(
+        DIFFUSE(IMAGE("./examples/jupiter_texture.pfm")),
+        UNIFORM(<0.,0.,0.>)
+)
+
 PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Y(clock))
 PLANE (ground_material, IDENTITY)
 
 SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
+SPHERE(planet_material, TRANSLATION([10,-7,5]) * SCALING([7,7,7]))
 
 CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)

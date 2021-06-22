@@ -380,15 +380,14 @@ end
 
 function expect_string(input_file::InputStream)
 
-    token = input_file.read_token()
+    token = read_token(input_file)
 
     try 
         isa(token, LiteralString) == false  
     catch e
         throw(GrammarError("got $token instead of a string", token.loc))
-
-    return token.string
     end
+    return token.value.s
 end
 
 
@@ -446,7 +445,8 @@ function parse_pigment(input_file::InputStream, scene::Scene)
         result = CheckeredPigment(color1, color2, num_of_steps)
     elseif keyword == IMAGE
         file_name = expect_string(input_file)
-        image_file = open(file_name, "rb")
+        println(file_name)
+        image_file = open(file_name, "r")
         image = read_pfm_image(image_file)
         result = ImagePigment(image)
     else
