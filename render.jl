@@ -2,21 +2,23 @@ import Pkg
 Pkg.activate(normpath(@__DIR__))
 
 using ProjectMoana
+using ArgParse
 import Images: save
 import Base: write  
 import ColorTypes: RGB
 
-using ArgParse
 
 function parse_commandline()
-    s = ArgParseSettings(description = "This program generates an image reading a scene from a input file. Try me!",
-                               usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] [--camera C] [--angle α] [--distance D] 
-                                        [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
-                              epilog = "Let's try again!")
+    s = ArgParseSettings(
+        description = "This program generates an image reading a scene from a input file. Try me!",
+        usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT]
+       [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
+        epilog = "Let's try again!"
+        )
 
     @add_arg_table s begin
         "--scene"
-            help = "name of the input scene file"
+            help = "Name of the input scene file where you can define the Shapes whit their materials and positions options and the observer's Camera whit its options"
             required = false
             default = "scene1.txt"
             arg_type = String
@@ -35,33 +37,18 @@ function parse_commandline()
             required = false
             default = 480 
             arg_type = Int       
-        "--camera"
-            help = "type of camera [O, for Orthogonal, or P, for Perspective]"
-            required = false
-            default = "P"
-            arg_type = String
-        "--angle"
-            help = "angle of the z-axis rotation applied to camera (in degrees)"
-            required = false
-            default = 0.f0
-            arg_type = Float32
-        "--dist"
-            help = "distance of a Perspective Camera"
-            required = false
-            default = 1.f0
-            arg_type = Float32
         "--file_out"
             help = "name of the output file (without extension)"
             required = false
             default = "demo_out" 
             arg_type = String  
         "--render_alg"
-            help = "type of rendering algortihm [O for On-Off, F for Flat, P for Path Tracer]"
+            help = "type of rendering algortihm \n [O for On-Off,\nF for Flat,\nP for Path Tracer]"
             required = false
             default = "P" 
             arg_type = String  
         "--a"
-            help = "a_factor for normalizing image luminosity during the convertion"
+            help = "a_factor for normalizing image luminosity during the convertion to LDR"
             required = false
             default = 1.f0
             arg_type = Float32
@@ -104,14 +91,12 @@ function build_variable_table(definitions::String)
 end
 
 function main()
+
+# Initialize command line args 
     params = parse_commandline()
 
     w = params["w"]
     h = params["h"]
-    a = w/h
-    d = params["dist"]
-#    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
-    camera_tr = rotation_z(30.f0*π/180.0f0) * translation(Vec(-4.0f0,0.f0,1.f0))
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
@@ -126,59 +111,32 @@ function main()
         return
     end
 
+# Parsing scene file
     input_file = open(scene_file, "r")
     scene = parse_scene(InputStream(input_file), variables)
-    # scene = Scene()
-    # WHITE = RGB(1.,1.,1.)
-    # BLACK = RGB(0.,0.,0.)
-    
-    # sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.1,.1))), UniformPigment(RGB(0.7, 0.5, 1)))
-    # sky = Plane(translation(Vec(0.,0.,100.)) * rotation_y( 150. ), sky_color)
-    # add_shape(scene.world, sky)
-
-    # ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.3, 0.5, 0.1), RGB(0.1, 0.2, 0.5), 4)))
-    # ground = Plane( Transformation(), ground_color )
-    # add_shape(scene.world, ground)
-
-    # mirror_color = Material(SpecularBRDF(UniformPigment(RGB(0.5,0.5,0.5))))
-    # mirror = Sphere(translation(Vec(0,0,1)), mirror_color)
-    # add_shape(scene.world, mirror)
-
-    println("World objects created.")
-    
-    image = HdrImage(w, h)
-    println("Generating a $w×$h image")
-
-# Creating a Perspective of Orthogonal CAMERA
-    if params["camera"] == "O"
-        camera = OrthogonalCamera(a, camera_tr)
-    elseif params["camera"] == "P"
-        #camera = PerspectiveCamera(a, camera_tr, d)
-        camera = PerspectiveCamera(1., camera_tr, 2.)
-    end
+    println("Observer's Camera and World objects created.")
 
 # Creating an ImageTracer object 
-    #tracer = ImageTracer(image, camera, params["nrays"])
+    image = HdrImage(w, h)
+    println("Generating a $w×$h image")
     tracer = ImageTracer(image, scene.camera, params["nrays"])
 
-    println("Observer initialized.")
-
+# Computing ray intersection
     print("Computing ray intersection ")
     if params["render_alg"] == "F"
-        println("using Flat renderer")
+        println("using Flat algorithm")
         renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
-        println("using Path Tracer renderer")
+        println("using Path Tracer algorithm")
         renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq),
                                        num_of_rays=2, max_depth=3, russian_roulette_limit=2)
         fire_all_rays(tracer, PathTracer, renderer)
     else
-        println("using On/Off renderer")
+        println("using On/Off algorithm")
         renderer = OnOff_Renderer(scene.world)
         fire_all_rays(tracer, OnOff, renderer)
     end
-
     println("\nRay intersections evaluated.")
 
 
@@ -186,23 +144,14 @@ function main()
     write(file_out_pfm, tracer.image)
     println("$(file_out_pfm) has been written to disk.")
 
-    # print(tracer.image.pixels])
-
-
 # Automatic CONVERSION TO JPEG FILE 
     # normalize_image(tracer.image, params["a"])
     # clamp_image(tracer.image)
-
     # matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
-    
     # save(file_out_png, matrix_pixels')
-
     # println("$(file_out_png) has been automatically written to disk.")
       
 end
 
 
-main()  
-
-
-############
+main()
