@@ -212,9 +212,9 @@ At this point, you just type:
 
 ### Animations
 
-## Contributing :recycle:
+## Contributing 💌
 
-Since this is a WIP project [pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
+[Pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License :registered::copyright:
 
