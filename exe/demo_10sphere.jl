@@ -32,7 +32,7 @@ function parse_commandline()
             required = false
             default = 0.
             arg_type = Float64
-        "--dist"
+        "--distance"
             help = "distance of a Perspective Camera"
             required = false
             default = 1.
@@ -63,7 +63,7 @@ function main()
     w = params["width"]
     h = params["height"]
     a = w/h
-    d = params["dist"]
+    d = params["distance"]
     camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
     image = HdrImage(w, h)
     file_out_pfm = "$(params["file_out"]).pfm"
@@ -86,16 +86,15 @@ function main()
     for x in [-0.5, 0.5]
         for y in [-0.5, 0.5]
             for z in [-0.5, 0.5]
-               add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.2, 0.2, 0.2)), material1 ))
+               add_shape(world, Sphere(translation(Vec(x, y, z)) * scaling(Vec(0.1, 0.1, 0.1)), material1 ))
             end
         end
     end
 
-   add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.2, 0.2, 0.2)), material2 ))
-   add_shape(world, Sphere(translation(Vec( -0.5, 0.0,-0.5)) * scaling(Vec(2, 2, 2)), material3 ))
-   add_shape(world, Plane(translation(Vec(1.1,0,-1.5))*rotation_y(0.0*pi/2.), material2))
+   add_shape(world, Sphere(translation(Vec( 0.0, 0.5, 0.0)) * scaling(Vec(0.1, 0.1, 0.1)), material2 ))
+   add_shape(world, Sphere(translation(Vec( -0.5, 0.0,-0.5)) * scaling(Vec(.1,.1,.1)), material3 ))
 
-    println("World objects created.")
+   println("World objects created.")
 
 
 # Creating a Perspective of Orthogonal CAMERA
@@ -132,14 +131,14 @@ function main()
 
 
 # Automatic CONVERSION TO JPEG FILE 
-    normalize_image(tracer.image, params["a"])
-    clamp_image(tracer.image)
+    # normalize_image(tracer.image, params["a"])
+    # clamp_image(tracer.image)
 
-    matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
+    # matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
     
-    save(file_out_png, matrix_pixels')
+    # save(file_out_png, matrix_pixels')
 
-    println("$(file_out_png) has been automatically written to disk.")
+    # println("$(file_out_png) has been automatically written to disk.")
       
 end
 

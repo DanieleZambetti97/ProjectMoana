@@ -3,7 +3,7 @@ Pkg.activate(normpath(@__DIR__))
 
 using ProjectMoana
 import Images: save
-import Base: write  
+import Base: write
 import ColorTypes: RGB
 
 using ArgParse
@@ -57,7 +57,12 @@ function parse_commandline()
             required = false
             default = 54
             arg_type = Int 
-    end
+        "--nrays"
+            help = "Number of rays for antialasing"
+            required = false
+            default = 4
+            arg_type = Int
+   end
 
     return parse_args(s)
 end
@@ -69,13 +74,20 @@ function main()
     h = params["height"]
     a = w/h
     d = params["dist"]
-    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-1.0,0.,0.))
+    camera_tr = rotation_z(params["angle"]*π/180.0) * translation(Vec(-2.0,0.,0.))
     image = HdrImage(w, h)
-    path_tracer
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["render_alg"]
     seq = convert(UInt64, params["seq"])
+    samples_per_pixel = params["nrays"]
+
+    samples_per_side = sqrt(samples_per_pixel)
+    if samples_per_side^2 != samples_per_pixel
+        println("Error, the number of rays per pixel ($samples_per_pixel) must be a perfect square")
+        return
+    end
+
 
 
 # Creating WORLD with sky, sun, checkered gorud, Mars, Jupiter and mirror
@@ -84,27 +96,27 @@ function main()
     BLACK = RGB(0.,0.,0.)
     
     sky_color = Material(DiffuseBRDF(UniformPigment(RGB(.1,.5,.99))), UniformPigment(BLACK))
-    sky = Plane(translation(Vec(0.,0.,100.)) * rotation_y( pi/6.), sky_color)
+    sky = Plane(translation(Vec(0.,0.,500.)) * rotation_y( pi/3.), sky_color)
     add_shape(world, sky)
 
     sun_color = Material(DiffuseBRDF(UniformPigment(RGB(0.6,0.8,1.))), UniformPigment(WHITE))
     sun = Plane(translation(Vec(-100,0.,0.)) * rotation_y(pi/2.), sun_color )
     add_shape(world, sun)
 
-    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.7,0.3,0.1), RGB(0.1,0.7,0.1), 10)))
-    ground = Plane(translation(Vec(0.,0.,-2.)) * rotation_y(pi/12.) * rotation_x(pi/24.) * scaling(Vec(10,10,10)), ground_color )
+    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.3, 0.5, 0.1), RGB(1, 0.6, 0.8), 4)))
+    ground = Plane(translation(Vec(0.,0.,-1.5)) * rotation_y(pi/12.) * rotation_x(pi/24.) * scaling(Vec(5,5,5)), ground_color )
     add_shape(world, ground)
 
     mirror_color = Material(SpecularBRDF())
-    mirror = Sphere(translation(Vec(3,2,0))*scaling(Vec(1.,1.,1.)), mirror_color)
+    mirror = Sphere(translation(Vec(1.5,2,-0.5))*scaling(Vec(1.,1.5,1.)), mirror_color)
     add_shape(world, mirror)
 
     planet2_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/jupiter_texture.pfm"))))
-    planet2 = Sphere(translation(Vec(6.,-2.,4.)) * scaling(Vec(3.,3.,3.)), planet2_color)
+    planet2 = Sphere(translation(Vec(6.,-4.,3.)) * scaling(Vec(3.,3.,3.)), planet2_color)
     add_shape(world, planet2)
 
     planet_color = Material(DiffuseBRDF(ImagePigment(read_pfm_image("./examples/mars_texture.pfm"))))
-    planet = Sphere(translation(Vec(2,-2.,-1.5)) * scaling(Vec(1.,1.,1.)), planet_color)
+    planet = Sphere(translation(Vec(1.,-1.,-1.1)) * scaling(Vec(1.,1.,1.)), planet_color)
     add_shape(world, planet)
 
     println("World objects created.")
@@ -119,7 +131,7 @@ function main()
 
 
 # Creating an ImageTracer object 
-    tracer = ImageTracer(image, camera)
+    tracer = ImageTracer(image, camera, samples_per_pixel)
 
     println("Observer initialized.")
 
@@ -130,7 +142,7 @@ function main()
         fire_all_rays(tracer, Flat, renderer)
     elseif params["render_alg"] == "P"
         println("using Path Tracer renderer")
-        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=1, max_depth=2, russian_roulette_limit=3)
+        renderer = PathTracer_Renderer(world; background_color=RGB(0.,0.,0.), pcg=PCG(UInt64(42), seq), num_of_rays=2, max_depth=2, russian_roulette_limit=3)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off renderer")
