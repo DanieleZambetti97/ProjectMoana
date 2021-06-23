@@ -186,7 +186,7 @@ Here we propose some beautiful things that can boost up our program: the possibi
 
 ### Parallel sum
 
-Since creating a image can requiring up to hours, you can significantly reduce the computational time by using parallel computation. You can write these lines into a bash script `my_parallel.sh`  (once installed `parallel`):
+Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. You can modify these lines into the bash script `exe/parallel_exe.sh`:
 
 ```bash
 file_begin="$1"
