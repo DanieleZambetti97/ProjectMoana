@@ -63,9 +63,42 @@ Do not worry about writing all the correct parameters! All of them are set to a 
 
 ## Input files: the correct syntax
 
-We implemented a new (very simple😄) language for creating images inside ProjectMoana.  
+We implemented a new (very simple😄) language for creating images inside ProjectMoana. We believe that this language is easier to learn following a step-by-step tutorial generating a simple image.  
 
-### A simple example
+### Step 1: the sky
+
+Open a txt file `my_first_scene.txt` and write the following lines:
+
+```
+# these are comments, yuo can write what you want!
+
+FLOAT clock(150)     # here the FLOAT variable clock is defined
+
+# defining a MATERIAL
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+# defining a PLANE with the sky_material and rotated around the Y axis with an angle clock
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+
+# defining the observer through a CAMERA rotated and translated
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+Here yuo can notice some particular features of this "scene-language":
+
+- the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be in capslock;
+- spaces, returns, and # are ignored;
+- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or SPECULAR, reflecting everything);
+- once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
+- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). TRANSLATION are defined by a 3D vector and ROTATION_* are defined by an angle in degrees.
+- lastly, you can generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
+
+This text file generates this image:
+
+
+
 
 ## What can Moana do?
 
