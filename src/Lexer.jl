@@ -111,7 +111,11 @@ mutable struct InputStream
 end
 
 
-# new error message to dislpay when something went wrong:
+""" 
+    GrammarError(msg::String, loc::SourceLocation)
+
+New error message to dislpay when something went wrong in the lexical review.
+"""
 struct GrammarError <: Exception
     msg::String
     
@@ -311,7 +315,7 @@ end
 
 ## PARSER #########################################################################################
 
-# auxiliary functions
+# auxiliary ASSERT functions:
 assert_is_keyword(token::Token, keyword::KeywordEnum)= isa(token.value, Keyword) && token.value.keyword == keyword
 
 assert_is_identifier(token::Token, identifier::Union{String, Char}) = isa(token.value, Identifier) && token.value.s == identifier 

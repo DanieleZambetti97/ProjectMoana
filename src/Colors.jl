@@ -2,7 +2,7 @@ using ColorTypes
 import Crayons.Crayon
 
 
-## Redifing the BASIC OPERATIONS between colors #########################################################################################
+## Redefining the BASIC OPERATIONS between colors #########################################################################################
 
 # Sum of two colors 
 Base.:+(c1::RGB{T}, c2::RGB{T}) where {T} = RGB((c1.r + c2.r), (c1.g + c2.g), (c1.b + c2.b))

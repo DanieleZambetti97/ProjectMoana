@@ -3,7 +3,6 @@
 abstract type Renderer end 
 
 # Camera is the abstract type which the two different cameras are generated from. 
-
 abstract type Camera
 end
 
@@ -138,9 +137,10 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
             im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1.f0 / im.ray_per_side^2)
         end
 
-        percentage= convert(Int,floor(100*(row-1)/im.image.height)) ##print progress
+        # mini-script for printing the percentage of rays computed
+        percentage= convert(Int32 ,floor(100*(row-1)/im.image.height)) ##print progress
         if percentage == temp+2
-            i = convert(Int,floor(percentage/2))
+            i = convert(Int32 ,floor(percentage/2))
             print("\rComputed $(percentage)% of pixels [$("#"^i)$("."^(49-i))]")
             temp = percentage
         end
