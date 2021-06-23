@@ -119,7 +119,7 @@ function main()
 # Creating an ImageTracer object 
     image = HdrImage(w, h)
     println("Generating a $w×$h image")
-    tracer = ImageTracer(image, scene.camera, params["nrays"])
+    tracer = ImageTracer(image, scene.camera, samples_per_pixel)
 
 # Computing ray intersection
     print("Computing ray intersection ")

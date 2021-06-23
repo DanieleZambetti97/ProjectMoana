@@ -7,11 +7,11 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [IN_FILE] [--a] [--γ] [OUT_FILE]",
+                               usage = "usage: [--help] [--in_file IN_FILE] [--a] [--γ] [--out_file OUT_FILE]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "IN_FILE"
+        "--in_file"
             help = "input PFM file name"
             required = true
         "--a"
@@ -24,7 +24,7 @@ function parse_commandline()
             required = false
             default = 1.0
             arg_type = Float64
-        "OUT_FILE"
+        "--out_file"
             help = "output LDR file name"
             required = false
             default = "out.png"
@@ -39,11 +39,11 @@ function main()
 
 # firtsly, open the input file
     img = HdrImage(1, 1)
-    open(params["IN_FILE"], "r") do inpf
+    open(params["in_file"], "r") do inpf
         img = read_pfm_image(inpf)
     end
     
-    println("File $(params["IN_FILE"]) has been read from disk.") # check
+    println("File $(params["in_file"]) has been read from disk.") # check
 
 # then normalizing and clamping
 
@@ -54,9 +54,9 @@ function main()
 
     image = reshape(img.pixels, (img.width,img.height))
     
-    save("$(params["OUT_FILE"])",image')
+    save("$(params["out_file"])",image')
 
-    println("File $(params["OUT_FILE"]) has been written to disk.") # check
+    println("File $(params["out_file"]) has been written to disk.") # check
     
 end
 

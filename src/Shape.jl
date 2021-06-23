@@ -101,21 +101,27 @@ function _plane_normal(point::Point, ray_dir::Vec)
     return result
 end
 
-function _plane_normal(point::Point, origin::Vec, ray_dir::Vec)
-    # result = Normal(0.f0, 0.f0, 1.f0)
-    # if ray_dir * Vec(0.f0, 0.f0, 1.f0) < 0.f0
-    #     result = Normal(0.f0,0.f0,-1.f0)
-    # else 
-    #     nothing
-    # end
-    # return result
-    # dir = Vec(point.x-origin.x, point.y-origin.y, point.z-origin.z)
-    # result = normalize(dir)
-    # if ray_dir.z > 0.f0
-    #     return Normal(result.x,result.y,result.z)
-    # else
-    #     return Normal(-1.f0*result.x,-1.f0*result.y,-1.f0*result.z)
-    # end
+
+"""
+    AAB(T,M)
+
+It creates a **Axis-aligned boxes**, where T is a generic ``Transformation`` applied to the cube
+that has two opposite vertices in (0,0,0) and (1,1,1), M is the ``Material`` of the cube.
+"""
+struct AAB <: Shape
+    transformation::Transformation
+    material::Material
+
+    AAB(transformation::Transformation=Transformation(),
+        material::Material=Material()) =
+        new(transformation, material)
+end
+
+## Hidden methods for AAB
+function _cube_point_to_uv(point::Point)
+end
+
+function _cube_normal(point::Point, ray_dir::Vec)
 end
 
 ## Code for HITRECORD ###########################################################################################################################
@@ -229,4 +235,9 @@ function ray_intersection(plane::Plane, ray::Ray)
         end
     end
     return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
+end
+
+function ray_intersection(cube::AAB, ray::Ray)
+    inverse_ray= inverse(cube.transformation) * ray
+    origin_vec = toVec(inverse_ray.origin)
 end
