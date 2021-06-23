@@ -91,7 +91,7 @@ Here yuo can notice some particular features of this "scene-language":
 
 - the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be in capslock;
 - spaces, returns, and # are ignored;
-- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or SPECULAR, reflecting everything);
+- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive (that can be DIFFUSE or SPECULAR) and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or TEXTURE, reproducing an image);
 - once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
 - you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). TRANSLATION are defined by a 3D vector and ROTATION_* are defined by an angle in degrees.
 - lastly, you can generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
@@ -172,7 +172,13 @@ Et volià! These lines generate your first Moana image:
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
 
 
-## What can Moana do?
+## What can Moana do? 😮
+
+This is the best image we created:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/example1.png>
+
+We challenge you to do more spectacular images! (If you can send it to us! 😉)
 
 ## Advanced tips: animations
 
