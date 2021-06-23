@@ -61,7 +61,8 @@ where
 
 Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
 
-## Input files: the correct syntax
+
+## Input files: a quick tutorial 😉
 
 We implemented a new (very simple😄) language for creating images inside ProjectMoana. We believe that this language is easier to learn following a step-by-step tutorial generating a simple image.  
 
@@ -97,7 +98,78 @@ Here yuo can notice some particular features of this "scene-language":
 
 This text file generates this image:
 
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sky.png>
 
+### Step 2: the ground
+
+Now you can add a second plane: the ground. Add these lines:
+
+```
+FLOAT clock(150)
+
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+#### new lines ###############
+MATERIAL ground_material(
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
+        UNIFORM(<0, 0, 0>)
+)
+##############################
+
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+#### new lines ###############
+PLANE (ground_material, IDENTITY)
+##############################
+
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+
+Now you added a checkered ground that is not emissive. Thus, it is lighted by the emissive skyblue sky. The IDENTITY is the null transformation.
+
+This script creates this image:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/ground.png>
+
+### Step 3: the sphere
+
+At this point you can place a non-emissive specular sphere in the middle of the scene; just add these lines:
+
+```
+FLOAT clock(150)
+
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+MATERIAL ground_material(
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
+        UNIFORM(<0, 0, 0>)
+)
+
+#### new lines ###############
+MATERIAL sphere_material(
+        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        UNIFORM(<0, 0, 0>)
+)
+##############################
+
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+PLANE (ground_material, IDENTITY)
+#### new lines ###############
+SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
+##############################
+
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+Et volià! These lines generate your first Moana image:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
 
 
 ## What can Moana do?
