@@ -180,7 +180,37 @@ This is the best image we created:
 
 We challenge you to do more spectacular images! (If you can send it to us! 😉)
 
-## Advanced tips: animations
+## Advanced tips 🤓
+
+Here we propose some beautiful things that can boost up our program: the possibility to create the same image using the parallel computation and the possibility to create animations.
+
+### Parallel sum
+
+Since creating a image can requiring up to hours, you can significantly reduce the computational time by using parallel computation. You can write these lines into a bash script `my_parallel.sh`  (once installed `parallel`):
+
+```bash
+file_begin="$1"
+
+parallel --ungroup -j N_CORES ./exe/parallel_img.sh '{}' $file_begin ::: $(seq 0 (TOT-1))
+
+julia parallel_sum.jl $file_begin
+
+#find "." -name $file_begin"0*" -type f -delete   # uncomment this line if you want to delete the single images after the sum
+```
+where:
+- `N_CORES` is the number of cores of your processor;
+- `TOT` is the total number of images you to sum;
+- `parallel_sum.jl` is the name of a bash script that runs the actual sum of the `TOT` images.
+
+With this script you create `TOT` images of the same scene but with a different backgorund noise. Thus, when summing them, the noise is significantly reduced. You obtain both a redecution in noise and in computational time!
+
+At this point, you just type:
+```bash
+~$ bash exe/parallel_exe.sh
+```
+
+
+### Animations
 
 ## Contributing :recycle:
 
