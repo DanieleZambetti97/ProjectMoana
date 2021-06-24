@@ -92,8 +92,8 @@ Here yuo can notice some particular features of this "scene-language":
 - spaces, returns, and # are ignored;
 - to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive (that can be DIFFUSE or SPECULAR) and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or TEXTURE, reproducing an image);
 - once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). TRANSLATION are defined by a 3D vector and ROTATION_* are defined by an angle in degrees.
-- lastly, you can generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
+- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). A TRANSLATION is defined by a 3D vector and a ROTATION_* is defined by an angle in degrees.
+- lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
 
 Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
 
