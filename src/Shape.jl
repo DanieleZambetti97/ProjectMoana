@@ -119,9 +119,45 @@ end
 
 ## Hidden methods for AAB
 function _cube_point_to_uv(point::Point)
+    if point.x == 0
+        u = point.z
+        v = 2.f0 - point.y 
+    elseif point.x == 1
+        u = 3.f0 - point.z 
+        v = 2.f0 - point.y
+    elseif point.z == 0
+        u = 4.f0 - point.x 
+        v = 2.f0 - point.y
+    elseif point.z == 1
+        u = 1.f0 + point.x
+        v = 2.f0 - point.y 
+    elseif point.y == 0
+        u = 1.f0 + point.x
+        v = 3.f0 - point.z
+    elseif point.y == 1
+        u = 1.f0 + point.x 
+        v = point.z
+    else 
+        u = 12.f0
+        v = 12.f0
+        println("\n Error! This point it cannot be mapped on the cube\n")
+    end
+    return Vec2D(u/4.f0, v/3.f0)
 end
 
 function _cube_normal(point::Point, ray_dir::Vec)
+    if point.x == 0 || point.x == 1
+        result = Vec(1.f0, 0.f0, 0.f0)
+    elseif point.y == 0 || point.y == 1
+        result = Vec(0.f0, 1.f0, 0.f0)
+    elseif point.z == 0 || point.z == 1
+        result = Vec(0.f0, 0.f0, 1.f0)
+    else 
+        result = Vec(9,9,9)############!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        println("\n Error! I cannot calculated the normal to this point of the cube\n")
+    end
+    result * ray_dir < 0.f0 ? nothing : result = result * -1.f0
+    return Normal(result.x, result.y, result.z)
 end
 
 ## Code for HITRECORD ###########################################################################################################################
@@ -146,7 +182,8 @@ struct HitRecord
     shape::Shape
 end
 
-Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t≈H2.t && H1.ray≈H2.ray && H1.shape ≈ H2.shape
+Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t ≈ H2.t && H1.ray≈H2.ray && H1.shape ≈ H2.shape
+#Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && isapprox(H1.t,H2.t, atol=5*10^-2) && H1.ray≈H2.ray && H1.shape ≈ H2.shape
 Base.:≈(::Nothing,H2::HitRecord) = false
 
 ## Definition of WORLD ############################################################################################################################################
@@ -240,4 +277,38 @@ end
 function ray_intersection(cube::AAB, ray::Ray)
     inverse_ray= inverse(cube.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
+    t_=zeros(2)
+
+    t_min ,t_max = sort( [- inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x] )
+    t_ymin ,t_ymax = sort( [- inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y] )
+
+    println("$t_min > $t_ymax) || ($t_ymin > $t_max")
+
+    if (t_min > t_ymax) || (t_ymin > t_max)
+        println("1 if")
+        return nothing
+    end
+    t_min = max(t_min, t_ymin)
+    t_max = min(t_max, t_ymax)
+
+    t_zmin ,t_zmax = sort( [- inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z] )
+
+    if (t_min > t_zmax) || (t_zmin > t_max)
+        println("2 if")
+        return nothing
+    end
+    t_min = max(t_min, t_zmin)
+    t_max = min(t_max, t_zmax)
+        
+    if (inverse_ray.tmin ≤ t_min ≤ inverse_ray.tmax)
+        hit_point = at(inverse_ray, t_min)
+        println("3 if")
+        return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_min, ray, cube)
+    elseif (inverse_ray.tmin ≤ t_max ≤ inverse_ray.tmax)
+        hit_point = at(inverse_ray, t_max)
+        println("4 if")
+        return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_max, ray, cube)
+    else
+        return nothing 
+    end
 end

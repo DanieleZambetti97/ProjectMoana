@@ -66,8 +66,11 @@ Base.:-(V1::Vec , V2::Vec )   = Vec((V1.x-V2.x), (V1.y-V2.y), (V1.z-V2.z))
 
 Base.:*(V1::Vec , scalar::Real)   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 
-Base.:*(scalar::Real, V1::Vec )   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
+Base.:*(scalar::Real, V1::Normal )   = Normal(V1.x*Float32(scalar), V1.y*Float32(scalar), V1.z*Float32(scalar))
 
+Base.:*(V1::Normal , scalar::Real)   = Normal(V1.x*Float32(scalar), V1.y*Float32(scalar), V1.z*Float32(scalar))
+
+Base.:*(scalar::Real, V1::Vec )   = Vec(V1.x*scalar, V1.y*scalar, V1.z*scalar)
 Base.:*(V1::Vec , V2::Vec )   = (V1.x*V2.x)+(V1.y*V2.y)+(V1.z*V2.z)
 
 Base.:≈(V1::Vec2D, V2::Vec2D) = Base.isapprox(V1.u, V2.u, atol = 5f-6)  && isapprox(V1.v, V2.v, atol = 5f-6)
