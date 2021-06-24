@@ -11,54 +11,49 @@ import ColorTypes: RGB
 function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
-        usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT]
-       [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
+        usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--file_out FILENAME] 
+        [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
         epilog = "Let's try again!"
         )
 
     @add_arg_table s begin
         "--scene"
-            help = "Name of the input scene file where you can define the Shapes whit their materials and positions options and the observer's Camera whit its options"
+            help = "Name of the input scene file where you can define the Shapes whit their materials and positions options and the observer's Camera whit its options;"
             required = false
             default = "scene1.txt"
             arg_type = String
-        "--anim_var"
-            help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
-            required = false
-            default = ""
-            arg_type = String
         "--w"
-            help = "width of the image"
+            help = "width of the image;"
             required = false
             default = 640
             arg_type = Int
         "--h"
-            help = "height of the image"
+            help = "height of the image;"
             required = false
             default = 480 
             arg_type = Int       
         "--file_out"
-            help = "name of the output file (without extension)"
+            help = "name of the output file (without extension);"
             required = false
             default = "demo_out" 
             arg_type = String  
         "--render_alg"
-            help = "type of rendering algortihm \n [O for On-Off,\nF for Flat,\nP for Path Tracer]"
+            help = "type of rendering algortihm (O for On-Off, F for Flat, P for Path Tracer);"
             required = false
             default = "P" 
             arg_type = String  
         "--a"
-            help = "a_factor for normalizing image luminosity during the convertion to LDR"
+            help = "a_factor for normalizing image luminosity during the convertion to LDR;"
             required = false
             default = 1.f0
             arg_type = Float32
         "--seq"
-            help = "sequence number for PCG generator"
+            help = "sequence number for PCG generator;"
             required = false
             default = 54
             arg_type = Int
         "--nrays"
-            help = "Number of rays for antialasing"
+            help = "Number of rays for antialasing."
             required = false
             default = 9
             arg_type = Int
@@ -103,7 +98,7 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["nrays"]
-    variables = build_variable_table("$(params["anim_var"])")
+    variables = build_variable_table("") # animation variable, if you want
 
     samples_per_side = sqrt(samples_per_pixel)
     if samples_per_side^2 != samples_per_pixel
