@@ -61,19 +61,160 @@ where
 
 Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
 
-## Input files: the correct syntax
 
-We implemented a new (very simple😄) language for creating images inside ProjectMoana.  
+## Input files: a quick tutorial 😉
 
-### A simple example
+We implemented a new (very simple😄) language for creating images inside ProjectMoana. We believe that this language is easier to learn following a step-by-step tutorial generating a simple image.  
 
-## What can Moana do?
+### Step 1: the sky
 
-## Advanced tips: animations
+Open a txt file `my_first_scene.txt` and write the following lines:
 
-## Contributing :recycle:
+```
+# these are comments, yuo can write what you want!
 
-Since this is a WIP project [pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
+FLOAT clock(150)     # here the FLOAT variable clock is defined
+
+# defining a MATERIAL
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+# defining a PLANE with the sky_material and rotated around the Y axis with an angle clock
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+
+# defining the observer through a CAMERA rotated and translated
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+Here yuo can notice some particular features of this "scene-language":
+
+- the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be in capslock;
+- spaces, returns, and # are ignored;
+- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive (that can be DIFFUSE or SPECULAR) and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or TEXTURE, reproducing an image);
+- once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
+- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). TRANSLATION are defined by a 3D vector and ROTATION_* are defined by an angle in degrees.
+- lastly, you can generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
+
+This text file generates this image:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sky.png>
+
+### Step 2: the ground
+
+Now you can add a second plane: the ground. Add these lines:
+
+```
+FLOAT clock(150)
+
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+#### new lines ###############
+MATERIAL ground_material(
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
+        UNIFORM(<0, 0, 0>)
+)
+##############################
+
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+#### new lines ###############
+PLANE (ground_material, IDENTITY)
+##############################
+
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+
+Now you added a checkered ground that is not emissive. Thus, it is lighted by the emissive skyblue sky. The IDENTITY is the null transformation.
+
+This script creates this image:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/ground.png>
+
+### Step 3: the sphere
+
+At this point you can place a non-emissive specular sphere in the middle of the scene; just add these lines:
+
+```
+FLOAT clock(150)
+
+MATERIAL sky_material(
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        UNIFORM(<0.5, 0.8, 1>)
+)
+
+MATERIAL ground_material(
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
+        UNIFORM(<0, 0, 0>)
+)
+
+#### new lines ###############
+MATERIAL sphere_material(
+        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        UNIFORM(<0, 0, 0>)
+)
+##############################
+
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+PLANE (ground_material, IDENTITY)
+#### new lines ###############
+SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
+##############################
+
+CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+```
+Et volià! These lines generate your first Moana image:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
+
+
+## What can Moana do? 😮
+
+This is the best image we created:
+
+<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/example1.png>
+
+We challenge you to do more spectacular images! (If you can send it to us! 😉)
+
+## Advanced tips 🤓
+
+Here we propose some beautiful things that can boost up our program: the possibility to create the same image using the parallel computation and the possibility to create animations.
+
+### Parallel sum
+
+Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. You can modify these lines into the bash script `exe/parallel_exe.sh`:
+
+```bash
+file_begin="$1"
+
+parallel --ungroup -j N_CORES ./exe/parallel_img.sh '{}' $file_begin ::: $(seq 0 (TOT-1))
+
+julia parallel_sum.jl $file_begin
+
+#find "." -name $file_begin"0*" -type f -delete   # uncomment this line if you want to delete the single images after the sum
+```
+where:
+- `N_CORES` is the number of cores of your processor;
+- `TOT` is the total number of images you to sum;
+- `parallel_sum.jl` is the name of a bash script that runs the actual sum of the `TOT` images.
+
+With this script you create `TOT` images of the same scene but with a different backgorund noise. Thus, when summing them, the noise is significantly reduced. You obtain both a redecution in noise and in computational time!
+
+At this point, you just type:
+```bash
+~$ bash exe/parallel_exe.sh
+```
+
+
+### Animations
+
+## Contributing 💌
+
+[Pull requests](https://github.com/DanieleZambetti97/ProjectMoana/pulls) are more than welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License :registered::copyright:
 
