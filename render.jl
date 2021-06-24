@@ -113,7 +113,7 @@ function main()
 
 # Parsing scene file
     input_file = open(scene_file, "r")
-    scene = parse_scene(InputStream(input_file), variables)
+    scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")
 
 # Creating an ImageTracer object 
