@@ -44,13 +44,12 @@ The current stable version is 1.0.0.
 Just type:
 
 ```bash
-julia render.jl [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] 
-                         [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]
+julia render.jl [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--file_out FILENAME] 
+                         [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]
 ```
 
 where
 - `--scene` is the name of the input scene file where you can define Shapes and a Camera with their options;
-- `--anim_var` is a variable usefull for animations (see chapter **Advanced tips: animation**);
 - `--w` is the width of the image you want to generate (in pixels);
 - `--h` is the height of the image (in pixels);
 - `--file_out` is the name of the output file (without extension, e.g. `demo_out`);
@@ -182,8 +181,6 @@ We challenge you to do more spectacular images! (If you can send it to us! 😉)
 
 ## Advanced tips 🤓
 
-Here we propose some beautiful things that can boost up our program: the possibility to create the same image using the parallel computation and the possibility to create animations.
-
 ### Parallel sum
 
 Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. You can modify these lines into the bash script `exe/parallel_exe.sh`:
@@ -208,9 +205,6 @@ At this point, you just type:
 ```bash
 ~$ bash exe/parallel_exe.sh
 ```
-
-
-### Animations
 
 ## Contributing 💌
 
