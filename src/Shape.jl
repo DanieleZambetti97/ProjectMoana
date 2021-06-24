@@ -140,7 +140,7 @@ function _cube_point_to_uv(point::Point)
     else 
         u = 12.f0
         v = 12.f0
-#        println("\n Error! This point it cannot be mapped on the cube\n")
+        println("\n Error! This point it cannot be mapped on the cube\n")
     end
     return Vec2D(u/4.f0, v/3.f0)
 end
@@ -154,7 +154,7 @@ function _cube_normal(point::Point, ray_dir::Vec)
         result = Vec(0.f0, 0.f0, 1.f0)
     else 
         result = Vec(9,9,9)############!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#        println("\n Error! I cannot calculated the normal to this point of the cube\n")
+        println("\n Error! I cannot calculated the normal to this point of the cube\n")
     end
     result * ray_dir < 0.f0 ? nothing : result = result * -1.f0
     return Normal(result.x, result.y, result.z)
@@ -282,10 +282,10 @@ function ray_intersection(cube::AAB, ray::Ray)
     t_min ,t_max = sort( [- inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x] )
     t_ymin ,t_ymax = sort( [- inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y] )
 
-#    println("$t_min > $t_ymax) || ($t_ymin > $t_max")
+    println("$t_min > $t_ymax) || ($t_ymin > $t_max")
 
     if (t_min > t_ymax) || (t_ymin > t_max)
- #       println("1 if")
+        println("1 if")
         return nothing
     end
     t_min = max(t_min, t_ymin)
@@ -294,7 +294,7 @@ function ray_intersection(cube::AAB, ray::Ray)
     t_zmin ,t_zmax = sort( [- inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z] )
 
     if (t_min > t_zmax) || (t_zmin > t_max)
-  #      println("2 if")
+        println("2 if")
         return nothing
     end
     t_min = max(t_min, t_zmin)
@@ -302,11 +302,11 @@ function ray_intersection(cube::AAB, ray::Ray)
         
     if (inverse_ray.tmin ≤ t_min ≤ inverse_ray.tmax)
         hit_point = at(inverse_ray, t_min)
-   #     println("3 if")
+        println("3 if")
         return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_min, ray, cube)
     elseif (inverse_ray.tmin ≤ t_max ≤ inverse_ray.tmax)
         hit_point = at(inverse_ray, t_max)
-    #    println("4 if")
+        println("4 if")
         return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_max, ray, cube)
     else
         return nothing 

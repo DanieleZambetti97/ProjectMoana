@@ -63,6 +63,7 @@ end
     ORTHOGONAL = 17
     PERSPECTIVE = 18
     FLOAT = 19
+    AABOX = 20
 end
 
 mutable struct Keyword
@@ -121,7 +122,7 @@ struct GrammarError <: Exception
     
     GrammarError(msg::String,
                  loc::SourceLocation = SourceLocation() ) =
-                 new("$msg \n Stacktrace: \n in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
+                 new("$msg Stacktrace: in $(loc.file_name) at line $(loc.line_num) : $(loc.col_num)")
 end
 
 
@@ -449,7 +450,6 @@ function parse_pigment(input_file::InputStream, scene::Scene)
         result = CheckeredPigment(color1, color2, num_of_steps)
     elseif keyword == IMAGE
         file_name = expect_string(input_file)
-        println(file_name)
         image_file = open(file_name, "r")
         image = read_pfm_image(image_file)
         result = ImagePigment(image)
@@ -566,6 +566,20 @@ function parse_plane(input_file::InputStream, scene::Scene)
     return Plane(transformation, scene.materials[material_name])
 end
 
+function parse_aab(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    material_name = expect_identifier(input_file)
+    if haskey(scene.materials, material_name) == false
+        # We raise the exception here because input_file is pointing to the end of the wrong identifier
+        throw(GrammarError(input_file.location, "unknown material $material_name"))
+    end
+    expect_symbol(input_file, ',')
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ')')
+
+    return AAB(transformation, scene.materials[material_name])
+end
 
 function parse_camera(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, '(')
@@ -626,6 +640,8 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world,parse_sphere(input_file, scene))
         elseif what.value.keyword == PLANE
             add_shape(scene.world, parse_plane(input_file, scene))
+        elseif what.value.keyword == AABOX
+            add_shape(scene.world, parse_aab(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError(what.location, "You cannot functionine more than one camera"))
