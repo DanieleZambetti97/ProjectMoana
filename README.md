@@ -33,7 +33,7 @@ The current stable version is 1.0.0.
    ```bash
    ~$ julia
    julia> using Pkg          # press ] to enter the package manager;
-   (@v1.5) pkg> activate .
+   (@v1.6) pkg> activate .
    (ProjectMoana) pkg>       # press backspace to exit;
    julia> Pkg.instantiate()  # this command will download and update the dependencies needed (it might take a while...);
    julia> exit()             # exiting the REPL.
