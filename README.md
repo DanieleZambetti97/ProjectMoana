@@ -1,10 +1,14 @@
 <img align="right" width="300" src="https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/PM_logo_2.png">
 
 # ProjectMoana :ocean::ocean:
+
 [![Unit tests](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml/badge.svg?branch=cameras)](https://github.com/DanieleZambetti97/ProjectMoana/actions/workflows/UnitTests.yml)
+
 > “Sometimes our strengths lie beneath the surface … Far beneath, in some cases.”  [💬](https://www.youtube.com/watch?v=fZ3QhwgVOTU)
 
-ProjectMoana is a Julia rendering program, able to generate images starting from a input text file (using the proper syntax). In addition it can convert PFM images to LDR formats (such as PNG and JPEG) using the Julia package [ImageMagick](https://juliapackages.com/p/imagemagick).
+ProjectMoana is a Julia rendering program, able to generate images starting from a input text file (using the proper syntax). 
+
+In addition it can convert PFM images to LDR formats (such as PNG and JPEG) using the Julia package [ImageMagick](https://juliapackages.com/p/imagemagick).
 The current stable version is 1.0.0.
 
 ## Requirements :heavy_exclamation_mark:
@@ -51,18 +55,19 @@ julia render.jl [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--alg RE
 ```
 
 where
+
 - `--scene` is the name of the input scene file where you can define Shapes and a Camera with their options;
-- `--w` is the width of the image you want to generate (in pixels), default value = `640`;
-- `--h` is the height of the image (in pixels), default value = `480`;
-- `--alg` is the type of rendering algortihm (O for On-Off, F for Flat, P for Path Tracer), default value = `P`;
-- `--seq` is the sequence number for PCG generator, default value = `54`;
-- `--pix_rays` is the number of rays per pixel for antialasing, default value = `9`;
-- `--rays` is the number of rays fired per intersection, deafult value = `2`;
-- `--d` is the max depth at which the intersection are evaluated, default value = `3`;
-- `--rr` is the russian roulette limit value, default value = `2`;
-- `--file_out` is the name of the output file (without extension, e.g. `demo_out`), default value = `demo_out`.
-- 
-Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
+- `--w` is the width of the image you want to generate (in pixels); default value = `640`;
+- `--h` is the height of the image (in pixels); default value = `480`;
+- `--alg` is the type of rendering algorithm (O for On-Off, F for Flat, P for Path Tracer); default value = `P`;
+- `--seq` is the sequence number for PCG generator; default value = `54`;
+- `--pix_rays` is the number of rays per pixel for antialiasing; default value = `9`;
+- `--rays` is the number of rays fired per intersection; default value = `2`;
+- `--d` is the max depth at which the intersection are evaluated; default value = `3`;
+- `--rr` is the Russian roulette limit value; default value = `2`;
+- `--file_out` is the name of the output file (without extension) ; default value = `demo_out`.
+  
+  Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
 
 ### PFM to LDR
 
@@ -73,8 +78,9 @@ julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--file_out FILE_OUT]
 ```
 
 where:
+
 - `--file_in` is the name of the image you want to convert;
-- `--file_out` is the name of the output file (the extension of the file specified here determines the output format!), default value = `LDR_out.png`.
+- `--file_out` is the name of the output file (the extension of the file specified here determines the output format!); default value = `LDR_out.png`.
 
 ## Input files: a quick tutorial 😉
 
@@ -101,11 +107,12 @@ PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 # defining the observer through a CAMERA rotated and translated
 CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
 ```
-Here yuo can notice some particular features of this "scene-language":
 
-- the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be in capslock;
+Here you can notice some particular features of this "scene-language":
+
+- the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be uppercase;
 - spaces, returns, and # are ignored;
-- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive and one emissive. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
+- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
 - once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
 - you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
 - lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
@@ -142,7 +149,7 @@ PLANE (ground_material, IDENTITY)
 CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
 ```
 
-Now you added a checkered ground that is not emissive. Thus, it is lighted by the emissive skyblue sky. The IDENTITY is the null transformation.
+Now you added a checkered ground that is not emissive. Thus, it is lighted by the emissive light-blue sky. The IDENTITY is the null transformation.
 
 This script creates this image:
 
@@ -181,10 +188,10 @@ SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 
 CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
 ```
+
 Et volià! These lines generate your first Moana image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
-
 
 ## What can Moana do? 😮
 
@@ -203,6 +210,7 @@ Since creating a image can require up to hours (if you want or need high resolut
 ```bash
  bash exe/parallel_exe.sh --options
 ```
+
 where the `--options` are the same used with `render.jl`.
 
 ## Contributing 💌
