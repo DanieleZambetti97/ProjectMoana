@@ -78,7 +78,7 @@ where:
 
 ## Input files: a quick tutorial 😉
 
-We implemented a new (very simple😄) language for creating images inside ProjectMoana. We believe that this language is easier to learn following a step-by-step tutorial generating a simple image.  
+We implemented a new (very simple😄) language for creating images inside ProjectMoana. We believe that this language is easier to learn following a step-by-step tutorial generating a simple image. For a more detailed description of the language click [here](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/language.md).  
 
 ### Step 1: the sky
 
@@ -87,16 +87,16 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 ```
 # these are comments, yuo can write what you want!
 
-FLOAT clock(150)     # here the FLOAT variable clock is defined
+FLOAT ang_degrees(150)     # here the FLOAT variable ang_degrees is defined
 
 # defining a MATERIAL
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0., 0., 0.>)),
-        UNIFORM(<0.5, 0.8, 1>)
+        DIFFUSE(UNIFORM(<0., 0., 0.>)),   # diffusive part
+        UNIFORM(<0.5, 0.8, 1>)            # emissive part
 )
 
-# defining a PLANE with the sky_material and rotated around the Y axis with an angle clock
-PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+# defining a PLANE with the sky_material and rotated around the Y axis with an angle ang_degrees
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 
 # defining the observer through a CAMERA rotated and translated
 CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
@@ -105,9 +105,9 @@ Here yuo can notice some particular features of this "scene-language":
 
 - the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be in capslock;
 - spaces, returns, and # are ignored;
-- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive (that can be DIFFUSE or SPECULAR) and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or TEXTURE, reproducing an image);
+- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive and one emissive. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
 - once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). A TRANSLATION is defined by a 3D vector and a ROTATION_* is defined by an angle in degrees.
+- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
 - lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
 
 Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
@@ -119,7 +119,7 @@ Now type `julia render.jl --scene my_first_scene.txt`and you will create this im
 Now you can add a second plane: the ground. Add these lines:
 
 ```
-FLOAT clock(150)
+FLOAT ang_degrees(150)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
@@ -134,7 +134,7 @@ MATERIAL ground_material(
 )
 ##############################
 
-PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 #### new lines ###############
 PLANE (ground_material, IDENTITY)
 ##############################
@@ -153,7 +153,7 @@ This script creates this image:
 At this point you can place a non-emissive specular sphere in the middle of the scene; just add these lines:
 
 ```
-FLOAT clock(150)
+FLOAT ang_degrees(150)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
@@ -173,7 +173,7 @@ MATERIAL sphere_material(
 )
 ##############################
 
-PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(clock))
+PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 PLANE (ground_material, IDENTITY)
 #### new lines ###############
 SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
