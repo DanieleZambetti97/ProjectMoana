@@ -17,7 +17,7 @@ function parse_commandline()
         "--a"
             help = "a_factor"
             required = false
-            default = 0.18
+            default = 1.
             arg_type = Float64
         "--γ"
             help = "γ factor"

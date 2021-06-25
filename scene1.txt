@@ -2,19 +2,19 @@ FLOAT clock(150)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
-        UNIFORM(<0.5, 0.8, 1>)
+        UNIFORM(<1., 1., 1.>)
 )
 
 # Here is a comment
 
 MATERIAL ground_material(
         DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
-                        <0.1, 0.2, 0.5>, 4)),
+                         <0.1, 0.2, 0.5>, 4)),
         UNIFORM(<0, 0, 0>)
 )
 
 MATERIAL sphere_material(
-        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        SPECULAR(UNIFORM(<1., 0.1, 0.1>)),
         UNIFORM(<0, 0, 0>)
 )
 
@@ -23,10 +23,17 @@ MATERIAL planet_material(
         UNIFORM(<0.,0.,0.>)
 )
 
-PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Y(clock))
+MATERIAL cube_material(
+        DIFFUSE(IMAGE("./examples/rubiks_cube.pfm")),
+        UNIFORM(<0, 0, 0>)
+)
+
+PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Z(-30) * ROTATION_Y(clock))
 PLANE (ground_material, IDENTITY)
 
 SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 SPHERE(planet_material, TRANSLATION([10,-7,5]) * SCALING([7,7,7]))
 
-CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+AABOX(cube_material, TRANSLATION([-1.5,1.7,1.]) * SCALING([1.,1.,1.]) * ROTATION_Z(45) * ROTATION_X(45))
+
+CAMERA(PERSPECTIVE, TRANSLATION([-4, 0, 1]), 1.0, 2.0)

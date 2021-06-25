@@ -1,5 +1,5 @@
 import Pkg
-Pkg.activate(normpath(@__DIR__))
+Pkg.activate(".")
 using ProjectMoana
 using ArgParse
 import ColorTypes:RGB
@@ -7,11 +7,11 @@ import Images:save
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program make an averege image from 4 images. Try me!",
-                               usage = "usage: [--help] [IN_FILE]",
+                               usage = "usage: [--help] [--in_file INFILE]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "IN_FILE"
+        "--in_file"
             help = "input PFM file name"
             required = true
     end
@@ -22,7 +22,7 @@ end
 function main()
     params = parse_commandline()
 
-    fileinput=params["IN_FILE"]
+    fileinput=params["in_file"]
 
     img0 = read_pfm_image(string(fileinput, "000.pfm"))
     img1 = read_pfm_image(string(fileinput, "001.pfm"))
@@ -45,16 +45,7 @@ function main()
     end
 
      write(string(fileinput, "sum.pfm"), out)
-     println("$(string(fileinput, "sum.pfm")) has been automatically written to disk.")
-
-    # Automatic CONVERSION TO JPEG FILE 
-    normalize_image(out, 0.18)
-    clamp_image(out)
-
-    matrix_pixels = reshape(out.pixels, (out.width, out.height))
-
-    save(string(fileinput, "sum.png"), matrix_pixels')
-    println("$(string(fileinput, "sum.png")) has been automatically written to disk.")
+     println("$(string(fileinput, "sum.pfm")) has been written to disk.")
 end
 
 main()

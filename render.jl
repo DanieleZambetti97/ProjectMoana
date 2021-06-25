@@ -11,8 +11,8 @@ import ColorTypes: RGB
 function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
-        usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--file_out FILENAME] 
-        [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
+        usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT]
+       [--file_out FILENAME] [--render_alg ALG] [--seq S] [--nrays NUM_OF_RAYS]",
         epilog = "Let's try again!"
         )
 
@@ -21,6 +21,11 @@ function parse_commandline()
             help = "Name of the input scene file where you can define the Shapes whit their materials and positions options and the observer's Camera whit its options;"
             required = false
             default = "scene1.txt"
+            arg_type = String
+        "--anim_var"
+            help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
+            required = false
+            default = "€"
             arg_type = String
         "--w"
             help = "width of the image;"
@@ -42,11 +47,6 @@ function parse_commandline()
             required = false
             default = "P" 
             arg_type = String  
-        "--a"
-            help = "a_factor for normalizing image luminosity during the convertion to LDR;"
-            required = false
-            default = 1.f0
-            arg_type = Float32
         "--seq"
             help = "sequence number for PCG generator;"
             required = false
@@ -65,6 +65,11 @@ end
 function build_variable_table(definitions::String)
 
     variables = Dict{String, Float32}()
+
+    if definitions == "€" ######default option, return empty dictionary
+        return variables
+    end
+
     for declaration in definitions
         parts = split(declaration, ":")
         if length(parts) != 2
@@ -108,7 +113,7 @@ function main()
 
 # Parsing scene file
     input_file = open(scene_file, "r")
-    scene = parse_scene(InputStream(input_file), variables)
+    scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")
 
 # Creating an ImageTracer object 
@@ -138,13 +143,6 @@ function main()
 # Saving the PFM FILE 
     write(file_out_pfm, tracer.image)
     println("$(file_out_pfm) has been written to disk.")
-
-# Automatic CONVERSION TO JPEG FILE 
-    # normalize_image(tracer.image, params["a"])
-    # clamp_image(tracer.image)
-    # matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
-    # save(file_out_png, matrix_pixels')
-    # println("$(file_out_png) has been automatically written to disk.")
       
 end
 

@@ -5,12 +5,29 @@ if [ "$1" == "" ]; then
     exit 1
 fi
 
-readonly file_begin="$2"
-readonly seq="$1"
-readonly seqNNN=$(printf "%03d" $seq)
-readonly filename=$file_begin$seqNNN
+readonly SCENE_FILE="$2"
+readonly ANIMATION_VAR="$3"
+readonly WIDTH="$4"
+readonly HEIGHT="$5"
+readonly FILENAME="$6"
+readonly ALG="$7"
+readonly S="$1"
+readonly NUM_OF_RAYS="$8"
 
-time julia demo.jl --width 640 --height 480 --seq $seq --file_out $filename
+readonly seqNNN=$(printf "%03d" $S)
 
-#Run the script whith
-#parallel --ungroup -j 4 ./parallel_img.sh '{}' _filename_begin_ ::: $(seq 0 3)
+readonly filename=$FILENAME$seqNNN
+
+# echo "parallel_img.sh con seq=${S}"
+# echo "${SCENE_FILE}"
+# echo "${ANIMATION_VAR}"
+# echo "${WIDTH}"
+# echo "${HEIGHT}"
+# echo "${filename}"
+# echo "${ALG}"
+# echo "${S}"
+# echo "${NUM_OF_RAYS}"
+
+julia render.jl --scene ${SCENE_FILE} --anim_var ${ANIMATION_VAR} --w ${WIDTH} --h ${HEIGHT} --file_out ${filename} --render_alg ${ALG} --seq ${S} --nrays ${NUM_OF_RAYS}
+
+#time julia demo_pathtracer.jl --width 1280 --height 960 --seq $seq --file_out $filename
