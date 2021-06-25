@@ -33,12 +33,12 @@ PLANE (sky_material, TRANSLATION([0, 0, 500]) * ROTATION_Y(60) )
 
 PLANE (sun_material, TRANSLATION([-100,0.,0.]) * ROTATION_Y(90))
 
-PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(0) * ROTATION_X(0) * SCALING([5,5,5]))
+#PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(7.5) * ROTATION_X(-91) * SCALING([1,1,1]))
 
 SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
 
 SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3]))
 
-AABOX(cube_material, TRANSLATION([1.,-1.,-0.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(45) * ROTATION_X(45))
+AABOX(cube_material, TRANSLATION([-0.5,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(45) * ROTATION_X(45) * ROTATION_Y(45))
 
 CAMERA(PERSPECTIVE, TRANSLATION([-2, 0, 0]), 1.0, 1.0)

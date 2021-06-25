@@ -113,7 +113,7 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["pix_rays"]
-    n_rays = params["n_rays"]
+    n_rays = params["rays"]
     depth = params["d"]
     russ_roulette = params["rr"]
 
@@ -130,6 +130,10 @@ function main()
     input_file = open(scene_file, "r")
     scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")
+
+    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.3, 0.5, 0.1), RGB(1, 0.6, 0.8), 4)))
+    ground = Plane(translation(Vec(0.,0.,-1.5)) * rotation_y(pi/12.) * rotation_x(pi/24.) * scaling(Vec(5,5,5)), ground_color )
+    add_shape(scene.world, ground)
 
 # Creating an ImageTracer object 
     image = HdrImage(w, h)

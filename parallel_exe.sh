@@ -1,12 +1,14 @@
 #!/bin/bash
 SCENE_FILE="scene1.txt"
-ANIMATION_VAR="€"
 WIDTH="640"
 HEIGHT="480"
-FILENAME="demo_out"
 ALG="P"
 S="54"
-NUM_OF_RAYS="9"
+RAYS_PER_PIXEL="9"
+NUM_OF_RAYS="2"
+DEPTH="3"
+RUSSIAN_ROULETTE="2"
+FILENAME="demo_out"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -15,11 +17,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
     --scene)
       SCENE_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --anim_var)
-      ANIMATION_VAR="$2"
       shift # past argument
       shift # past value
       ;;
@@ -33,12 +30,7 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --file_out)
-      FILENAME="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --render_alg)
+    --alg)
       ALG="$2"
       shift # past argument
       shift # past value
@@ -48,11 +40,32 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --nrays)
+    --pix_rays)
+      RAYS_PER_PIXEL="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --rays)
       NUM_OF_RAYS="$2"
       shift # past argument
       shift # past value
       ;;
+    --d)
+      DPETH="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --rr)
+      RUSSIAN_ROULETTE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --file_out)
+      FILENAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
     --default)
       DEFAULT=YES
       shift # past argument
@@ -68,18 +81,20 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # echo "parallel_exe.sh:"
 # echo "${SCENE_FILE}"
-# echo "${ANIMATION_VAR}"
 # echo "${WIDTH}"
 # echo "${HEIGHT}"
-# echo "${FILENAME}"
 # echo "${ALG}"
 # echo "${S}"
+# echo "${RAYS_PER_PIXEL}"
 # echo "${NUM_OF_RAYS}"
+# echo "${DEPTH}"
+# echo "${RUSSIAN_ROULETTE}"
+# echo "${FILENAME}"
 
 echo -e "Computing parallel render of 4 pictures"
 echo -e "...this operation could requires a lot of time...\n"
 #parallel -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
-parallel --ungroup -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
+parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $WIDTH $HEIGHT $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
 echo -e "\nFinish parallel rendering"
 
 echo -e "\nSumming up 4 pictures"
