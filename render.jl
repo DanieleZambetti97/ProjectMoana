@@ -112,6 +112,7 @@ function main()
     end
 
 # Parsing scene file
+    println("Reading $scene_file")
     input_file = open(scene_file, "r")
     scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")

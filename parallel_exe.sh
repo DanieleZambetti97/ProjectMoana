@@ -78,7 +78,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo -e "Computing parallel render of 4 pictures"
 echo -e "...this operation could requires a lot of time...\n"
-parallel --keep-order -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
+#parallel -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
+parallel --ungroup -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
 echo -e "\nFinish parallel rendering"
 
 echo -e "\nSumming up 4 pictures"
