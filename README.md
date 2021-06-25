@@ -33,7 +33,7 @@ The current stable version is 1.0.0.
    ```bash
    ~$ julia
    julia> using Pkg          # press ] to enter the package manager;
-   (@v1.5) pkg> activate .
+   (@v1.6) pkg> activate .
    (ProjectMoana) pkg>       # press backspace to exit;
    julia> Pkg.instantiate()  # this command will download and update the dependencies needed (it might take a while...);
    julia> exit()             # exiting the REPL.
@@ -44,20 +44,19 @@ The current stable version is 1.0.0.
 Just type:
 
 ```bash
-julia render.jl [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT] 
-                         [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]
+julia render.jl [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--file_out FILENAME] 
+                         [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]
 ```
 
 where
 - `--scene` is the name of the input scene file where you can define Shapes and a Camera with their options;
-- `--anim_var` is a variable usefull for animations (see chapter **Advanced tips: animation**);
-- `--w` is the width of the image you want to generate (in pixels);
-- `--h` is the height of the image (in pixels);
-- `--file_out` is the name of the output file (without extension, e.g. `demo_out`);
-- `--render_alg` is the type of rendering algortihm (On-Off, Flat, Path Tracer);
-- `--a` is the `a_factor` used in the normalization of the image luminosity during the convertion to LDR;
-- `--seq` is the sequence number for PCG generator;
-- `--nrays` is the number of rays used for antialasing.
+- `--w` is the width of the image you want to generate (in pixels), default value = `640`;
+- `--h` is the height of the image (in pixels), default value = `480`;
+- `--file_out` is the name of the output file (without extension, e.g. `demo_out`), default value = `demo_out`;
+- `--render_alg` is the type of rendering algortihm (O for On-Off, F for Flat, P for Path Tracer), default value = `P`;
+- `--a` is the `a_factor` used in the normalization of the image luminosity during the convertion to LDR, default value = `1`;
+- `--seq` is the sequence number for PCG generator, default value = `54`;
+- `--nrays` is the number of rays used for antialasing, default value = `9`.
 
 Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
 
@@ -93,10 +92,10 @@ Here yuo can notice some particular features of this "scene-language":
 - spaces, returns, and # are ignored;
 - to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one diffusive (that can be DIFFUSE or SPECULAR) and one emissive. Both the diffusive and emissive part  must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or TEXTURE, reproducing an image);
 - once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). TRANSLATION are defined by a 3D vector and ROTATION_* are defined by an angle in degrees.
-- lastly, you can generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
+- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`). A TRANSLATION is defined by a 3D vector and a ROTATION_* is defined by an angle in degrees.
+- lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
 
-This text file generates this image:
+Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sky.png>
 
@@ -182,8 +181,6 @@ We challenge you to do more spectacular images! (If you can send it to us! 😉)
 
 ## Advanced tips 🤓
 
-Here we propose some beautiful things that can boost up our program: the possibility to create the same image using the parallel computation and the possibility to create animations.
-
 ### Parallel sum
 
 Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. You can modify these lines into the bash script `exe/parallel_exe.sh`:
@@ -208,9 +205,6 @@ At this point, you just type:
 ```bash
 ~$ bash exe/parallel_exe.sh
 ```
-
-
-### Animations
 
 ## Contributing 💌
 
