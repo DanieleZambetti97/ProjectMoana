@@ -11,39 +11,29 @@ import ColorTypes: RGB
 function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
-        usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT]
-       [--file_out FILENAME] [--render_alg ALG] [--seq S] [--nrays NUM_OF_RAYS]",
+        usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--alg RENDER_ALG] [--seq S] 
+        [--pix_rays RAYS_PER_PIXEL] [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME] ",
         epilog = "Let's try again!"
         )
 
     @add_arg_table s begin
         "--scene"
-            help = "Name of the input scene file where you can define the Shapes whit their materials and positions options and the observer's Camera whit its options;"
+            help = "name of the input scene file;"
             required = false
             default = "scene1.txt"
             arg_type = String
-        "--anim_var"
-            help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
-            required = false
-            default = "€"
-            arg_type = String
         "--w"
-            help = "width of the image;"
+            help = "width of the image in pixels;"
             required = false
             default = 640
             arg_type = Int
         "--h"
-            help = "height of the image;"
+            help = "height of the image in pixels;"
             required = false
             default = 480 
             arg_type = Int       
-        "--file_out"
-            help = "name of the output file (without extension);"
-            required = false
-            default = "demo_out" 
-            arg_type = String  
-        "--render_alg"
-            help = "type of rendering algortihm (O for On-Off, F for Flat, P for Path Tracer);"
+        "--alg"
+            help = "type of rendering algorithm (O for On-Off, F for Flat, P for Path Tracer);"
             required = false
             default = "P" 
             arg_type = String  
@@ -52,11 +42,31 @@ function parse_commandline()
             required = false
             default = 54
             arg_type = Int
-        "--nrays"
-            help = "Number of rays for antialasing."
+        "--pix_rays"
+            help = "number of rays per pixel for antialasing;"
             required = false
             default = 9
             arg_type = Int
+        "--rays"
+            help = "number of rays fired per intersection;"
+            required = false
+            default = 2
+            arg_type = Int
+        "--d"
+            help = "max depth at which the intersection are evaluated;"
+            required = false
+            default = 3
+            arg_type = Int
+        "--rr"
+            help = "russian roulette limit value;"
+            required = false
+            default = 2
+            arg_type = Int
+        "--file_out"
+            help = "name of the output file (without extension)."
+            required = false
+            default = "demo_out" 
+            arg_type = String  
     end
 
     return parse_args(s)
@@ -99,10 +109,14 @@ function main()
     h = params["h"]
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
-    algorithm = params["render_alg"]
+    algorithm = params["alg"]
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
-    samples_per_pixel = params["nrays"]
+    samples_per_pixel = params["pix_rays"]
+    n_rays = params["n_rays"]
+    depth = params["d"]
+    russ_roulette = params["rr"]
+
     variables = build_variable_table("") # animation variable, if you want
 
     samples_per_side = sqrt(samples_per_pixel)
@@ -124,14 +138,14 @@ function main()
 
 # Computing ray intersection
     print("Computing ray intersection ")
-    if params["render_alg"] == "F"
+    if algorithm == "F"
         println("using Flat algorithm")
         renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
         fire_all_rays(tracer, Flat, renderer)
-    elseif params["render_alg"] == "P"
+    elseif algorithm == "P"
         println("using Path Tracer algorithm")
         renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq),
-                                       num_of_rays=2, max_depth=3, russian_roulette_limit=2)
+                                       num_of_rays = n_rays, max_depth = depth, russian_roulette_limit = russ_roulette)
         fire_all_rays(tracer, PathTracer, renderer)
     else
         println("using On/Off algorithm")
