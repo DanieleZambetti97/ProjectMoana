@@ -7,27 +7,27 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [--in_file IN_FILE] [--a] [--γ] [--out_file OUT_FILE]",
+                               usage = "usage: [--help] [--file_in FILE_IN] [--a] [--γ] [--file_out FILE_OUT]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "--in_file"
-            help = "input PFM file name"
+        "--file_in"
+            help = "input PFM file name;"
             required = true
         "--a"
-            help = "a_factor"
+            help = "a_factor;"
             required = false
             default = 1.
             arg_type = Float64
         "--γ"
-            help = "γ factor"
+            help = "γ factor;"
             required = false
             default = 1.0
             arg_type = Float64
-        "--out_file"
-            help = "output LDR file name"
+        "--file_out"
+            help = "output LDR file name."
             required = false
-            default = "out.png"
+            default = "LDR_out.png"
     end
 
     return parse_args(s)
@@ -39,24 +39,24 @@ function main()
 
 # firtsly, open the input file
     img = HdrImage(1, 1)
-    open(params["in_file"], "r") do inpf
+    open(params["file_in"], "r") do inpf
         img = read_pfm_image(inpf)
     end
     
-    println("File $(params["in_file"]) has been read from disk.") # check
+    println("File $(params["file_in"]) has been read from disk.") # check
 
 # then normalizing and clamping
 
-    normalize_image(img, params["a"])
-    clamp_image(img)
+    # normalize_image(img, params["a"])
+    # clamp_image(img)
 
 # saving the image in the output format using Images method
 
     image = reshape(img.pixels, (img.width,img.height))
     
-    save("$(params["out_file"])",image')
+    save("$(params["file_out"])",image')
 
-    println("File $(params["out_file"]) has been written to disk.") # check
+    println("File $(params["file_out"]) has been written to disk.") # check
     
 end
 
