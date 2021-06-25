@@ -14,7 +14,7 @@ MATERIAL ground_material(
 )
 
 MATERIAL sphere_material(
-        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        SPECULAR(UNIFORM(<1., 0.1, 0.1>)),
         UNIFORM(<0, 0, 0>)
 )
 
@@ -28,7 +28,7 @@ MATERIAL cube_material(
         UNIFORM(<0, 0, 0>)
 )
 
-PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Y(clock))
+PLANE (sky_material, TRANSLATION([0, 0, 100]) * ROTATION_Z(-30) * ROTATION_Y(clock))
 PLANE (ground_material, IDENTITY)
 
 SPHERE(sphere_material, TRANSLATION([0, 0, 1]))

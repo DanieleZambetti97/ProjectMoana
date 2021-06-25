@@ -7,18 +7,13 @@ import Images:save
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program make an averege image from 4 images. Try me!",
-                               usage = "usage: [--help] [--in_file INFILE] [--a A]",
+                               usage = "usage: [--help] [--in_file INFILE]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
         "--in_file"
             help = "input PFM file name"
             required = true
-        "--a"
-            help = "a_factor for normalizing image luminosity during the convertion"
-            required = false
-            default = 1.
-            arg_type = Float64
     end
 
     return parse_args(s)

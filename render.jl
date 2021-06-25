@@ -12,7 +12,7 @@ function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
         usage = "usage: [--help] [--scene SCENE_FILE] [--anim_var ANIMATION_VAR] [--w WIDTH] [--h HEIGHT]
-       [--file_out FILENAME] [--render_alg ALG] [--a A] [--seq S] [--nrays NUM_OF_RAYS]",
+       [--file_out FILENAME] [--render_alg ALG] [--seq S] [--nrays NUM_OF_RAYS]",
         epilog = "Let's try again!"
         )
 
@@ -47,11 +47,6 @@ function parse_commandline()
             required = false
             default = "P" 
             arg_type = String  
-        "--a"
-            help = "a_factor for normalizing image luminosity during the convertion to LDR"
-            required = false
-            default = 1.f0
-            arg_type = Float32
         "--seq"
             help = "sequence number for PCG generator"
             required = false
@@ -148,13 +143,6 @@ function main()
 # Saving the PFM FILE 
     write(file_out_pfm, tracer.image)
     println("$(file_out_pfm) has been written to disk.")
-
-# Automatic CONVERSION TO JPEG FILE 
-    # normalize_image(tracer.image, params["a"])
-    # clamp_image(tracer.image)
-    # matrix_pixels = reshape(tracer.image.pixels, (tracer.image.width, tracer.image.height))
-    # save(file_out_png, matrix_pixels')
-    # println("$(file_out_png) has been automatically written to disk.")
       
 end
 

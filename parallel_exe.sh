@@ -5,7 +5,6 @@ WIDTH="640"
 HEIGHT="480"
 FILENAME="demo_out"
 ALG="P"
-A="1."
 S="54"
 NUM_OF_RAYS="9"
 
@@ -44,11 +43,6 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --a)
-      A="$2"
-      shift # past argument
-      shift # past value
-      ;;
     --seq)
       S="$2"
       shift # past argument
@@ -72,20 +66,24 @@ done
 
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-echo "parallel_exe.sh:"
-echo "${SCENE_FILE}"
-echo "${ANIMATION_VAR}"
-echo "${WIDTH}"
-echo "${HEIGHT}"
-echo "${FILENAME}"
-echo "${ALG}"
-echo "${A}"
-echo "${S}"
-echo "${NUM_OF_RAYS}"
+# echo "parallel_exe.sh:"
+# echo "${SCENE_FILE}"
+# echo "${ANIMATION_VAR}"
+# echo "${WIDTH}"
+# echo "${HEIGHT}"
+# echo "${FILENAME}"
+# echo "${ALG}"
+# echo "${S}"
+# echo "${NUM_OF_RAYS}"
 
-parallel --ungroup -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $A $NUM_OF_RAYS ::: $(seq 0 3)
+echo -e "Computing parallel render of 4 pictures"
+echo -e "...this operation could requires a lot of time...\n"
+parallel --keep-order -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
+echo -e "\nFinish parallel rendering"
 
-julia ./exe/parallel_sum.jl --in_file $FILENAME --a $A
+echo -e "\nSumming up 4 pictures"
+julia ./exe/parallel_sum.jl --in_file $FILENAME
 
 find "." -name $FILENAME"0*" -type f -delete
+echo -e "\n4 single pictures has been deleted"
 
