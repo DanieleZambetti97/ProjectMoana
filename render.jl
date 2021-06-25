@@ -25,7 +25,7 @@ function parse_commandline()
         "--anim_var"
             help = "Declare a variable usefull for animation. The syntax is «--declare-float=VAR:VALUE». Example: --declare-float=clock:150"
             required = false
-            default = ""
+            default = "€"
             arg_type = String
         "--w"
             help = "width of the image"
@@ -70,6 +70,11 @@ end
 function build_variable_table(definitions::String)
 
     variables = Dict{String, Float32}()
+
+    if definitions == "€" ######default option, return empty dictionary
+        return variables
+    end
+
     for declaration in definitions
         parts = split(declaration, ":")
         if length(parts) != 2
