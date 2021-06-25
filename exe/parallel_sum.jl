@@ -7,11 +7,11 @@ import Images:save
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program make an averege image from 4 images. Try me!",
-                               usage = "usage: [--help] [--in_file INFILE]",
+                               usage = "usage: [--help] [--file_in FILE_IN]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
-        "--in_file"
+        "--file_in"
             help = "input PFM file name"
             required = true
     end
@@ -22,7 +22,7 @@ end
 function main()
     params = parse_commandline()
 
-    fileinput=params["in_file"]
+    fileinput=params["file_in"]
 
     img0 = read_pfm_image(string(fileinput, "000.pfm"))
     img1 = read_pfm_image(string(fileinput, "001.pfm"))
@@ -44,8 +44,8 @@ function main()
         end
     end
 
-     write(string(fileinput, "sum.pfm"), out)
-     println("$(string(fileinput, "sum.pfm")) has been written to disk.")
+    write(string(fileinput, ".pfm"), out)
+    println("$(string(fileinput, ".pfm")) has been written to disk.")
 end
 
 main()

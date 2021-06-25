@@ -47,6 +47,21 @@ while [[ $# -gt 0 ]]; do
       ;;
     --rays)
       NUM_OF_RAYS="$2"
+      shift
+      shift
+      ;;
+    --d)
+      DEPTH = "$2"
+      shift
+      shift
+      ;;
+    --rr)
+      RUSSIAN_ROULETTE="$2"
+      shift
+      shift
+      ;;
+    --file_out)
+      FILENAME="$2"
       shift # past argument
       shift # past value
       ;;
@@ -91,15 +106,14 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # echo "${RUSSIAN_ROULETTE}"
 # echo "${FILENAME}"
 
-echo -e "Computing parallel render of 4 pictures"
-echo -e "...this operation could requires a lot of time...\n"
-#parallel -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
+echo -e "Computing parallel render of 4 pictures:"
+echo -e "...it could take a while...\n"
 parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $WIDTH $HEIGHT $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
-echo -e "\nFinish parallel rendering"
+echo -e "\nParallel rendering finished."
 
-echo -e "\nSumming up 4 pictures"
-julia ./exe/parallel_sum.jl --in_file $FILENAME
+echo -e "\nSumming pictures..."
+julia ./exe/parallel_sum.jl --file_in $FILENAME
 
 find "." -name $FILENAME"0*" -type f -delete
-echo -e "\n4 single pictures has been deleted"
+echo -e "\n The 4 pictures have been deleted."
 
