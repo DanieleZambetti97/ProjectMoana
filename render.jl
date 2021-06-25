@@ -113,7 +113,7 @@ function main()
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
     samples_per_pixel = params["pix_rays"]
-    n_rays = params["n_rays"]
+    n_rays = params["rays"]
     depth = params["d"]
     russ_roulette = params["rr"]
 

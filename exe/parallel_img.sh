@@ -6,13 +6,16 @@ if [ "$1" == "" ]; then
 fi
 
 readonly SCENE_FILE="$2"
-readonly ANIMATION_VAR="$3"
-readonly WIDTH="$4"
-readonly HEIGHT="$5"
-readonly FILENAME="$6"
-readonly ALG="$7"
+readonly WIDTH="$3"
+readonly HEIGHT="$4"
+readonly ALG="$5"
+readonly RAYS_PER_PIXEL="$6"
+readonly NUM_OF_RAYS="$7"
+readonly DEPTH="$8"
+readonly RUSSIAN_ROULETTE="$9"
+readonly FILENAME="${10}"
 readonly S="$1"
-readonly NUM_OF_RAYS="$8"
+
 
 readonly seqNNN=$(printf "%03d" $S)
 
@@ -28,6 +31,5 @@ readonly filename=$FILENAME$seqNNN
 # echo "${S}"
 # echo "${NUM_OF_RAYS}"
 
-julia render.jl --scene ${SCENE_FILE} --anim_var ${ANIMATION_VAR} --w ${WIDTH} --h ${HEIGHT} --file_out ${filename} --render_alg ${ALG} --seq ${S} --nrays ${NUM_OF_RAYS}
+julia render.jl --scene ${SCENE_FILE} --w ${WIDTH} --h ${HEIGHT} --alg ${ALG} --seq ${S} --pix_rays ${RAYS_PER_PIXEL} --rays ${NUM_OF_RAYS} --d ${DEPTH} --rr ${RUSSIAN_ROULETTE} --file_out ${filename}
 
-#time julia demo_pathtracer.jl --width 1280 --height 960 --seq $seq --file_out $filename

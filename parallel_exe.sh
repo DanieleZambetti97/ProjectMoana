@@ -1,12 +1,14 @@
 #!/bin/bash
 SCENE_FILE="scene1.txt"
-ANIMATION_VAR="€"
 WIDTH="640"
 HEIGHT="480"
 FILENAME="demo_out"
 ALG="P"
 S="54"
-NUM_OF_RAYS="9"
+RAYS_PER_PIXEL="9"
+NUM_OF_RAYS="2"
+DEPTH="3"
+RUSSIAN_ROULETTE="2"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -15,11 +17,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
     --scene)
       SCENE_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --anim_var)
-      ANIMATION_VAR="$2"
       shift # past argument
       shift # past value
       ;;
@@ -33,12 +30,7 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --file_out)
-      FILENAME="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --render_alg)
+    --alg)
       ALG="$2"
       shift # past argument
       shift # past value
@@ -48,8 +40,28 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --nrays)
+    --pix_rays)
+      RAYS_PER_PIXEL="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --rays)
       NUM_OF_RAYS="$2"
+      shift
+      shift
+      ;;
+    --d)
+      DEPTH = "$2"
+      shift
+      shift
+      ;;
+    --rr)
+      RUSSIAN_ROULETTE="$2"
+      shift
+      shift
+      ;;
+    --file_out)
+      FILENAME="$2"
       shift # past argument
       shift # past value
       ;;
@@ -76,14 +88,14 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # echo "${S}"
 # echo "${NUM_OF_RAYS}"
 
-echo -e "Computing parallel render of 4 pictures"
-echo -e "...this operation could requires a lot of time...\n"
-parallel --keep-order -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $ANIMATION_VAR $WIDTH $HEIGHT $FILENAME $ALG $NUM_OF_RAYS ::: $(seq 0 3)
-echo -e "\nFinish parallel rendering"
+echo -e "Computing parallel render of 4 pictures:"
+echo -e "...it could take a while...\n"
+parallel --keep-order -j 4 ./exe/parallel_img.sh '{}' $SCENE_FILE $WIDTH $HEIGHT $ALG $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
+echo -e "\nParallel rendering finished."
 
-echo -e "\nSumming up 4 pictures"
-julia ./exe/parallel_sum.jl --in_file $FILENAME
+echo -e "\nSumming pictures..."
+julia ./exe/parallel_sum.jl --file_in $FILENAME
 
 find "." -name $FILENAME"0*" -type f -delete
-echo -e "\n4 single pictures has been deleted"
+echo -e "\n The 4 pictures have been deleted."
 
