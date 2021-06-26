@@ -20,12 +20,12 @@ MATERIAL mirror_material(
 )
 
 MATERIAL planet_material(
-        DIFFUSE(IMAGE("./examples/jupiter_texture.pfm")),
+        DIFFUSE(IMAGE("./examples/texture_jupiter.pfm")),
         UNIFORM(<0.,0.,0.>)
 )
 
 MATERIAL cube_material(
-        DIFFUSE(IMAGE("./examples/rubiks_cube.pfm")),
+        DIFFUSE(IMAGE("./examples/texture_rubiks_cube.pfm")),
         UNIFORM(<0, 0, 0>)
 )
 
@@ -33,7 +33,7 @@ PLANE (sky_material, TRANSLATION([0, 0, 500]) * ROTATION_Y(60) )
 
 PLANE (sun_material, TRANSLATION([-100,0.,0.]) * ROTATION_Y(90))
 
-#PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(7.5) * ROTATION_X(-91) * SCALING([1,1,1]))
+PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(15) * ROTATION_X(7.5) * SCALING([1,1,1]))
 
 SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
 

@@ -507,15 +507,15 @@ function parse_transformation(input_file::InputStream, scene::Scene)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_X
             expect_symbol(input_file, '(')
-            result *= rotation_x(expect_number(input_file, scene))
+            result *= rotation_x(expect_number(input_file, scene) * pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_Y
             expect_symbol(input_file, '(')
-            result *= rotation_y(expect_number(input_file, scene))
+            result *= rotation_y(expect_number(input_file, scene) * pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_Z
             expect_symbol(input_file, '(')
-            result *= rotation_z(expect_number(input_file, scene))
+            result *= rotation_z(expect_number(input_file, scene) * pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == SCALING
             expect_symbol(input_file, '(')

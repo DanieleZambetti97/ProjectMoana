@@ -131,10 +131,6 @@ function main()
     scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")
 
-    ground_color = Material(DiffuseBRDF(CheckeredPigment(RGB(0.3, 0.5, 0.1), RGB(1, 0.6, 0.8), 4)))
-    ground = Plane(translation(Vec(0.,0.,-1.5)) * rotation_y(pi/12.) * rotation_x(pi/24.) * scaling(Vec(5,5,5)), ground_color )
-    add_shape(scene.world, ground)
-
 # Creating an ImageTracer object 
     image = HdrImage(w, h)
     println("Generating a $w×$h image")

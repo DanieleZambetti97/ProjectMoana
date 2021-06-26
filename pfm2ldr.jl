@@ -25,7 +25,7 @@ function parse_commandline()
             default = 1.0
             arg_type = Float64
         "--file_out"
-            help = "output LDR file name."
+            help = "output LDR file name. (Extention must be specified)"
             required = false
             default = "LDR_out.png"
     end
@@ -47,8 +47,8 @@ function main()
 
 # then normalizing and clamping
 
-    # normalize_image(img, params["a"])
-    # clamp_image(img)
+    normalize_image(img, params["a"])
+    clamp_image(img)
 
 # saving the image in the output format using Images method
 
