@@ -67,19 +67,21 @@ where
 - `--rr` is the Russian roulette limit value; default value = `2`;
 - `--file_out` is the name of the output file (without extension) ; default value = `demo_out`.
   
-  Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. 
+  Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. The image generated is a PFM image. To convert it in any LDR format (JPEG, PNG, ...) use `pfm2ldr.jl`.
 
 ### PFM to LDR
 
 From a terminal type:
 
 ```bash
-julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--file_out FILE_OUT]
+julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--a A_FACTOR] [--clamp CLAMPING_METHOD] [--file_out FILE_OUT]
 ```
 
 where:
 
 - `--file_in` is the name of the image you want to convert;
+- `--a` is the *a_factor* required to normalize pixels; it can be considered as the avarage luminosity of the image;
+- `--clamp` is the option to specify the clamping method: for simple images (such as containing only 1 or 2 shapes) you must sepcify `--clamp IM` and the *a_factor* is not needed; for composite images (containing many shapes) you can use the custom clamping `--clamp C` and you can also add any *a_factor* to adjust luminosity.
 - `--file_out` is the name of the output file (the extension of the file specified here determines the output format!); default value = `LDR_out.png`.
 
 ## Input files: a quick tutorial 😉
@@ -93,16 +95,22 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 ```
 # these are comments, yuo can write what you want!
 
+# VARIABLES #####################
+
 FLOAT ang_degrees(150)     # here the FLOAT variable ang_degrees is defined
 
-# defining a MATERIAL
+# MATERIALS ####################
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),   # diffusive part
         UNIFORM(<0.5, 0.8, 1>)            # emissive part
 )
 
+# SHAPES #######################
+
 # defining a PLANE with the sky_material and rotated around the Y axis with an angle ang_degrees
 PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
+
+# CAMERA #######################
 
 # defining the observer through a CAMERA rotated and translated
 CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
@@ -112,11 +120,14 @@ Here you can notice some particular features of this "scene-language":
 
 - the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be uppercase;
 - spaces, returns, and # are ignored;
-- to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
 - colors are defined with **RGB** format (each component can be a real number between 0 and 1); a color is defined between angular brackets (e.g. `<0.5, 0.8, 1>`);
-- once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-- you can apply any transformation to any shape just by adding a transformation to the shape constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
-- lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want) and, once again, any transformation can be applied to it.
+- the file is divided into 4 paragraphs:
+   - **variables**: where you can define any variable;
+   - **materials**: to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
+   - **shapes**: once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
+
+   - **cameras**: lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want);
+- you can apply any transformation to any shape ora camera just by adding a transformation to the constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
 
 Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
 
@@ -193,6 +204,8 @@ CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
 Et volià! These lines generate your first Moana image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
+
+> Note: this image can be converted to PNG using `pfm2ldr.jl`; only for this final image you can use the Custom clamping method (`--clamp C`) adding a low *a_factor* (e.g. 0.1). 
 
 ## What can Moana do? 😮
 
