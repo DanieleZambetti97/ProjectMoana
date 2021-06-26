@@ -1,5 +1,0 @@
-Istruzioni per fare questa immagine
-
-- Utilizzare come eseguibile demo_10sphere.jl passando da riga di comando 
-    julia demo_10sphere.jl --width  2000 --height 1000 --render_alg on_off --camera P 
-

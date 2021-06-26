@@ -51,7 +51,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --d)
-      DEPTH = "$2"
+      DEPTH="$2"
       shift
       shift
       ;;
