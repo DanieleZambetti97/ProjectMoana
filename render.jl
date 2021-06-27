@@ -137,7 +137,7 @@ function main()
     tracer = ImageTracer(image, scene.camera, samples_per_pixel)
 
 # Computing ray intersection
-    print("Computing ray intersection ")
+    print("Computing ray intersections ")
     if algorithm == "F"
         println("using Flat algorithm")
         renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
