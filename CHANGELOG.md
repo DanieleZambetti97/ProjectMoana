@@ -1,4 +1,10 @@
 ## HEAD
+- **First stable version 1.0.0**: **breaking changes**:
+  - the old command ``demo.jl --options`` won't work anymore: now use ``render.jl --options``. For a more detailed list of options check the [README](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/README.md);
+  - the scenes must be written in a text file and then passed to `render.jl`;
+  - changes in the options of `pfm2ldr.jl` (check the [README](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/README.md)).
+
+## 2021-06-08
 - **Breaking change**: demo.jl is called from command line using options and not arguments (e.g.: ``demo.jl 720 600`` won't work anymore, use instead: ``demo.jl --width 720 --height 600``);
 - Adding the Path Tracer algorithm to generate images with spheres and planes. 
 
