@@ -212,7 +212,7 @@ Et volià! These lines generate your first Moana image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sphere.png>
 
-> Note: this image can be converted to PNG using `pfm2ldr.jl`; only for this final image you can use the Custom clamping method (`--clamp C`) adding a low *a_factor* (e.g. 0.1). 
+> Note: this image can be converted to PNG using `pfm2ldr.jl`; only for this final image you can use the Custom clamping method (`--clamp C`).
 
 ## What can Moana do? 😮
 
