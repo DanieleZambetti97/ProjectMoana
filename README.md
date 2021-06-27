@@ -67,7 +67,7 @@ where
 - `--rr` is the Russian roulette limit value; default value = `2`;
 - `--file_out` is the name of the output file (without extension) ; default value = `demo_out`.
   
-  Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. The image generated is a PFM image. To convert it in any LDR format (JPEG, PNG, ...) use `pfm2ldr.jl`.
+  Do not worry about writing all the correct parameters! All of them are set to a default value and for a basic usage you only have to explicit the name of input file with the option `--scene`. The image generated is a PFM image. You can open a PFM image using programs such as [GIMP](https://www.gimp.org/downloads/) or you can convert it in any LDR format (JPEG, PNG, ...) using our script `pfm2ldr.jl`.
 
 ### PFM to LDR
 
@@ -97,7 +97,8 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 
 # VARIABLES #####################
 
-FLOAT ang_degrees(150)     # here the FLOAT variable ang_degrees is defined
+FLOAT ang_degrees(150)
+
 
 # MATERIALS ####################
 MATERIAL sky_material(
@@ -105,10 +106,12 @@ MATERIAL sky_material(
         UNIFORM(<0.5, 0.8, 1>)            # emissive part
 )
 
+
 # SHAPES #######################
 
 # defining a PLANE with the sky_material and rotated around the Y axis with an angle ang_degrees
 PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
+
 
 # CAMERA #######################
 
@@ -132,6 +135,8 @@ Here you can notice some particular features of this "scene-language":
 Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/sky.png>
+
+>Note: if you want to convert this image to any LDR format we recommend using the ImageMagick clamping method (`--clamp IM`).
 
 ### Step 2: the ground
 
@@ -166,6 +171,8 @@ Now you added a checkered ground that is not emissive. Thus, it is lighted by th
 This script creates this image:
 
 <img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/ground.png>
+
+>Note: if you want to convert this image to any LDR format we recommend using the ImageMagick clamping method (`--clamp IM`).
 
 ### Step 3: the sphere
 
