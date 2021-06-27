@@ -80,7 +80,7 @@ julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--a A_FACTOR] [--clamp CLAMPING_M
 where:
 
 - `--file_in` is the name of the image you want to convert;
-- `--a` is the *a_factor* required to normalize pixels; it can be considered as the avarage luminosity of the image;
+- `--a` is the *a_factor* required to normalize pixels; it can be considered as the average luminosity of the image;
 - `--clamp` is the option to specify the clamping method: for simple images (such as containing only 1 or 2 shapes) you must sepcify `--clamp IM` and the *a_factor* is not needed; for composite images (containing many shapes) you can use the custom clamping `--clamp C` and you can also add any *a_factor* to adjust luminosity.
 - `--file_out` is the name of the output file (the extension of the file specified here determines the output format!); default value = `LDR_out.png`.
 
