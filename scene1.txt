@@ -1,5 +1,5 @@
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0.1, 0.5, 0.99>)),
+        DIFFUSE(UNIFORM(<0., 0.2, 0.6>)),
         UNIFORM(<0., 0., 0.>)
 )
 
@@ -9,8 +9,8 @@ MATERIAL sun_material(
 )
 
 MATERIAL ground_material(
-        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
-                         <1.0, 0.6, 0.8>, 4)),
+        DIFFUSE(CHECKERED(<0.9, 0.9, 1.>,
+                         <0.35, 0., 0.>, 4)),
         UNIFORM(<0, 0, 0>)
 )
 
