@@ -51,14 +51,14 @@ function fire_ray( camera::OrthogonalCamera, u, v)
 end
 
 """
-    PerspectiveCamera(;a=1.0, T=Transformation(), d=1.0)
+    PerspectiveCamera(a, T, d)
 
 It creates a **Perspective Camera**. 
 
 ## Arguments:
 - *a* -> aspect ratio;
 - *T* -> generic Transformation;
-- *d* -> distance between the observer and the screen(?).
+- *d* -> distance between the observer and the screen.
 
 When not specified in the constructor, a = 1 and T = Transformation(), 
 where *a* is the aspect ratio and *T* a generic transformation.
