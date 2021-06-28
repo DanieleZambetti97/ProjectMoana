@@ -126,9 +126,8 @@ Here you can notice some particular features of this "scene-language":
 - colors are defined with **RGB** format (each component can be a real number between 0 and 1); a color is defined between angular brackets (e.g. `<0.5, 0.8, 1>`);
 - the file is divided into 4 blocks:
    - **variables**: where you can define any variable;
-   - **materials**: to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
+   - **materials**: to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. The **diffusive** one contains a *BRDF* that can be SPECULAR or DIFFUSE (depending on the reflective properties of the object). Both the diffusive and emissive parts must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
    - **shapes**: once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-
    - **cameras**: lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want);
 - you can apply any transformation to any shape ora camera just by adding a transformation to the constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
 
