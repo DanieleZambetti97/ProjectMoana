@@ -97,7 +97,7 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 
 # VARIABLES #####################
 
-FLOAT ang_degrees(150)
+FLOAT ang_degrees(10)
 
 
 # MATERIALS ####################
@@ -124,7 +124,7 @@ Here you can notice some particular features of this "scene-language":
 - the keywords (FLOAT, MATERIAL, DIFFUSE, ...) need to be uppercase;
 - spaces, returns, and # are ignored;
 - colors are defined with **RGB** format (each component can be a real number between 0 and 1); a color is defined between angular brackets (e.g. `<0.5, 0.8, 1>`);
-- the file is divided into 4 paragraphs:
+- the file is divided into 4 blocks:
    - **variables**: where you can define any variable;
    - **materials**: to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. Both the diffusive and emissive part must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
    - **shapes**: once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
@@ -143,7 +143,7 @@ Now type `julia render.jl --scene my_first_scene.txt`and you will create this im
 Now you can add a second plane: the ground. Add these lines:
 
 ```
-FLOAT ang_degrees(150)
+FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
@@ -179,7 +179,7 @@ This script creates this image:
 At this point you can place a non-emissive specular sphere in the middle of the scene; just add these lines:
 
 ```
-FLOAT ang_degrees(150)
+FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
