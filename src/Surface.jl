@@ -112,6 +112,7 @@ struct DiffuseBRDF <: BRDF
                 reflectance::Number = 1. ) =
                 new(pigment, reflectance)
 end
+
 Base.:≈(brdf1::DiffuseBRDF, brdf2::DiffuseBRDF) = brdf1.pigment ≈ brdf2.pigment && brdf1.reflectance ≈ brdf2.reflectance
 
 eval(brdf::DiffuseBRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return brdf.pigment.get_color(uv) * (brdf.reflectance / π)
@@ -137,6 +138,7 @@ struct SpecularBRDF <: BRDF
 
     SpecularBRDF(pigment::Pigment = UniformPigment(RGB(1.,1.,1.)) ) = new(pigment)    
 end
+
 Base.:≈(brdf1::SpecularBRDF, brdf2::SpecularBRDF) = brdf1.pigment ≈ brdf2.pigment
 
 #eval(brdf::SpecularBRDF, n::Normal, in_dir::Vec, out_dir::Vec, uv::Vec2D) = return brdf.pigment.get_color(uv) * (brdf.reflectance / π)
@@ -159,6 +161,7 @@ function LightSource(x::RGB)
         return true
     end
 end
+
 """
     Material(brdf, e_r)
 
@@ -177,6 +180,7 @@ struct Material
              is_light_source::Bool = LightSource(emitted_radiance.color) ) =
              new(brdf, emitted_radiance, is_light_source)
 end 
+
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance
 
 

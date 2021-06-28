@@ -328,6 +328,20 @@ assert_is_number(token::Token, number::Float32) = isa(token.value, LiteralNumber
 
 assert_is_string(token::Token, string::Union{String, Char}) = isa(token.value, LiteralString) && token.value.s == string 
 
+"""
+    Scene(materials, world, camera, float_variables, overridden_variables)
+
+It creates a complete scene.
+
+## Arguments:
+
+- materials is a Dict{String, Material} that collects all the materials;
+- world is World containing all the shapes;
+- camera is a Union{Camera, Nothing} representing the observer;
+- float_variables is a Dict{String, Float32} that collects all the floating point variables;
+- overridden_variables is a Set{String}, for controlling animations.
+
+"""
 mutable struct Scene
 
     materials::Dict{String, Material}
@@ -343,6 +357,8 @@ mutable struct Scene
           overridden_variables::Set{String} = Set{String}() ) =
           new(materials, world, camera,float_variables, overridden_variables)
 end
+
+## EXPECT functions 
 
 function expect_symbol(input_file::InputStream, symbol::Char)
     token = read_token(input_file)
@@ -408,6 +424,7 @@ function expect_identifier(input_file::InputStream)
     return token.value.s
 end
 
+## PARSING functions ########################################################################
 
 function parse_vector(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, '[')
@@ -541,7 +558,6 @@ function parse_sphere(input_file::InputStream, scene::Scene)
 
     material_name = expect_identifier(input_file)
     if haskey(scene.materials, material_name) == false
-        # We raise the exception here because input_file is pointing to the end of the wrong identifier
         throw(GrammarError(input_file.location, "unknown material $material_name"))
     end
     expect_symbol(input_file, ',')
@@ -556,7 +572,6 @@ function parse_plane(input_file::InputStream, scene::Scene)
 
     material_name = expect_identifier(input_file)
     if haskey(scene.materials, material_name) == false
-        # We raise the exception here because input_file is pointing to the end of the wrong identifier
         throw(GrammarError(input_file.location, "unknown material $material_name"))
     end
     expect_symbol(input_file, ',')
@@ -601,12 +616,22 @@ function parse_camera(input_file::InputStream, scene::Scene)
     end
 end
 
+## PARSING the whole scene #################################################################################
 
+"""
+    parse_scene(input_file, variables)
+
+It parse the whole scene, making it ready to be rendered.
+
+- input_file is a txt file, containing the scene to be parsed;
+- variables is a Dict{String, Float32} containing the floating point variables.
+
+"""
 function parse_scene(input_file::InputStream, variables::Dict{String, Float32} = Dict{String, Float32}() )
-    """Read a scene description from a stream and return a :class:`.Scene` object"""
+
     scene = Scene()
     scene.float_variables = copy(variables)
-    scene.overridden_variables = Set{String}() ################## nooooooooooo
+    scene.overridden_variables = Set{String}()
 
     while true
         what = read_token(input_file)
@@ -631,8 +656,6 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             end
 
             if (variable_name in scene.overridden_variables) == false
-                # Only functionine the variable if it was not functionined by the user *outside* the scene file
-                # (e.g., from the command line)
                 scene.float_variables[variable_name] = variable_value
             end
 
