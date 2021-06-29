@@ -50,15 +50,13 @@ The current stable version is 1.0.0.
 From a terminal type:
 
 ```bash
-julia render.jl [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--alg RENDER_ALG] [--seq S] [--pix_rays RAYS_PER_PIXEL] 
+julia render.jl [--help] [--scene SCENE_FILE] [--alg RENDER_ALG] [--seq S] [--pix_rays RAYS_PER_PIXEL] 
                          [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME]
 ```
 
 where
 
 - `--scene` is the name of the input scene file where you can define Shapes and a Camera with their options;
-- `--w` is the width of the image you want to generate (in pixels); default value = `640`;
-- `--h` is the height of the image (in pixels); default value = `480`;
 - `--alg` is the type of rendering algorithm (O for On-Off, F for Flat, P for Path Tracer); default value = `P`;
 - `--seq` is the sequence number for PCG generator; default value = `54`;
 - `--pix_rays` is the number of rays per pixel for antialiasing; default value = `9`;
@@ -74,14 +72,15 @@ where
 From a terminal type:
 
 ```bash
-julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--a A_FACTOR] [--clamp CLAMPING_METHOD] [--file_out FILE_OUT]
+julia pfm2ldr.jl [--help] [--file_in FILE_IN] [--clamp CLAMPING_METHOD] [--a A_FACTOR] [--gamma G] [--file_out FILE_OUT]
 ```
 
 where:
 
 - `--file_in` is the name of the image you want to convert;
+- `--clamp` is the option to specify the clamping method: for simple images (such as containing only 1 or 2 shapes) you must sepcify `--clamp IM` and the *a_factor* is not needed; for composite images (containing many shapes) you can use the custom clamping `--clamp C` and you can also specify the *a_factor* and *gamma_factor* to adjust luminosity.
 - `--a` is the *a_factor* required to normalize pixels; it can be considered as the average luminosity of the image;
-- `--clamp` is the option to specify the clamping method: for simple images (such as containing only 1 or 2 shapes) you must sepcify `--clamp IM` and the *a_factor* is not needed; for composite images (containing many shapes) you can use the custom clamping `--clamp C` and you can also add any *a_factor* to adjust luminosity.
+- `--gamma` is the factor that characterize the response of the monitor. If you know the *gamma_factor* of your monitor you can correct the image you want to generate, otherwise it has a deafult value = `1`;
 - `--file_out` is the name of the output file (the extension of the file specified here determines the output format!); default value = `LDR_out.png`.
 
 ## Input files: a quick tutorial 😉
