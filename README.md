@@ -234,7 +234,7 @@ We challenge you to do more spectacular images! (If you can send it to us! 😉)
 Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. Thus, we implemented the possibility to easily do this by just typing the following line from a terminal:
 
 ```bash
- bash exe/parallel_exe.sh --options
+ bash parallel_exe.sh --options
 ```
 
 where the `--options` are the same used with `render.jl`.
