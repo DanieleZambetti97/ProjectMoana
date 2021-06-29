@@ -45,7 +45,7 @@ function parse_commandline()
         "--pix_rays"
             help = "number of rays per pixel for antialasing;"
             required = false
-            default = 9
+            default = 4
             arg_type = Int
         "--rays"
             help = "number of rays fired per intersection;"

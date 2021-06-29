@@ -64,6 +64,7 @@ end
     PERSPECTIVE = 18
     FLOAT = 19
     AABOX = 20
+    INT = 21
 end
 
 mutable struct Keyword
@@ -581,17 +582,31 @@ function parse_aab(input_file::InputStream, scene::Scene)
     return AAB(transformation, scene.materials[material_name])
 end
 
-function parse_camera(input_file::InputStream, scene::Scene)
+function parse_camera(input_file::InputStream, scene::Scene, width, height)
     expect_symbol(input_file, '(')
     type_kw = expect_keywords(input_file, [PERSPECTIVE, ORTHOGONAL])
     expect_symbol(input_file, ',')
+    if type_kw == PERSPECTIVE
+        distance = expect_number(input_file, scene)
+        expect_symbol(input_file, ',')
+    end
     transformation = parse_transformation(input_file, scene)
     expect_symbol(input_file, ',')
-    aspect_ratio = expect_number(input_file, scene)
-    expect_symbol(input_file, ',')
-    distance = expect_number(input_file, scene)
-    expect_symbol(input_file, ')')
-
+    try 
+        next_token = expect_symbol(input_file, ')')
+    catch e
+        unread_token(input_file, next_token)
+        try
+            next_token = expect_number(input_file, scene)
+        catch e
+            aspect_ratio = next_token
+    end
+    if aspect_ratio == 0 || (width, height) == (nothing, nothing)
+        throw(GrammarError(input_file.location, "Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file"))
+    else
+        aspect_ratio = width / height
+    end
+    
     if type_kw == PERSPECTIVE
         result = PerspectiveCamera(aspect_ratio, transformation, distance)
     elseif type_kw == ORTHOGONAL
@@ -616,7 +631,7 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
         if isa(what.value, Keyword) == false
             throw(GrammarError("expected a keyword instead of $what", what.loc))
         end
-        if what.value.keyword == FLOAT
+        if what.value.keyword == FLOAT || what.value.keyword == INT
             variable_name = expect_identifier(input_file)
 
             # Save this for the error message
@@ -646,7 +661,9 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             if scene.camera != nothing
                 throw(GrammarError(what.location, "You cannot functionine more than one camera"))
             end
-            scene.camera = parse_camera(input_file, scene)
+            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : nothing
+            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : nothing
+            scene.camera = parse_camera(input_file, scene, width, height)
         elseif what.value.keyword == MATERIAL
             name, material = parse_material(input_file, scene)
             scene.materials[name] = material
