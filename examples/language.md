@@ -81,7 +81,7 @@ All the transformation are described by matrixes.
 
 **Examples:**
 
-The transformation in the shapes showm above.
+The transformation in the shapes shown above.
 
 
 ### Cameras
@@ -96,11 +96,11 @@ Any camera is created with `CAMERA(ORTHOGONAL/PERSPECTIVE, transformation)`.
 
 **Examples**
 ```
-CAMERA(ORTHOGONAL, TRANSLATION([-2, 0, 0]))                   # deafult aspect ratio width/height
+CAMERA(ORTHOGONAL, TRANSLATION([-2, 0, 0]))                   # default aspect ratio width/height
 
 CAMERA(ORTHOGONAL, TRANSLATION([-2, 0, 0]), a_ratio)          # specifying aspect ratio
 
-CAMERA(PERSPECTIVE, distance, TRANSLATION([-2, 0, 0]))             # deafult aspect ratio width/height
+CAMERA(PERSPECTIVE, distance, TRANSLATION([-2, 0, 0]))             # default aspect ratio width/height
 
 CAMERA(PERSPECTIVE, distance, TRANSLATION([-2, 0, 0]), a_ratio )   # specifying aspect ratio
 ```
