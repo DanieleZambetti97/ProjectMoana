@@ -6,7 +6,7 @@ export printcol, luminosity
 export HdrImage, InvalidPfmFileFormat, 
        _parse_img_size, _parse_endianness, _read_float, _read_line,
        valid_coordinates, pixel_offset, get_pixel, set_pixel,
-       average_luminosity, clamp_image, normalize_image, read_pfm_image
+       average_luminosity, clamp_image, normalize_image, read_pfm_image, tone_mapping
 
 export Vec, Point, Transformation, Normal, Vec2D,
        cross, squared_norm, norm, normalize, inverse, is_consistent, toVec, create_onb,

@@ -205,3 +205,12 @@ function clamp_image(img)
         img.pixels[i] = RGB(r, g, b)
     end
 end
+
+function tone_mapping(img, γ)
+    for i in 1:length(img.pixels)
+        (r, g, b) = (floor(255*(img.pixels[i].r)^(1/γ)), 
+                     floor(255*(img.pixels[i].g)^(1/γ)),
+                     floor(255*(img.pixels[i].b)^(1/γ)))  
+        img.pixels[i] = RGB(r/255, g/255, b/255)     
+    end
+end

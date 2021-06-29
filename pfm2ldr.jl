@@ -1,27 +1,32 @@
 import Pkg
 Pkg.activate(normpath(@__DIR__))
 
-import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, greet
+import ProjectMoana: HdrImage, read_pfm_image, normalize_image, clamp_image, greet, tone_mapping
 import Images: save
 using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [--file_in FILE_IN] [--a] [--clamp CLAMP] [--file_out FILE_OUT]",
+                               usage = "usage: [--help] [--file_in FILE_IN] [--clamp CLAMP]  [--a A] [--gamma Γ] [--file_out FILE_OUT]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
         "--file_in"
             help = "input PFM file name;"
             required = true
+        "--clamp"
+            help = "specify which clamping to use: Custom (C) or ImageMagick (IM);"
+            default = "C"
         "--a"
             help = "a_factor;"
             required = false
             default = 1.
             arg_type = Float64
-        "--clamp"
-            help = "specify which clamping to use: Custom (C) or ImageMagick (IM);"
-            default = "C"
+        "--gamma"
+            help = "γ factor, for monitor response;"
+            required = false
+            default = 1.
+            arg_type = Float64
         "--file_out"
             help = "output LDR file name (with extension)."
             required = false
@@ -48,6 +53,7 @@ function main()
     if params["clamp"] == "C"
         normalize_image(img, params["a"])
         clamp_image(img)
+        tone_mapping(img, params["gamma"])
     end
 
 # saving the image in the output format using Images method
