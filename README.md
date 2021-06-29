@@ -96,6 +96,9 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 
 # VARIABLES #####################
 
+INT WIDTH (640)    # dimension of the image!!!
+INT HEIGHT (480)   # REQUIRED!
+
 FLOAT ang_degrees(10)
 
 
@@ -115,7 +118,7 @@ PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 # CAMERA #######################
 
 # defining the observer through a CAMERA rotated and translated
-CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+CAMERA(PERSPECTIVE, 2.0, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]))   # as last parameter (after the transformations) yuo can add any aspect ratio value you want
 ```
 
 Here you can notice some particular features of this "scene-language":
@@ -124,10 +127,10 @@ Here you can notice some particular features of this "scene-language":
 - spaces, returns, and # are ignored;
 - colors are defined with **RGB** format (each component can be a real number between 0 and 1); a color is defined between angular brackets (e.g. `<0.5, 0.8, 1>`);
 - the file is divided into 4 blocks:
-   - **variables**: where you can define any variable;
+   - **variables**: where you can define any variable; here you must specify the dimension of the image as WIDTH AND HEIGHT;
    - **materials**: to generate any shape (planes or spheres) you must before create a MATERIAL that has two components: one **diffusive** and one **emissive**. The **diffusive** one contains a *BRDF* that can be SPECULAR or DIFFUSE (depending on the reflective properties of the object). Both the diffusive and emissive parts must contain a PIGMENT (UNIFORM, having a uniform diffusion, CHECKERED, generating a checkered pigment with two colors, or IMAGE, reproducing an image);
    - **shapes**: once the MATERIAL is ready you can create the actual shape, in this case a PLANE;
-   - **cameras**: lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want); the last two parameters are the aspect ratio and the distance between the observer and the screen;
+   - **cameras**: lastly, you must generate a CAMERA, representing the observer. It can be PERSPECTIVE or ORTHOGONAL (depending on the view you want); if it's perspective you must specify the distance between the observer and the screen (the second parameter, right after `PERSPECTIVE`); the last parameter is the aspect ratio of the image: if omitted (as in this case), it is calculated as WIDTH/HEIGHT, otherwise it's assigned to the vlue you specify.
 - you can apply any transformation to any shape ora camera just by adding a transformation to the constructor (as in `TRANSLATION([0, 0, 100])* ROTATION_Y(clock)`).
 
 Now type `julia render.jl --scene my_first_scene.txt`and you will create this image:
@@ -141,6 +144,8 @@ Now type `julia render.jl --scene my_first_scene.txt`and you will create this im
 Now you can add a second plane: the ground. Add these lines:
 
 ```
+INT WIDTH (640)
+INT HEIGHT (480)
 FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
@@ -161,7 +166,7 @@ PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
 PLANE (ground_material, IDENTITY)
 ##############################
 
-CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+CAMERA(PERSPECTIVE, 2.0, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]))
 ```
 
 Now you added a checkered ground that is not emissive. Thus, it is lighted by the emissive light-blue sky. The IDENTITY is the null transformation.
@@ -177,6 +182,8 @@ This script creates this image:
 At this point you can place a non-emissive specular sphere in the middle of the scene; just add these lines:
 
 ```
+INT WIDTH (640)
+INT HEIGHT (480)
 FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
@@ -203,7 +210,7 @@ PLANE (ground_material, IDENTITY)
 SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 ##############################
 
-CAMERA(PERSPECTIVE, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+CAMERA(PERSPECTIVE, 2.0, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]))
 ```
 
 Et volià! These lines generate your first Moana image:
