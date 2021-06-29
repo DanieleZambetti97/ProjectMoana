@@ -7,7 +7,7 @@ using ArgParse
 
 function parse_commandline()
     s = ArgParseSettings(description = "This program converts a PFM image into a PNG image. Try me!",
-                               usage = "usage: [--help] [--file_in FILE_IN] [--a] [--γ] [--file_out FILE_OUT]",
+                               usage = "usage: [--help] [--file_in FILE_IN] [--a] [--clamp CLAMP] [--file_out FILE_OUT]",
                               epilog = "Let's try again!")
 
     @add_arg_table s begin
@@ -19,13 +19,11 @@ function parse_commandline()
             required = false
             default = 1.
             arg_type = Float64
-        "--γ"
-            help = "γ factor;"
-            required = false
-            default = 1.0
-            arg_type = Float64
+        "--clamp"
+            help = "specify which clamping to use: Custom (C) or ImageMagick (IM);"
+            default = "C"
         "--file_out"
-            help = "output LDR file name. (Extention must be specified)"
+            help = "output LDR file name (with extension)."
             required = false
             default = "LDR_out.png"
     end
@@ -47,8 +45,10 @@ function main()
 
 # then normalizing and clamping
 
-    normalize_image(img, params["a"])
-    clamp_image(img)
+    if params["clamp"] == "C"
+        normalize_image(img, params["a"])
+        clamp_image(img)
+    end
 
 # saving the image in the output format using Images method
 

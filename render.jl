@@ -11,8 +11,8 @@ import ColorTypes: RGB
 function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
-        usage = "usage: [--help] [--scene SCENE_FILE] [--w WIDTH] [--h HEIGHT] [--alg RENDER_ALG] [--seq S] 
-        [--pix_rays RAYS_PER_PIXEL] [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME] ",
+        usage = "usage: [--help] [--scene SCENE_FILE] [--alg RENDER_ALG] [--seq S] [--pix_rays RAYS_PER_PIXEL] 
+        [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME] ",
         epilog = "Let's try again!"
         )
 
@@ -21,17 +21,7 @@ function parse_commandline()
             help = "name of the input scene file;"
             required = false
             default = "scene1.txt"
-            arg_type = String
-        "--w"
-            help = "width of the image in pixels;"
-            required = false
-            default = 640
-            arg_type = Int
-        "--h"
-            help = "height of the image in pixels;"
-            required = false
-            default = 480 
-            arg_type = Int       
+            arg_type = String    
         "--alg"
             help = "type of rendering algorithm (O for On-Off, F for Flat, P for Path Tracer);"
             required = false
@@ -105,8 +95,7 @@ function main()
 # Initialize command line args 
     params = parse_commandline()
 
-    w = params["w"]
-    h = params["h"]
+    ## AGGIUNGERE W E H!
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["alg"]
@@ -137,7 +126,7 @@ function main()
     tracer = ImageTracer(image, scene.camera, samples_per_pixel)
 
 # Computing ray intersection
-    print("Computing ray intersection ")
+    print("Computing ray intersections ")
     if algorithm == "F"
         println("using Flat algorithm")
         renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))

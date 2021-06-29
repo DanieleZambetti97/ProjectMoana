@@ -6,15 +6,13 @@ if [ "$5" == "" ]; then
 fi
 
 readonly SCENE_FILE="$1"
-readonly WIDTH="$2"
-readonly HEIGHT="$3"
-readonly ALG="$4"
-readonly S="$5"
-readonly RAYS_PER_PIXEL="$6"
-readonly NUM_OF_RAYS="$7"
-readonly DEPTH="$8"
-readonly RUSSIAN_ROULETTE="$9"
-readonly FILENAME="${10}"
+readonly ALG="$2"
+readonly S="$3"
+readonly RAYS_PER_PIXEL="$4"
+readonly NUM_OF_RAYS="$5"
+readonly DEPTH="$6"
+readonly RUSSIAN_ROULETTE="$7"
+readonly FILENAME="$8"
 
 readonly seqNNN=$(printf "%03d" $S)
 
@@ -22,8 +20,6 @@ readonly filename=$FILENAME$seqNNN
 
 # echo "parallel_img.sh con seq=${S}"
 # echo "${SCENE_FILE}"
-# echo "${WIDTH}"
-# echo "${HEIGHT}"
 # echo "${ALG}"
 # echo "${S}"
 # echo "${RAYS_PER_PIXEL}"
@@ -32,4 +28,4 @@ readonly filename=$FILENAME$seqNNN
 # echo "${RUSSIAN_ROULETTE}"
 # echo "${FILENAME}"
 
-julia render.jl --scene ${SCENE_FILE} --w ${WIDTH} --h ${HEIGHT} --alg ${ALG} --seq ${S} --pix_rays ${RAYS_PER_PIXEL} --rays ${NUM_OF_RAYS} --d ${DEPTH} --rr ${RUSSIAN_ROULETTE} --file_out ${filename} 
+julia render.jl --scene ${SCENE_FILE} --alg ${ALG} --seq ${S} --pix_rays ${RAYS_PER_PIXEL} --rays ${NUM_OF_RAYS} --d ${DEPTH} --rr ${RUSSIAN_ROULETTE} --file_out ${filename} 

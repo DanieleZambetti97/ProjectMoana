@@ -51,14 +51,14 @@ function fire_ray( camera::OrthogonalCamera, u, v)
 end
 
 """
-    PerspectiveCamera(;a=1.0, T=Transformation(), d=1.0)
+    PerspectiveCamera(a, T, d)
 
 It creates a **Perspective Camera**. 
 
 ## Arguments:
 - *a* -> aspect ratio;
 - *T* -> generic Transformation;
-- *d* -> distance between the observer and the screen(?).
+- *d* -> distance between the observer and the screen.
 
 When not specified in the constructor, a = 1 and T = Transformation(), 
 where *a* is the aspect ratio and *T* a generic transformation.
@@ -87,8 +87,8 @@ It creates a **ImageTracer**.
     
 ## Arguments:
 - image -> object of type HdrImage;
-- camera.
-- ray_per_side^2 is the number of ray that are trow for each pixels to reduce aliasing
+- camera;
+- ray_per_side^2 is the number of rays fired in each pixel to reduce aliasing;
 
 """
 struct ImageTracer
@@ -104,7 +104,7 @@ function fire_ray(im::ImageTracer, col, row, u_pixel=0.5f0, v_pixel=0.5f0)
     ray_vector = []
     for i in 1:im.ray_per_side
         for j in 1:im.ray_per_side
-            if im.ray_per_side > 1
+            if im.ray_per_side > 1 # ANTIALIASING!!
                 u_pixel = (j - 1 + pcg_randf(im.pcg)) / im.ray_per_side
                 v_pixel = (i - 1 + pcg_randf(im.pcg)) / im.ray_per_side
             end

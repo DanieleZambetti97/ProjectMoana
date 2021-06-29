@@ -105,8 +105,8 @@ end
 """
     AAB(T,M)
 
-It creates a **Axis-aligned boxes**, where T is a generic ``Transformation`` applied to the cube
-that has two opposite vertices in (0,0,0) and (1,1,1), M is the ``Material`` of the cube.
+It creates a **axis-aligned box**, where T is a generic ``Transformation`` and  M is the ``Material`` of the cube. 
+By default the AAB is generated with the front-bottom left vertex in (0,0,0), while the front-top right vertex is in (1,1,1).
 """
 struct AAB <: Shape
     transformation::Transformation
@@ -161,7 +161,7 @@ end
 ## Code for HITRECORD ###########################################################################################################################
 
 """
-    HitRecord()
+    HitRecord(world_point, normal, surface_point, t, ray, shape)
 
 ## Arguments:
 - world point;
@@ -188,6 +188,7 @@ Base.:≈(::Nothing,H2::HitRecord) = false
 
 """
     World()
+    
 It creates a **World** with an array of shapes.
 """
 struct World

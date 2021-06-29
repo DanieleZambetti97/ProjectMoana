@@ -11,7 +11,7 @@ Here are reported all the keyowrds needed to create a scene from a text file. Fo
 
 - `MATERIAL`: defines a new material, fundamental for creating shapes;
 - a `MATERIAL` has two components:
-  - a **diffusive** one that can be `DIFFUSE` (for a diffuse effect) of `SPECULAR` (for a specular effect);
+  - a **diffusive** one that contains a *BRDF* `DIFFUSE` (for a diffuse effect) or `SPECULAR` (for a specular effect);
   - a **emissive** one that can only be `UNIFORM`.
 - both of the components are defined by a **pigment** that can be:
   - `UNIFORM` for a uniform color;
