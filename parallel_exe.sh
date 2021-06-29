@@ -1,7 +1,5 @@
 #!/bin/bash
 SCENE_FILE="scene1.txt"
-WIDTH="640"
-HEIGHT="480"
 ALG="P"
 S="54"
 RAYS_PER_PIXEL="9"
@@ -17,16 +15,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
     --scene)
       SCENE_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --w)
-      WIDTH="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --h)
-      HEIGHT="$2"
       shift # past argument
       shift # past value
       ;;
@@ -96,8 +84,6 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # echo "parallel_exe.sh:"
 # echo "${SCENE_FILE}"
-# echo "${WIDTH}"
-# echo "${HEIGHT}"
 # echo "${ALG}"
 # echo "${S}"
 # echo "${RAYS_PER_PIXEL}"
@@ -108,7 +94,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo -e "Computing parallel render of 4 pictures:"
 echo -e "...it could take a while...\n"
-parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $WIDTH $HEIGHT $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
+parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
 echo -e "\nParallel rendering finished."
 
 echo -e "\nSumming pictures..."
