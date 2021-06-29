@@ -121,6 +121,8 @@ function main()
     println("Observer's Camera and World objects created.")
 
 # Creating an ImageTracer object 
+    w = scene.float_variables["WIDTH"]
+    h = scene.float_variables["HEIGHT"]
     image = HdrImage(w, h)
     println("Generating a $w×$h image")
     tracer = ImageTracer(image, scene.camera, samples_per_pixel)

@@ -299,7 +299,7 @@ function read_token(stream::InputStream)
 
     else
         # It's some weird character, like "@` or `&`
-        throw(GrammarError(stream.location, "Invalid character $ch"))
+        throw(GrammarError("Invalid character $ch", stream.location))
     end
     
 end
@@ -324,8 +324,8 @@ assert_is_identifier(token::Token, identifier::Union{String, Char}) = isa(token.
 
 assert_is_symbol(token::Token, symbol::Union{String, Char}) = occursin(symbol, SYMBOLS) && isa(token.value, ProjectMoana.Symbol) && token.value.symbol == symbol
 
-assert_is_number(token::Token, number::Float64) = isa(token.value, LiteralNumber) && token.value.number == number 
-assert_is_number(token::Token, number::Float32) = isa(token.value, LiteralNumber) && token.value.number == number 
+assert_is_number(token::Token, number) = isa(token.value, LiteralNumber) && token.value.number == number 
+#assert_is_number(token::Token, number::Float32) = isa(token.value, LiteralNumber) && token.value.number == number 
 
 assert_is_string(token::Token, string::Union{String, Char}) = isa(token.value, LiteralString) && token.value.s == string 
 
@@ -559,7 +559,7 @@ function parse_sphere(input_file::InputStream, scene::Scene)
 
     material_name = expect_identifier(input_file)
     if haskey(scene.materials, material_name) == false
-        throw(GrammarError(input_file.location, "unknown material $material_name"))
+        throw(GrammarError("unknown material $material_name", input_file.location))
     end
     expect_symbol(input_file, ',')
     transformation = parse_transformation(input_file, scene)
@@ -573,7 +573,7 @@ function parse_plane(input_file::InputStream, scene::Scene)
 
     material_name = expect_identifier(input_file)
     if haskey(scene.materials, material_name) == false
-        throw(GrammarError(input_file.location, "unknown material $material_name"))
+        throw(GrammarError("unknown material $material_name", input_file.location))
     end
     expect_symbol(input_file, ',')
     transformation = parse_transformation(input_file, scene)
@@ -588,7 +588,7 @@ function parse_aab(input_file::InputStream, scene::Scene)
     material_name = expect_identifier(input_file)
     if haskey(scene.materials, material_name) == false
         # We raise the exception here because input_file is pointing to the end of the wrong identifier
-        throw(GrammarError(input_file.location, "unknown material $material_name"))
+        throw(GrammarError("unknown material $material_name", input_file.location))
     end
     expect_symbol(input_file, ',')
     transformation = parse_transformation(input_file, scene)
@@ -606,29 +606,26 @@ function parse_camera(input_file::InputStream, scene::Scene, width, height)
         expect_symbol(input_file, ',')
     end
     transformation = parse_transformation(input_file, scene)
-    expect_symbol(input_file, ',')
-    try 
-        next_token = expect_symbol(input_file, ')')
-    catch e
-        unread_token(input_file, next_token)
-        try
-            next_token = expect_number(input_file, scene)
-        catch e
-            aspect_ratio = next_token
+
+    aspect_ratio = 0
+    next_token = read_token(input_file)
+    if isa(next_token.value, Symbol) && next_token.value.symbol == ','
+        aspect_ratio = expect_number(input_file, scene)
     end
-    if aspect_ratio == 0 || (width, height) == (nothing, nothing)
-        throw(GrammarError(input_file.location, "Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file"))
-    else
+    if aspect_ratio == 0 && nothing in [width, height]
+        throw(GrammarError("Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file", input_file.location))
+    elseif aspect_ratio == 0
         aspect_ratio = width / height
+        unread_token(input_file, next_token)
     end
+    expect_symbol(input_file, ')')
     
     if type_kw == PERSPECTIVE
         result = PerspectiveCamera(aspect_ratio, transformation, distance)
     elseif type_kw == ORTHOGONAL
         result = OrthogonalCamera(aspect_ratio, transformation)
-
-    return result
     end
+    return result
 end
 
 ## PARSING the whole scene #################################################################################
@@ -667,7 +664,7 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             expect_symbol(input_file, ')')
 
             if haskey(scene.float_variables, variable_name) == true && haskey(scene.overridden_variables, variable_name) == false
-                throw(GrammarError(variable_loc, "variable «$variable_name» cannot be refunctionined"))
+                throw(GrammarError("variable «$variable_name» cannot be refunctionined",variable_loc))
             end
 
             if (variable_name in scene.overridden_variables) == false
@@ -682,7 +679,7 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world, parse_aab(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
-                throw(GrammarError(what.location, "You cannot functionine more than one camera"))
+                throw(GrammarError("You cannot functionine more than one camera", what.location))
             end
             width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : nothing
             height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : nothing
