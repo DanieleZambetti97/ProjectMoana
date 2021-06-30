@@ -32,7 +32,7 @@ The current stable version is 2.0.1.
    tar -xf v2.0.1.tar.gz -C /path/to/your/directory
    ```
 
-3. Move to `path/to/your/directory` and from the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
+3. Move to `path/to/your/directory/ProjectMoana-2.0.1` and from the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
    
    ```bash
    ~$ julia
