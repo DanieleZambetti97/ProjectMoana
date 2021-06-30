@@ -237,7 +237,7 @@ Since creating a image can require up to hours (if you want or need high resolut
  bash parallel_exe.sh --options
 ```
 
-> Note: running this requires GNU parallel installed (download [here](https://www.gnu.org/software/parallel/).
+> Note: running this requires GNU parallel installed (download [here](https://www.gnu.org/software/parallel/)).
 
 where the `--options` are the same used with `render.jl`.
 
