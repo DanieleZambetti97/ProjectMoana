@@ -9,7 +9,7 @@
 ProjectMoana is a Julia rendering program, able to generate images starting from a input text file (using the proper syntax). 
 
 In addition it can convert PFM images to LDR formats (such as PNG and JPEG) using the Julia package [ImageMagick](https://juliapackages.com/p/imagemagick).
-The current stable version is 1.0.0.
+The current stable version is 2.0.0.
 
 ## Requirements :heavy_exclamation_mark:
 
@@ -18,10 +18,10 @@ The current stable version is 1.0.0.
 
 ## Installation :top:
 
-1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v1.0.0) or from the terminal
+1. Download the latest version tar.gz file from the ProjectMoana GitHub [repository](https://github.com/DanieleZambetti97/ProjectMoana/releases/tag/v2.0.0) or from the terminal
    
    ```bash
-   wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v1.0.0.tar.gz
+   wget https://github.com/DanieleZambetti97/ProjectMoana/archive/refs/tags/v2.0.0.tar.gz
    ```
 
 > Note: check for the latest version on the repo and change to the current one in the above command.
@@ -29,7 +29,7 @@ The current stable version is 1.0.0.
 2. Exctract the file in the directory you want to use the program:
    
    ```bash
-   tar -xf v1.0.0.tar.gz -C /path/to/your/directory
+   tar -xf v2.0.0.tar.gz -C /path/to/your/directory
    ```
 
 3. From the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
@@ -234,7 +234,7 @@ We challenge you to do more spectacular images! (If you can send it to us! 😉)
 Since creating a image can require up to hours (if you want or need high resolution), you can significantly reduce the computational time by using parallel computation. Thus, we implemented the possibility to easily do this by just typing the following line from a terminal:
 
 ```bash
- bash exe/parallel_exe.sh --options
+ bash parallel_exe.sh --options
 ```
 
 where the `--options` are the same used with `render.jl`.

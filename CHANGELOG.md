@@ -1,4 +1,9 @@
 ## HEAD
+- **Breaking changes**: 
+  - in `render.jl --options`, width and height are not options anymore: they are declared in the scene file;
+  - in `pfm2ldr.jl --options`, the *a_factor* and *gamma_factor* can now be explicitly passed from command line.
+
+## 2021-06-25
 - **First stable version 1.0.0**: **breaking changes**:
   - the old command ``demo.jl --options`` won't work anymore: now use ``render.jl --options``. For a more detailed list of options check the [README](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/README.md);
   - the scenes must be written in a text file and then passed to `render.jl`;
