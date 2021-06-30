@@ -106,7 +106,7 @@ end
     AAB(T,M)
 
 It creates a **axis-aligned box**, where T is a generic ``Transformation`` and  M is the ``Material`` of the cube. 
-By default the AAB is generated with the front-bottom left vertex in (0,0,0), while the front-top right vertex is in (1,1,1).
+By default the AAB is generated with the rear-bottom left vertex in (0,0,0), while the front-top right vertex is in (1,1,1).
 """
 struct AAB <: Shape
     transformation::Transformation

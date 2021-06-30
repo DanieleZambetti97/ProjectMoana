@@ -109,7 +109,7 @@ stream3 = IOBuffer("""
 
         SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
 
-        CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 2.0)
+        CAMERA(PERSPECTIVE, 2.0, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0)
         """)
 
 scene = parse_scene(InputStream(stream3))
@@ -159,7 +159,7 @@ end
 @testset "SceneFiles: Parser -> shapes " begin
         @test length(scene.world.shapes) == 3
         @test isa(scene.world.shapes[1], Plane)
-        @test scene.world.shapes[1].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0))
+        @test scene.world.shapes[1].transformation ≈ (translation(Vec(0, 0, 100)) * rotation_y(150.0f0*π/180))
         @test isa(scene.world.shapes[2], Plane)
         @test scene.world.shapes[2].transformation ≈ (Transformation())
         @test isa(scene.world.shapes[3], Sphere)
@@ -169,7 +169,7 @@ end
 
 @testset "SceneFiles: Parser -> camera " begin
         @test isa(scene.camera, PerspectiveCamera)
-        @test scene.camera.transformation ≈ (rotation_z(30.f0) * translation(Vec(-4, 0, 1)))
+        @test scene.camera.transformation ≈ (rotation_z(30.f0*pi/180) * translation(Vec(-4, 0, 1)))
         @test scene.camera.aspect_ratio ≈ 1.f0
         @test scene.camera.distance ≈ 2.f0
 
@@ -191,8 +191,8 @@ end
 
 # Check that defining two cameras in the same file raises a GrammarError
 stream5 = IOBuffer("""
-        CAMERA(PERSPECTIVE, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0, 1.0)
-        CAMERA(ORTHOGONAL, IDENTITY, 1.0, 1.0)
+        CAMERA(PERSPECTIVE, 1.0, ROTATION_Z(30) * TRANSLATION([-4, 0, 1]), 1.0)
+        CAMERA(ORTHOGONAL, IDENTITY, 1.0)
         """)
 
 @testset "SceneFiles: Parser -> double camera" begin
