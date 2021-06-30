@@ -90,3 +90,40 @@ end
 	# intersection2 = ray_intersection(cube2, ray2)
 	# @test intersection2 ≈ HitRecord( Point(1., 0.5, 0.5), Normal(0.0, -1., 0.0), Vec2D(1.5/4., 2.5/3.), 1.0, ray2, cube2 ) ≈ intersection2
 end
+
+union = ShapeUnion(Sphere(), Sphere(translation(Vec(0.,0.,1.))))
+ray1 = Ray(Point(0,0,3), Vec(0,0,-1))
+intersection1 = ray_intersection(union,ray1)
+
+ray2 = Ray(Point(2,0,0), Vec(-1,0,0))
+intersection2 = ray_intersection(union,ray2)
+
+ray3 = Ray(Point(0,0,0), Vec(0,1,0))
+intersection3 = ray_intersection(union,ray3)
+
+ray4 = Ray(Point(2,0,1), Vec(-1,0,0))
+intersection4 = ray_intersection(union,ray4)
+
+ray5 = Ray(Point(0,0,3), Vec(0,0,1))
+intersection5 = ray_intersection(union,ray5)
+
+ray6 = Ray(Point(-10,0,0), Vec(0,0,-1))
+intersection6 = ray_intersection(union,ray6)
+
+union2 = ShapeUnion( Sphere(), AAB())
+ray7 = Ray(Point(0.5,0.5,2), Vec(0,0,-1))
+intersection7 = ray_intersection(union2,ray7)
+
+ray8 = Ray(Point(0,0,-0.5), Vec(0,0,-1))
+intersection8 = ray_intersection(union2,ray8)
+
+@testset "Shape: Union" begin
+	@test intersection1 ≈ HitRecord(Point(0,0,2), Normal(0,0,1), Vec2D(0,0), 1.0, ray1, union.shape2 )
+	@test intersection2 ≈ HitRecord(Point(1,0,0), Normal(1,0,0), Vec2D(0,0.5), 1.0, ray2 , union.shape1)
+	@test intersection3 ≈ HitRecord(Point(0,1,0), Normal(0,-1,0), Vec2D(0.25,0.5), 1.0, ray3 , union.shape1)
+	@test intersection4 ≈ HitRecord(Point(1,0,1), Normal(1,0,0), Vec2D(0,0.5), 1.0, ray4, union.shape2 )
+	@test nothing == intersection5
+	@test nothing == intersection6
+	@test intersection7 ≈ HitRecord(Point(0.5,0.5,1), Normal(0,0,1), Vec2D(1.5/4.,1.5/3.), 1.0, ray7 , union2.shape2)
+	@test intersection8 ≈ HitRecord(Point(0,0,-1), Normal(0,0,1), Vec2D(0,1), 0.5, ray8, union2.shape1 )
+end

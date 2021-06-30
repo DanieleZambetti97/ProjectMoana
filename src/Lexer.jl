@@ -65,6 +65,7 @@ end
     FLOAT = 19
     AABOX = 20
     INT = 21
+    UNION = 22
 end
 
 mutable struct Keyword
@@ -597,6 +598,37 @@ function parse_aab(input_file::InputStream, scene::Scene)
     return AAB(transformation, scene.materials[material_name])
 end
 
+function parse_union(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape1 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        shape1 = parse_plane(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape1 = parse_aab(input_file, scene)
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape2 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        shape2 = parse_plane(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape2 = parse_aab(input_file, scene)
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ')')
+    return ShapeUnion(shape1,shape2)
+end
+
 function parse_camera(input_file::InputStream, scene::Scene, width, height)
     expect_symbol(input_file, '(')
     type_kw = expect_keywords(input_file, [PERSPECTIVE, ORTHOGONAL])
@@ -677,6 +709,8 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world, parse_plane(input_file, scene))
         elseif what.value.keyword == AABOX
             add_shape(scene.world, parse_aab(input_file, scene))
+        elseif what.value.keyword == UNION
+            add_shape(scene.world, parse_union(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError("You cannot functionine more than one camera", what.location))

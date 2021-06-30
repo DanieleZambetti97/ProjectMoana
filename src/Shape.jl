@@ -107,6 +107,37 @@ end
 
 It creates a **axis-aligned box**, where T is a generic ``Transformation`` and  M is the ``Material`` of the cube. 
 By default the AAB is generated with the rear-bottom left vertex in (0,0,0), while the front-top right vertex is in (1,1,1).
+
+AAB default orthogonal projection.
+           z
+           | z=1
+           |__________ 
+          /|         /|
+         / |        / |
+        /__________/  |
+        |  |       |  |
+        |  |_______|__|_________ y
+        | /        | /  y=1
+    x=1 |/_________|/ 
+        /  
+       /    
+       x
+
+
+UV mapping of the net of the default AAB. 
+        v   
+  1 | _ _ _ _ ________ _ _ _ _ _ _ _ _ _ 
+    |        |        |                 '
+    |        |   y=0  |                 '
+2/3 |________|________|________ ________'
+    |        |        |        |        |
+    |   x=0  |   z=1  |   x=1  |   z=0  |
+1/3 |________|________|________|________|
+    |        |        |                 '
+    |        |   y=1  |                 '
+    |________|________|_________________'___ u
+    0       1/4      2/4      3/4       1
+
 """
 struct AAB <: Shape
     transformation::Transformation
@@ -157,6 +188,18 @@ function _cube_normal(point::Point, ray_dir::Vec)
     result * ray_dir < 0.f0 ? nothing : result = result * -1.f0
     return Normal(result.x, result.y, result.z)
 end
+
+struct ShapeUnion <: Shape
+    shape1::Shape
+    shape2::Shape
+    transformation::Transformation
+
+    ShapeUnion(shape1::Shape,
+               shape2::Shape,
+               transformation::Transformation=Transformation()) =
+               new(shape1, shape2, transformation)
+ end
+Base.:≈(S1::ShapeUnion,S2::ShapeUnion) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2
 
 ## Code for HITRECORD ###########################################################################################################################
 
@@ -303,5 +346,23 @@ function ray_intersection(cube::AAB, ray::Ray)
         return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_max, ray, cube)
     else
         return nothing 
+    end
+end
+
+function ray_intersection(union::ShapeUnion, ray::Ray)
+    inverse_ray= inverse(union.transformation) * ray
+
+    intersection1 = ray_intersection(union.shape1, inverse_ray)
+    intersection2 = ray_intersection(union.shape2, inverse_ray)
+    if (intersection1, intersection2) == (nothing, nothing) 
+        return nothing
+    elseif intersection1 === nothing
+        return HitRecord(intersection2.world_point, intersection2.normal, intersection2.surface_point, intersection2.t, ray, union.shape2 )
+    elseif intersection2 === nothing
+        return HitRecord(intersection1.world_point, intersection1.normal, intersection1.surface_point, intersection1.t, ray, union.shape1 )
+    elseif intersection1.t < intersection2.t
+        return HitRecord(intersection1.world_point, intersection1.normal, intersection1.surface_point, intersection1.t, ray, union.shape1 )
+    elseif intersection2.t < intersection1.t 
+        return HitRecord(intersection2.world_point, intersection2.normal, intersection2.surface_point, intersection2.t, ray, union.shape2 )
     end
 end
