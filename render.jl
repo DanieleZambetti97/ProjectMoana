@@ -95,9 +95,7 @@ function main()
 # Initialize command line args 
     params = parse_commandline()
 
-    ## AGGIUNGERE W E H!
     file_out_pfm = "$(params["file_out"]).pfm"
-    file_out_png = "$(params["file_out"]).png"
     algorithm = params["alg"]
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]

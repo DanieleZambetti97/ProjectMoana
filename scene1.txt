@@ -40,7 +40,9 @@ PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(15) * ROTATION_
 
 SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
 
-UNION(SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([2,2,2]) ) , AABOX(planet_material, TRANSLATION([5,-4,3]) * SCALING([3.,3.,3.]) * ROTATION_Y(45)) )
+UNION(SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([2,2,2]) ) , 
+      AABOX(planet_material, TRANSLATION([5,-4,3]) * SCALING([3.,3.,3.]) * ROTATION_Y(45)),
+      TRANSLATION([-5,0,-2]) )
 
 #SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3])) 
 

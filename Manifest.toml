@@ -12,6 +12,17 @@ git-tree-sha1 = "485ee0867925449198280d4af84bdb46a2a404d0"
 uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
 version = "1.0.1"
 
+[[AbstractLattices]]
+git-tree-sha1 = "f35684b7349da49fcc8a9e520e30e45dbb077166"
+uuid = "398f06c4-4d28-53ec-89ca-5b2656b7603d"
+version = "0.2.1"
+
+[[AbstractTensors]]
+deps = ["AbstractLattices", "LinearAlgebra", "Random"]
+git-tree-sha1 = "34de5c9aa9b1ee234f52c77f10f21ea9d735202d"
+uuid = "a8e43f4a-99b7-5565-8bf1-0165161caaea"
+version = "0.6.5"
+
 [[AbstractTrees]]
 git-tree-sha1 = "03e0550477d86222521d254b741d470ba17ea0b5"
 uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
@@ -96,6 +107,12 @@ deps = ["InteractiveUtils", "UUIDs"]
 git-tree-sha1 = "8ad457cfeb0bca98732c97958ef81000a543e73e"
 uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
 version = "1.0.5"
+
+[[ColorSchemes]]
+deps = ["ColorTypes", "Colors", "FixedPointNumbers", "Random", "StaticArrays"]
+git-tree-sha1 = "c8fd01e4b736013bc61b704871d20503b33ea402"
+uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+version = "3.12.1"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -222,9 +239,15 @@ version = "1.4.3"
 
 [[FFTW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "5a0d4b6a22a34d17d53543bd124f4b08ed78e8b0"
+git-tree-sha1 = "3676abafff7e4ff07bbd2c42b3d8201f31653dcc"
 uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
-version = "3.3.9+7"
+version = "3.3.9+8"
+
+[[Fatou]]
+deps = ["ColorSchemes", "LaTeXStrings", "Reduce", "Requires", "SyntaxTree"]
+git-tree-sha1 = "f8cf195d76c75505429800ae6f13c804b8503c16"
+uuid = "5f923234-c850-556d-bb4f-28324fa1959a"
+version = "1.1.3"
 
 [[FileIO]]
 deps = ["Pkg", "Requires", "UUIDs"]
@@ -252,6 +275,12 @@ deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "
 git-tree-sha1 = "21efd19106a55620a188615da6d3d06cd7f6ee03"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
 version = "2.13.93+0"
+
+[[ForceImport]]
+deps = ["Test"]
+git-tree-sha1 = "7ac07d5194360af910146abd33af89bb69541194"
+uuid = "9dda63f9-cce7-5873-89fa-eccbb2fffcde"
+version = "0.0.3"
 
 [[FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Pkg", "Zlib_jll"]
@@ -359,6 +388,12 @@ deps = ["FileIO", "Netpbm", "PNGFiles", "TiffImages", "UUIDs"]
 git-tree-sha1 = "d2b485a4db3d24b58a7558d5e47979c6e9ba1c8e"
 uuid = "82e4d734-157c-48bb-816b-45c225c6df19"
 version = "0.5.5"
+
+[[ImageInTerminal]]
+deps = ["Crayons", "ImageCore", "ImageTransformations"]
+git-tree-sha1 = "835047c78830901a1b70c73e2e50ec66fb8a80d6"
+uuid = "d8c32880-2388-543b-8c61-d9f865259254"
+version = "0.4.6"
 
 [[ImageMagick]]
 deps = ["FileIO", "ImageCore", "ImageMagick_jll", "InteractiveUtils", "Libdl", "Pkg", "Random"]
@@ -468,6 +503,11 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "e5b909bcf985c5e2605737d2ce278ed791b89be6"
 uuid = "dd4b983a-f0e5-5f8d-a1b7-129d4a5fb1ac"
 version = "2.10.1+0"
+
+[[LaTeXStrings]]
+git-tree-sha1 = "c7f1c695e06c01b95a67f0cd1d34994f3e7db104"
+uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+version = "1.2.1"
 
 [[LazyArtifacts]]
 deps = ["Artifacts", "Pkg"]
@@ -747,10 +787,22 @@ git-tree-sha1 = "5862d915387ebb954016f50a88e34f79a9e5fcd2"
 uuid = "a223df75-4e93-5b7c-acf9-bdd599c0f4de"
 version = "0.8.3"
 
+[[Reduce]]
+deps = ["AbstractTensors", "ForceImport", "LinearAlgebra", "REPL", "ReplMaker", "SyntaxTree"]
+git-tree-sha1 = "decab29ece048b8808391025b8c423530646e792"
+uuid = "93e0c654-6965-5f22-aba9-9c1ae6b3c259"
+version = "1.2.11"
+
 [[Reexport]]
 git-tree-sha1 = "5f6c21241f0f655da3952fd60aa18477cf96c220"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.1.0"
+
+[[ReplMaker]]
+deps = ["REPL", "Unicode"]
+git-tree-sha1 = "76098218397ec93b925b70ce355144d539b1a8b4"
+uuid = "b873ce64-0db9-51f5-a568-4457d8e49576"
+version = "0.2.5"
 
 [[Requires]]
 deps = ["UUIDs"]
@@ -843,6 +895,12 @@ deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Ran
 git-tree-sha1 = "2f6792d523d7448bbe2fec99eca9218f06cc746d"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.33.8"
+
+[[SyntaxTree]]
+deps = ["Test"]
+git-tree-sha1 = "9f33aae2c72d812968a6b7af9e189aa925661a99"
+uuid = "a4af3ec5-f8ac-5fed-a759-c2e80b4d74cb"
+version = "1.0.1"
 
 [[TOML]]
 deps = ["Dates"]
