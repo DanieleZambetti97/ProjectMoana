@@ -301,23 +301,25 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     if Δ<0
         return nothing
     else 
+        t_hit = []
         t_1 = Float32(( -b - sqrt(Δ) ) / (2.0 * a))
         t_2 = Float32(( -b + sqrt(Δ) ) / (2.0 * a))
         if inverse_ray.tmin < t_1 < inverse_ray.tmax
-            first_hit_t = t_1
+            push!(t_hit, t_1, t_2)
         elseif inverse_ray.tmin < t_2 < inverse_ray.tmax
-            first_hit_t = t_2
+            push!(t_hit, t_2, t_1)
         else
             return nothing
         end
-        
-        hit_point = at(inverse_ray, first_hit_t)
+        t_hit[2]<0 ? t_hit[2]=Inf : nothing
+
+        hit_point = at(inverse_ray, t_hit[1])
     end
 
     return HitRecord(sphere.transformation * hit_point,
                      sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir),
                      _sphere_point_to_uv(hit_point),
-                     sort([t_1, t_2]),
+                     t_hit,
                      ray,
                      sphere)
 end
@@ -346,45 +348,78 @@ end
 
 function ray_intersection(cube::AAB, ray::Ray)
     inverse_ray= inverse(cube.transformation) * ray
-    origin_vec = toVec(inverse_ray.origin)
-    t_=zeros(2)
 
-    t_min ,t_max = sort( [- inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x] )
-    t_ymin ,t_ymax = sort( [- inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y] )
+    ## Find intersection on x and y direction and save ordered by distance
+    t_xmin ,t_xmax = - inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x
+    t_ymin ,t_ymax = - inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y
 
+    t_min ,t_max = sort([t_xmin, t_xmax])
+    t_ymin ,t_ymax = sort([t_ymin, t_ymax])
+
+    ## Check if intersection points lay lie on the cube
     if (t_min > t_ymax) || (t_ymin > t_max)
         return nothing
     end
     t_min = max(t_min, t_ymin)
     t_max = min(t_max, t_ymax)
 
-    t_zmin ,t_zmax = sort( [- inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z] )
+    ## Find intersection on z direction and save ordered by distance
+    t_zmin ,t_zmax = - inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z
+
+    ## Check if intersection points lay lie on the cube
+    t_zmin ,t_zmax = sort([t_zmin, t_zmax])
 
     if (t_min > t_zmax) || (t_zmin > t_max)
         return nothing
     end
     t_min = max(t_min, t_zmin)
     t_max = min(t_max, t_zmax)
-        
-    if inverse_ray.tmin ≤ t_min ≤ inverse_ray.tmax
-        hit_point = at(inverse_ray, t_min)
-        return HitRecord(cube.transformation * hit_point,
-                         cube.transformation * _cube_normal(hit_point, inverse_ray.dir),
-                         _cube_point_to_uv(hit_point),
-                         [t_min, t_max],
+
+    t_min<0 ? t_min=Inf : nothing
+    t_max<0 ? t_max=Inf : nothing
+
+    if inverse_ray.tmin < t_min < inverse_ray.tmax
+        hit_point_near = at(inverse_ray, t_min)
+        hit_point_far = at(inverse_ray, t_max)
+        if hit_point_far.x!=0 && hit_point_far.x*Inf != Inf
+            hit_point_far=Point(Inf, hit_point_far.y, hit_point_far.z)
+        end
+        if hit_point_far.y!=0 &&  hit_point_far.y*Inf != Inf
+            hit_point_far=Point(hit_point_far.x ,Inf, hit_point_far.z)
+        end
+        if hit_point_far.z!=0 && hit_point_far.z*Inf != Inf
+            hit_point_far=Point(hit_point_far.x, hit_point_far.y, Inf) 
+        end
+        t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
+        return HitRecord(cube.transformation * hit_point_near,
+                         cube.transformation * _cube_normal(hit_point_near, inverse_ray.dir),
+                         _cube_point_to_uv(hit_point_near),
+                         t_hit,
                          ray,
                          cube)
-    elseif inverse_ray.tmin ≤ t_max ≤ inverse_ray.tmax
-        hit_point = at(inverse_ray, t_max)
-        return HitRecord(cube.transformation * hit_point,
-                         cube.transformation * _cube_normal(hit_point, inverse_ray.dir),
-                         _cube_point_to_uv(hit_point),
-                         [t_max, t_min],
+    elseif inverse_ray.tmin < t_max < inverse_ray.tmax
+        hit_point_near = at(inverse_ray, t_max)
+        hit_point_far = at(inverse_ray, t_min)
+        if hit_point_far.x!=0 && hit_point_far.x*Inf != Inf
+            hit_point_far=Point(Inf, hit_point_far.y, hit_point_far.z)
+        end
+        if hit_point_far.y!=0 &&  hit_point_far.y*Inf != Inf
+            hit_point_far=Point(hit_point_far.x ,Inf, hit_point_far.z)
+        end
+        if hit_point_far.z!=0 && hit_point_far.z*Inf != Inf
+            hit_point_far=Point(hit_point_far.x, hit_point_far.y, Inf) 
+        end
+        t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
+        return HitRecord(cube.transformation * hit_point_near,
+                         cube.transformation * _cube_normal(hit_point_near, inverse_ray.dir),
+                         _cube_point_to_uv(hit_point_near),
+                         t_hit,
                          ray,
                          cube)
     else
         return nothing 
     end
+    println()
 end
 
 function ray_intersection(union::ShapeUnion, ray::Ray)
@@ -412,14 +447,14 @@ function ray_intersection(union::ShapeUnion, ray::Ray)
         return HitRecord(intersection1.world_point,
                          intersection1.normal,
                          intersection1.surface_point,
-                         intersection1.t,
+                         [intersection1.t[1], intersection1.t[2]<intersection2.t[2] ? intersection2.t[2] : intersection1.t[2] ],
                          ray,
                          union.shape1)
     elseif intersection2.t < intersection1.t 
         return HitRecord(intersection2.world_point,
                          intersection2.normal,
                          intersection2.surface_point,
-                         intersection2.t,
+                         [intersection2.t[1], intersection2.t[2]<intersection1.t[2] ? intersection1.t[2] : intersection2.t[2] ],
                          ray,
                          union.shape2)
     end
