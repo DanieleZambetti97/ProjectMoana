@@ -14,7 +14,7 @@ export Vec, Point, Transformation, Normal, Vec2D,
 
 export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF, SpecularBRDF, scatter_ray
 
-export Shape, Sphere, World, Plane, AAB, ShapeUnion, HitRecord, ray_intersection, add_shape, Ray, at
+export Shape, Sphere, World, Plane, AAB, ShapeUnion, ShapeDifference, HitRecord, ray_intersection, add_shape, Ray, at
        
 export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
        fire_ray, fire_all_rays

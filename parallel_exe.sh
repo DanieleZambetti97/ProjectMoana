@@ -94,12 +94,18 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo -e "Computing parallel render of 4 pictures:"
 echo -e "...it could take a while...\n"
-parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
+#parallel --ungroup -j 4 ./exe/parallel_img.sh $SCENE_FILE $ALG '{}' $RAYS_PER_PIXEL $NUM_OF_RAYS $DEPTH $RUSSIAN_ROULETTE $FILENAME ::: $(seq 0 3)
 echo -e "\nParallel rendering finished."
 
 echo -e "\nSumming pictures..."
 julia ./exe/parallel_sum.jl --file_in $FILENAME
 
-find "." -name $FILENAME"0*" -type f -delete
+a=`find "." -maxdepth 1 -name $FILENAME"*_sum*" -type f` 
+
+if [ "$a" == "" ]; then
+    exit 1
+fi
+
+find "." -maxdepth 1 -name $FILENAME"0*" -type f -delete
 echo -e "\n The 4 pictures have been deleted."
 

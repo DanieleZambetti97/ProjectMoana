@@ -1,8 +1,18 @@
-INT WIDTH (640 )
+INT WIDTH (640)
 INT HEIGHT (480)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0.0, 0.4, 0.85>)),
+        UNIFORM(<0., 0., 0.>)
+)
+
+MATERIAL green_material(
+        DIFFUSE(UNIFORM(<0.1, 0.9, 0.0>)),
+        UNIFORM(<0., 0., 0.>)
+)
+
+MATERIAL orange_material(
+        DIFFUSE(UNIFORM(<0.99, 0.5, 0.0>)),
         UNIFORM(<0., 0., 0.>)
 )
 
@@ -28,7 +38,7 @@ MATERIAL planet_material(
 )
 
 MATERIAL cube_material(
-        DIFFUSE(IMAGE("./examples/texture_rubiks_cube.pfm")),
+        DIFFUSE(IMAGE("./examples/texture_rubiks_cube_solved.pfm")),
         UNIFORM(<0, 0, 0>)
 )
 
@@ -38,14 +48,14 @@ PLANE (sun_material, TRANSLATION([-100,0.,0.]) * ROTATION_Y(90))
 
 PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(15) * ROTATION_X(7.5) * SCALING([1,1,1]))
 
-SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
+SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.])*ROTATION_Z(45))
 
-UNION(SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([2,2,2]) ) , 
-      AABOX(planet_material, TRANSLATION([5,-4,3]) * SCALING([3.,3.,3.]) * ROTATION_Y(45)),
-      TRANSLATION([-5,0,-2]) )
+DIFFERENCE (AABOX(green_material, SCALING([4.,4.,4.])*TRANSLATION([-0.5,-0.5,-0.5]) ),
+            SPHERE(orange_material, TRANSLATION([0.,0.,0.])*SCALING([2.5,2.5,2.5]) ) , 
+            TRANSLATION([4,-3,-0.5])*ROTATION_Z(-45)*ROTATION_Y(30) )
 
 #SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3])) 
 
-#AABOX(cube_material, TRANSLATION([-0.5,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(45) * ROTATION_X(45) * ROTATION_Y(45))
-
-CAMERA(PERSPECTIVE, 1.0, TRANSLATION([-2, 0, 0]))
+#AABOX(cube_material, TRANSLATION([-2,0,0]) * ROTATION_Z(70) * SCALING([3.,3.,3.]) * ROTATION_X(80) * ROTATION_Y(45) * TRANSLATION([-0.5,-0.5,-0.5]))
+  
+CAMERA(PERSPECTIVE, 1.0, TRANSLATION([-2., 0, 0.5]))

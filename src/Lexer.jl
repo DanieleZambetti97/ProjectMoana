@@ -66,6 +66,7 @@ end
     AABOX = 20
     INT = 21
     UNION = 22
+    DIFFERENCE = 23
 end
 
 mutable struct Keyword
@@ -628,7 +629,40 @@ function parse_union(input_file::InputStream, scene::Scene)
     expect_symbol(input_file, ',')
     transformation = parse_transformation(input_file, scene)
     expect_symbol(input_file, ')')
-    return ShapeUnion(shape1,shape2, transformation)
+    return ShapeUnion(shape1,shape2,transformation)
+end
+
+function parse_difference(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape1 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape1 = parse_aab(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        throw(GrammarError("got $next_tk PLANE shapes cannot be use in DIFFERENCE, use onle AAB or SPHERE"))
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape2 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape2 = parse_aab(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        throw(GrammarError("got $next_tk PLANE shapes cannot be use in DIFFERENCE, use onle AAB or SPHERE"))
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ')')
+    return ShapeDifference(shape1,shape2,transformation)
 end
 
 function parse_camera(input_file::InputStream, scene::Scene, width, height)
@@ -714,6 +748,8 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world, parse_aab(input_file, scene))
         elseif what.value.keyword == UNION
             add_shape(scene.world, parse_union(input_file, scene))
+        elseif what.value.keyword == DIFFERENCE
+            add_shape(scene.world, parse_difference(input_file, scene))
 
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing

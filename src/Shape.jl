@@ -189,6 +189,11 @@ function _cube_normal(point::Point, ray_dir::Vec)
     return Normal(result.x, result.y, result.z)
 end
 
+
+struct CSGError <: Exception
+    msg::String
+end
+
 struct ShapeUnion <: Shape
     shape1::Shape
     shape2::Shape
@@ -199,8 +204,21 @@ struct ShapeUnion <: Shape
                transformation::Transformation=Transformation()) =
                new(shape1, shape2, transformation)
  end
-Base.:≈(S1::ShapeUnion,S2::ShapeUnion) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2
+Base.:≈(S1::ShapeUnion,S2::ShapeUnion) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2 && S1.transformation ≈ S2.transformation
 
+struct ShapeDifference <: Shape
+    shape1::Shape
+    shape2::Shape
+    transformation::Transformation
+
+    function ShapeDifference(shape1::Shape, shape2::Shape, transformation::Transformation=Transformation())
+        if isa(shape1, Plane) || isa(shape2, Plane)
+            throw(CSGError("It's not possibile to use Plane shapes in ShapeDifference, try whit AAB and Spheres"))
+        end
+        return new(shape1, shape2, transformation)
+    end
+ end
+Base.:≈(S1::ShapeDifference,S2::ShapeDifference) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2 && S1.transformation ≈ S2.transformation
 ## Code for HITRECORD ###########################################################################################################################
 
 """
@@ -218,7 +236,7 @@ struct HitRecord
     world_point::Point
     normal::Normal
     surface_point::Vec2D
-    t::Float32
+    t::Array{Float32}
     ray::Ray
     shape::Shape
 end
@@ -263,7 +281,7 @@ function ray_intersection(world::World, ray::Ray)
 
         if intersection === nothing
             continue
-        elseif closest === nothing  || (intersection.t < closest.t)
+        elseif closest === nothing  || (intersection.t[1] < closest.t[1])
             closest = intersection
         end
     
@@ -285,9 +303,9 @@ function ray_intersection(sphere::Sphere, ray::Ray)
     else 
         t_1 = Float32(( -b - sqrt(Δ) ) / (2.0 * a))
         t_2 = Float32(( -b + sqrt(Δ) ) / (2.0 * a))
-        if t_1 > inverse_ray.tmin && t_1 < inverse_ray.tmax
+        if inverse_ray.tmin < t_1 < inverse_ray.tmax
             first_hit_t = t_1
-        elseif t_2 > inverse_ray.tmin && t_2 < inverse_ray.tmax
+        elseif inverse_ray.tmin < t_2 < inverse_ray.tmax
             first_hit_t = t_2
         else
             return nothing
@@ -296,7 +314,12 @@ function ray_intersection(sphere::Sphere, ray::Ray)
         hit_point = at(inverse_ray, first_hit_t)
     end
 
-    return HitRecord(sphere.transformation * hit_point, sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir), _sphere_point_to_uv(hit_point), first_hit_t, ray, sphere )
+    return HitRecord(sphere.transformation * hit_point,
+                     sphere.transformation * _sphere_normal(hit_point, inverse_ray.dir),
+                     _sphere_point_to_uv(hit_point),
+                     sort([t_1, t_2]),
+                     ray,
+                     sphere)
 end
 
 function ray_intersection(plane::Plane, ray::Ray)
@@ -313,7 +336,12 @@ function ray_intersection(plane::Plane, ray::Ray)
             return nothing
         end
     end
-    return HitRecord(plane.transformation * hit_point, plane.transformation * _plane_normal(hit_point, inverse_ray.dir), _plane_point_to_uv(hit_point), t, ray, plane )
+    return HitRecord(plane.transformation * hit_point,
+                     plane.transformation * _plane_normal(hit_point, inverse_ray.dir),
+                     _plane_point_to_uv(hit_point),
+                     [t],
+                     ray,
+                     plane)
 end
 
 function ray_intersection(cube::AAB, ray::Ray)
@@ -338,12 +366,22 @@ function ray_intersection(cube::AAB, ray::Ray)
     t_min = max(t_min, t_zmin)
     t_max = min(t_max, t_zmax)
         
-    if (inverse_ray.tmin ≤ t_min ≤ inverse_ray.tmax)
+    if inverse_ray.tmin ≤ t_min ≤ inverse_ray.tmax
         hit_point = at(inverse_ray, t_min)
-        return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_min, ray, cube)
-    elseif (inverse_ray.tmin ≤ t_max ≤ inverse_ray.tmax)
+        return HitRecord(cube.transformation * hit_point,
+                         cube.transformation * _cube_normal(hit_point, inverse_ray.dir),
+                         _cube_point_to_uv(hit_point),
+                         [t_min, t_max],
+                         ray,
+                         cube)
+    elseif inverse_ray.tmin ≤ t_max ≤ inverse_ray.tmax
         hit_point = at(inverse_ray, t_max)
-        return HitRecord(cube.transformation * hit_point, cube.transformation * _cube_normal(hit_point, inverse_ray.dir), _cube_point_to_uv(hit_point), t_max, ray, cube)
+        return HitRecord(cube.transformation * hit_point,
+                         cube.transformation * _cube_normal(hit_point, inverse_ray.dir),
+                         _cube_point_to_uv(hit_point),
+                         [t_max, t_min],
+                         ray,
+                         cube)
     else
         return nothing 
     end
@@ -357,12 +395,107 @@ function ray_intersection(union::ShapeUnion, ray::Ray)
     if (intersection1, intersection2) == (nothing, nothing) 
         return nothing
     elseif intersection1 === nothing
-        return HitRecord(intersection2.world_point, intersection2.normal, intersection2.surface_point, intersection2.t, ray, union.shape2 )
+        return HitRecord(intersection2.world_point,
+                         intersection2.normal,
+                         intersection2.surface_point,
+                         intersection2.t,
+                         ray,
+                         union.shape2)
     elseif intersection2 === nothing
-        return HitRecord(intersection1.world_point, intersection1.normal, intersection1.surface_point, intersection1.t, ray, union.shape1 )
+        return HitRecord(intersection1.world_point,
+                         intersection1.normal,
+                         intersection1.surface_point,
+                         intersection1.t,
+                         ray,
+                         union.shape1)
     elseif intersection1.t < intersection2.t
-        return HitRecord(intersection1.world_point, intersection1.normal, intersection1.surface_point, intersection1.t, ray, union.shape1 )
+        return HitRecord(intersection1.world_point,
+                         intersection1.normal,
+                         intersection1.surface_point,
+                         intersection1.t,
+                         ray,
+                         union.shape1)
     elseif intersection2.t < intersection1.t 
-        return HitRecord(intersection2.world_point, intersection2.normal, intersection2.surface_point, intersection2.t, ray, union.shape2 )
+        return HitRecord(intersection2.world_point,
+                         intersection2.normal,
+                         intersection2.surface_point,
+                         intersection2.t,
+                         ray,
+                         union.shape2)
+    end
+end
+
+function ray_intersection(difference::ShapeDifference, ray::Ray)
+    inverse_ray= inverse(difference.transformation) * ray
+
+    intersection1 = ray_intersection(difference.shape1, inverse_ray)
+    if intersection1 === nothing
+        return nothing
+    end
+
+    intersection2 = ray_intersection(difference.shape2, inverse_ray)
+    if intersection2 === nothing
+        return HitRecord(intersection1.world_point,
+        intersection1.normal,
+        intersection1.surface_point,
+        [intersection1.t[1]],
+        ray,
+        difference.shape1)
+
+    end
+
+    ### Check if there is intersection between the two shapes along the ray direction, otherwise return nothing
+    if intersection1.t[1]<intersection2.t[2] 
+        t_shape_near = intersection1.t
+        t_shape_far = intersection2.t
+    else
+        t_shape_near = intersection1.t
+        t_shape_far = intersection2.t
+    end
+    if t_shape_near[2] < t_shape_far[1]
+        return nothing
+    end
+
+    t_accettable = [intersection1.t[1],intersection1.t[2],intersection2.t[1],intersection2.t[2]]
+    # if intersection2.t[1] < intersection1.t[1] < intersection2.t[2]
+    #     splice!(t_accettable, findall(x->x==intersection1.t[1], t_accettable)[1])
+    # elseif intersection2.t[1] < intersection1.t[2] < intersection2.t[2]
+    #     splice!(t_accettable, findall(x->x==intersection1.t[2], t_accettable)[1])
+    # elseif intersection1.t[1] < intersection2.t[1] < intersection1.t[2]
+    #     splice!(t_accettable, findall(x->x==intersection2.t[1], t_accettable)[1])
+    # elseif intersection1.t[1] < intersection2.t[2] < intersection1.t[2]
+    #     splice!(t_accettable, findall(x->x==intersection2.t[2], t_accettable)[1])
+    # end
+
+    # if length(t_accettable) == 0
+    #     return nothing
+    # elseif length(t_accettable) == 1
+    #     return
+
+    if intersection1.t[1] < intersection2.t[1]
+        return HitRecord(intersection1.world_point,
+                         intersection1.normal,
+                         intersection1.surface_point,
+                         [intersection1.t[1]],
+                         ray,
+                         difference.shape1)
+    elseif intersection2.t[1]<intersection1.t[1]<intersection1.t[2]<intersection2.t[2]
+        return nothing
+    else
+        new_ray = Ray(inverse_ray.origin, inverse_ray.dir, intersection2.t[1]+1.10e-10, Inf, inverse_ray.depth)
+        new_intersection = ray_intersection(difference.shape2, new_ray)
+        if new_intersection === nothing
+            println(intersection1)
+            println(intersection2)
+            println(inverse_ray)
+            println(new_ray)
+            println(t_accettable)
+        end
+        return HitRecord(new_intersection.world_point,
+                         new_intersection.normal,
+                         new_intersection.surface_point,
+                         [new_intersection.t[1]],
+                         ray,
+                         difference.shape2)
     end
 end
