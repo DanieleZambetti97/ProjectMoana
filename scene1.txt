@@ -50,12 +50,12 @@ PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(15) * ROTATION_
 
 SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.])*ROTATION_Z(45))
 
-DIFFERENCE (AABOX(green_material, SCALING([4.,4.,4.])*TRANSLATION([-0.5,-0.5,-0.5]) ),
-            SPHERE(orange_material, TRANSLATION([0.,0.,0.])*SCALING([2.5,2.5,2.5]) ) , 
-            TRANSLATION([4,-3,-0.5])*ROTATION_Z(-45)*ROTATION_Y(30) )
+#DIFFERENCE (AABOX(green_material, SCALING([4.,4.,4.])*TRANSLATION([-0.5,-0.5,-0.5]) ),
+#            SPHERE(orange_material, TRANSLATION([0.,0.,0.])*SCALING([2.5,2.5,2.5]) ) , 
+#            TRANSLATION([4,-3,-0.5])*ROTATION_Z(-45)*ROTATION_Y(30) )
 
-#SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3])) 
+SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3])) 
 
-#AABOX(cube_material, TRANSLATION([-2,0,0]) * ROTATION_Z(70) * SCALING([3.,3.,3.]) * ROTATION_X(80) * ROTATION_Y(45) * TRANSLATION([-0.5,-0.5,-0.5]))
-  
-CAMERA(PERSPECTIVE, 1.0, TRANSLATION([-2., 0, 0.5]))
+AABOX(cube_material, TRANSLATION([0,0,0]) * SCALING([1.,1.,1.]) * ROTATION_X(0) * ROTATION_Y(-45.01) * ROTATION_Z(45.01) * TRANSLATION([-0.5,-0.5,-0.5]))
+
+CAMERA(PERSPECTIVE, 1.0, TRANSLATION([-1.5, 0, 0.0]))

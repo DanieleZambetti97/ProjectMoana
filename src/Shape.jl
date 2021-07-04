@@ -3,7 +3,7 @@
 """
 Ray( origin, dir, tmin, tmax, depth)
 
-It creates a **Ray**. When not specified tmin = 1e-5, tmax = +∞ and depth = 0.f0
+It creates a **Ray**. When not specified tmin = 1e-10, tmax = +∞ and depth = 0.f0
 """
 struct Ray
     origin::Point 
@@ -12,13 +12,17 @@ struct Ray
     tmax::Float32 
     depth::Int16
     
-    Ray( origin, dir, tmin=1e-5, tmax=Inf, depth=0) = new(origin, dir, tmin, tmax, depth)
-
+    Ray(origin,
+        dir,
+        tmin=1e-10,
+        tmax=Inf,
+        depth=0) =
+        new(origin, dir, tmin, tmax, depth)
 end
 
 Base.:*(T::Transformation, R::Ray) = Ray(T*R.origin, T*R.dir, R.tmin, R.tmax, R.depth )
 
-Base.:isapprox(ray1::Ray, ray2::Ray) = isapprox(ray1.origin, ray2.origin) && isapprox(ray1.dir, ray2.dir)
+Base.:≈(ray1::Ray, ray2::Ray) = ray1.origin ≈ ray2.origin &&  ray1.dir ≈ ray2.dir
 
 """
     at(ray, t)
@@ -30,10 +34,13 @@ at(ray::Ray, t::Number) = ray.origin + ray.dir*t
 
 
 ## Code for SHAPES #########################################################################################
-
 abstract type Shape
 end
 Base.:≈(S1::Shape,S2::Shape) = S1.transformation ≈ S2.transformation && S1.material ≈ S2.material
+
+struct ShapeError <: Exception
+    msg::String
+end
 
 """
     Sphere(T)
@@ -43,13 +50,12 @@ It creates a **Sphere**, where T is a generic ``Transformation`` applied to the 
 struct Sphere <: Shape
     transformation::Transformation
     material::Material
+
     Sphere(transformation::Transformation = Transformation(),
            material::Material = Material()) =
            new(transformation, material)
-#    Sphere() = new(Tansformation(), Material())
 end
 
-## Hidden methods for sphere
 function _sphere_point_to_uv(point::Point)
     u = Float32(atan(point.y, point.x) / (2.0f0 * pi))
     if u >= 0.f0 
@@ -88,7 +94,6 @@ struct Plane <: Shape
           new(transformation, material)
 end
 
-## Hidden methods for plane
 function _plane_point_to_uv(point::Point)
     u = Float32(point.x - floor(point.x))
     v = Float32(point.y - floor(point.y))
@@ -97,15 +102,19 @@ end
 
 function _plane_normal(point::Point, ray_dir::Vec)
     result = Normal(0.f0, 0.f0, 1.f0)
-    Vec(0.f0, 0.f0, 1.f0) * ray_dir < 0.f0 ? nothing : result = Normal(0.f0, 0.f0, -1.f0)
-    return result
+    if Vec(0.f0, 0.f0, 1.f0) * ray_dir < 0.f0
+        return result 
+    else
+        result = Normal(0.f0, 0.f0, -1.f0)
+        return result
+    end
 end
 
 
 """
     AAB(T,M)
 
-It creates a **axis-aligned box**, where T is a generic ``Transformation`` and  M is the ``Material`` of the cube. 
+It creates an **axis-aligned box**, where T is a generic ``Transformation`` and  M is the ``Material`` of the cube. 
 By default the AAB is generated with the rear-bottom left vertex in (0,0,0), while the front-top right vertex is in (1,1,1).
 
 AAB default orthogonal projection.
@@ -148,52 +157,91 @@ struct AAB <: Shape
         new(transformation, material)
 end
 
-## Hidden methods for AAB
+_atol=1e-6
+
 function _cube_point_to_uv(point::Point)
-    if point.x == 0
+    if isapprox(point.x, 0, atol=_atol)
         u = point.z
         v = 2.f0 - point.y 
-    elseif point.x == 1
+    elseif isapprox(point.x, 1, atol=_atol)
         u = 3.f0 - point.z 
         v = 2.f0 - point.y
-    elseif point.z == 0
+    elseif isapprox(point.z, 0, atol=_atol)
         u = 4.f0 - point.x 
         v = 2.f0 - point.y
-    elseif point.z == 1
+    elseif isapprox(point.z, 1, atol=_atol)
         u = 1.f0 + point.x
         v = 2.f0 - point.y 
-    elseif point.y == 0
+    elseif isapprox(point.y, 0, atol=_atol)
         u = 1.f0 + point.x
         v = 3.f0 - point.z
-    elseif point.y == 1
+    elseif isapprox(point.y, 1, atol=_atol)
         u = 1.f0 + point.x 
         v = point.z
     else 
-        u = 12.f0
-        v = 12.f0
+        a = findmin([point.x, point.y, point.z, abs(1-point.x), abs(1-point.y-1), abs(1-point.z)]) 
+        if a[2] == 1
+            u = point.z
+            v = 2.f0 - point.y 
+        elseif a[2] == 4
+            u = 3.f0 - point.z 
+            v = 2.f0 - point.y
+        elseif a[2] == 3
+            u = 4.f0 - point.x 
+            v = 2.f0 - point.y
+        elseif a[2] == 6
+            u = 1.f0 + point.x
+            v = 2.f0 - point.y 
+        elseif a[2] == 2
+            u = 1.f0 + point.x
+            v = 3.f0 - point.z
+        elseif a[2] == 5
+            u = 1.f0 + point.x 
+            v = point.z
+        else
+            throw(ShapeError("Mapping of point $point on UV plane faild"))
+        end
+        println("UV: Sono entrato nella ricera del minimo $a    $point")
     end
     return Vec2D(u/4.f0, v/3.f0)
 end
 
 function _cube_normal(point::Point, ray_dir::Vec)
-    if point.x == 0 || point.x == 1
+    if isapprox(point.x, 0, atol=_atol) || isapprox(point.x, 1, atol=_atol)
         result = Vec(1.f0, 0.f0, 0.f0)
-    elseif point.y == 0 || point.y == 1
+    elseif isapprox(point.y, 0, atol=_atol) || isapprox(point.y, 1, atol=_atol)
         result = Vec(0.f0, 1.f0, 0.f0)
-    elseif point.z == 0 || point.z == 1
+    elseif isapprox(point.z, 0, atol=_atol) || isapprox(point.z, 1, atol=_atol)
         result = Vec(0.f0, 0.f0, 1.f0)
     else 
-        result = Vec(9,9,9)############!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        a = findmin([point.x, point.y, point.z, abs(1-point.x), abs(1-point.y-1), abs(1-point.z)]) 
+        if a[2] == 1 || a[2] == 4
+            result = Vec(1.f0, 0.f0, 0.f0)
+        elseif a[2] == 2 || a[2] == 5
+            result = Vec(0.f0, 1.f0, 0.f0)
+        elseif a[2] == 3 || a[2] == 6
+            result = Vec(0.f0, 0.f0, 1.f0)
+        else
+             throw(ShapeError("Cannot calculates normal to point $point, ray intersection $ray_dir"))
+        end
+         println("Normale: Sono entrato nella ricera del minimo $a    $point")
     end
-    result * ray_dir < 0.f0 ? nothing : result = result * -1.f0
-    return Normal(result.x, result.y, result.z)
+
+    if result * ray_dir < 0.f0 
+        return Normal(result.x, result.y, result.z)
+    else
+        result = result * -1.f0
+        return Normal(result.x, result.y, result.z)
+    end
 end
 
 
-struct CSGError <: Exception
-    msg::String
-end
+"""
+    ShapeUnion(S1,S2,T)
 
+It creates a new shape form the union of shape S1 and shape S2 using the Constructive Solid Geometry.
+The transformation T is applied to the two shapes.
+"""
 struct ShapeUnion <: Shape
     shape1::Shape
     shape2::Shape
@@ -203,7 +251,8 @@ struct ShapeUnion <: Shape
                shape2::Shape,
                transformation::Transformation=Transformation()) =
                new(shape1, shape2, transformation)
- end
+end
+
 Base.:≈(S1::ShapeUnion,S2::ShapeUnion) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2 && S1.transformation ≈ S2.transformation
 
 struct ShapeDifference <: Shape
@@ -213,7 +262,7 @@ struct ShapeDifference <: Shape
 
     function ShapeDifference(shape1::Shape, shape2::Shape, transformation::Transformation=Transformation())
         if isa(shape1, Plane) || isa(shape2, Plane)
-            throw(CSGError("It's not possibile to use Plane shapes in ShapeDifference, try whit AAB and Spheres"))
+            throw(ShapeError("It's not possibile to use Plane shapes in ShapeDifference, try whit AAB and Spheres"))
         end
         return new(shape1, shape2, transformation)
     end
@@ -242,7 +291,6 @@ struct HitRecord
 end
 
 Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && H1.t ≈ H2.t && H1.ray≈H2.ray && H1.shape ≈ H2.shape
-#Base.:≈(H1::HitRecord,H2::HitRecord) = H1.world_point≈H2.world_point && H1.normal≈H2.normal && H1.surface_point≈H2.surface_point && isapprox(H1.t,H2.t, atol=5*10^-2) && H1.ray≈H2.ray && H1.shape ≈ H2.shape
 Base.:≈(::Nothing,H2::HitRecord) = false
 
 ## Definition of WORLD ############################################################################################################################################
@@ -257,20 +305,18 @@ struct World
     World() = new([]) 
 end
 
-# Adding shapes method
 function add_shape(world::World, shape::Shape)
     push!(world.shapes, shape)
 end
 
 ## RAY INTERSECTION ###############################################################################################################################
-
 """
     ray_intersection(shape, ray)
 
 Evaluates the intersection between a shape (or a World) and a ray, returning a HitRecord.
 """
 function ray_intersection(shape::Shape, ray::Ray)
-    return nothing   #sarebbe meglio far uscire un error
+    throw(ShapeError("Ray intersection whit shape $shape are not supported"))
 end
 
 ## Overloading for ray_intersection with the struct World
@@ -291,7 +337,7 @@ function ray_intersection(world::World, ray::Ray)
 end
 
 function ray_intersection(sphere::Sphere, ray::Ray)
-    inverse_ray= inverse(sphere.transformation) * ray
+    inverse_ray = inverse(sphere.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
     a = Float32(squared_norm(inverse_ray.dir))
     b = Float32(2.0 * origin_vec * inverse_ray.dir)
@@ -325,7 +371,7 @@ function ray_intersection(sphere::Sphere, ray::Ray)
 end
 
 function ray_intersection(plane::Plane, ray::Ray)
-    inverse_ray= inverse(plane.transformation) * ray
+    inverse_ray = inverse(plane.transformation) * ray
     origin_vec = toVec(inverse_ray.origin)
 
     if inverse_ray.dir.z ≈ 0
@@ -347,14 +393,14 @@ function ray_intersection(plane::Plane, ray::Ray)
 end
 
 function ray_intersection(cube::AAB, ray::Ray)
-    inverse_ray= inverse(cube.transformation) * ray
+    inverse_ray = inverse(cube.transformation) * ray
 
     ## Find intersection on x and y direction and save ordered by distance
-    t_xmin ,t_xmax = - inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x
-    t_ymin ,t_ymax = - inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y
+    t_xmin,t_xmax = - inverse_ray.origin.x / inverse_ray.dir.x , (1. - inverse_ray.origin.x) / inverse_ray.dir.x
+    t_ymin,t_ymax = - inverse_ray.origin.y / inverse_ray.dir.y , (1. - inverse_ray.origin.y) / inverse_ray.dir.y
 
-    t_min ,t_max = sort([t_xmin, t_xmax])
-    t_ymin ,t_ymax = sort([t_ymin, t_ymax])
+    t_min,t_max = sort([t_xmin, t_xmax])
+    t_ymin,t_ymax = sort([t_ymin, t_ymax])
 
     ## Check if intersection points lay lie on the cube
     if (t_min > t_ymax) || (t_ymin > t_max)
@@ -364,10 +410,10 @@ function ray_intersection(cube::AAB, ray::Ray)
     t_max = min(t_max, t_ymax)
 
     ## Find intersection on z direction and save ordered by distance
-    t_zmin ,t_zmax = - inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z
+    t_zmin,t_zmax = - inverse_ray.origin.z / inverse_ray.dir.z , (1. - inverse_ray.origin.z) / inverse_ray.dir.z
 
     ## Check if intersection points lay lie on the cube
-    t_zmin ,t_zmax = sort([t_zmin, t_zmax])
+    t_zmin,t_zmax = sort([t_zmin, t_zmax])
 
     if (t_min > t_zmax) || (t_zmin > t_max)
         return nothing
@@ -380,36 +426,31 @@ function ray_intersection(cube::AAB, ray::Ray)
 
     if inverse_ray.tmin < t_min < inverse_ray.tmax
         hit_point_near = at(inverse_ray, t_min)
+        x = isnan(hit_point_near.x) ? Inf : hit_point_near.x
+        y = isnan(hit_point_near.y) ? Inf : hit_point_near.y
+        z = isnan(hit_point_near.z) ? Inf : hit_point_near.z
+        hit_point_near = Point(x,y,z)
+    
         hit_point_far = at(inverse_ray, t_max)
-        if hit_point_far.x!=0 && hit_point_far.x*Inf != Inf
-            hit_point_far=Point(Inf, hit_point_far.y, hit_point_far.z)
-        end
-        if hit_point_far.y!=0 &&  hit_point_far.y*Inf != Inf
-            hit_point_far=Point(hit_point_far.x ,Inf, hit_point_far.z)
-        end
-        if hit_point_far.z!=0 && hit_point_far.z*Inf != Inf
-            hit_point_far=Point(hit_point_far.x, hit_point_far.y, Inf) 
-        end
         t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
+
         return HitRecord(cube.transformation * hit_point_near,
                          cube.transformation * _cube_normal(hit_point_near, inverse_ray.dir),
                          _cube_point_to_uv(hit_point_near),
                          t_hit,
                          ray,
                          cube)
+
     elseif inverse_ray.tmin < t_max < inverse_ray.tmax
         hit_point_near = at(inverse_ray, t_max)
+        x = isnan(hit_point_near.x) ? Inf : hit_point_near.x
+        y = isnan(hit_point_near.y) ? Inf : hit_point_near.y
+        z = isnan(hit_point_near.z) ? Inf : hit_point_near.z
+        hit_point_near = Point(x,y,z)
+
         hit_point_far = at(inverse_ray, t_min)
-        if hit_point_far.x!=0 && hit_point_far.x*Inf != Inf
-            hit_point_far=Point(Inf, hit_point_far.y, hit_point_far.z)
-        end
-        if hit_point_far.y!=0 &&  hit_point_far.y*Inf != Inf
-            hit_point_far=Point(hit_point_far.x ,Inf, hit_point_far.z)
-        end
-        if hit_point_far.z!=0 && hit_point_far.z*Inf != Inf
-            hit_point_far=Point(hit_point_far.x, hit_point_far.y, Inf) 
-        end
         t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
+
         return HitRecord(cube.transformation * hit_point_near,
                          cube.transformation * _cube_normal(hit_point_near, inverse_ray.dir),
                          _cube_point_to_uv(hit_point_near),
@@ -525,6 +566,7 @@ function ray_intersection(difference::ShapeDifference, ray::Ray)
             println(inverse_ray)
             println(new_ray)
             println(t_accettable)
+            return nothing
         end
         return HitRecord(new_intersection.world_point,
                          new_intersection.normal,
