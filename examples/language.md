@@ -56,6 +56,7 @@ MATERIAL material_image(
 - `PLANE` defined by a `(material, transformation)`; by default the plane generated is the XY plane. To move or transform it, apply a transformation;
 - `SPHERE` defined by a `(material, transformation)`; by default the sphere is generated with center in (0,0,0) and radius 1. To move or transform it, apply a transformation;
 - `AABOX` (Axis ALigned Box) defined by `(material, transformation)`; by default the plane is generated with the rear-left vertex in (0,0,0) and the top-right vertex in (1,1,1). To move or transform it, apply a transformation.
+- `LIGHTPOINT` (Shapes represent point light source for PL algorithm) defined by `(material, vector)`; 
 
 By default, shapes are generated in the center of the image; moving them requires a transformation.
 
@@ -66,6 +67,9 @@ PLANE (material1, TRANSLATION([0, 0, 500]) * ROTATION_Y(60) )
 SPHERE(material2, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
 
 AABOX(material_image, TRANSLATION([-0.5,-1.7,-1.1]) * SCALING([1.,1.,1.]))
+
+LIGHTPOINT( point_material, [1.9,-1., 1.])
+
 ```
 
 ### Transformations
