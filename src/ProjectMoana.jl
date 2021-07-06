@@ -27,7 +27,7 @@ export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, K
        FLOAT, assert_is_identifier, assert_is_keyword, assert_is_number, assert_is_string, assert_is_symbol, Scene, parse_scene
       
        
-using LinearAlgebra
+using LinearAlgebra, Intervals
 
 include("PCG.jl")
 include("Colors.jl")

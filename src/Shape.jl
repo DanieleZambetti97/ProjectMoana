@@ -1,5 +1,5 @@
 ## Code for RAYS #########################################################################################################################
-
+using Intervals
 """
 Ray( origin, dir, tmin, tmax, depth)
 
@@ -157,7 +157,7 @@ struct AAB <: Shape
         new(transformation, material)
 end
 
-_atol=1e-6
+_atol=5e-5
 
 function _cube_point_to_uv(point::Point)
     if isapprox(point.x, 0, atol=_atol)
@@ -268,6 +268,20 @@ struct ShapeDifference <: Shape
     end
  end
 Base.:≈(S1::ShapeDifference,S2::ShapeDifference) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2 && S1.transformation ≈ S2.transformation
+
+struct ShapeIntersection <: Shape
+    shape1::Shape
+    shape2::Shape
+    transformation::Transformation
+
+    function ShapeIntersection(shape1::Shape, shape2::Shape, transformation::Transformation=Transformation())
+        if isa(shape1, Plane) || isa(shape2, Plane)
+            throw(ShapeError("It's not possibile to use Plane shapes in ShapeIntersection, try whit AAB and Spheres"))
+        end
+        return new(shape1, shape2, transformation)
+    end
+ end
+Base.:≈(S1::ShapeIntersection,S2::ShapeIntersection) = S1.shape1 ≈ S2.shape1 && S1.shape2 ≈ S2.shape2 && S1.transformation ≈ S2.transformation
 ## Code for HITRECORD ###########################################################################################################################
 
 """
@@ -430,8 +444,13 @@ function ray_intersection(cube::AAB, ray::Ray)
         y = isnan(hit_point_near.y) ? Inf : hit_point_near.y
         z = isnan(hit_point_near.z) ? Inf : hit_point_near.z
         hit_point_near = Point(x,y,z)
-    
+        
         hit_point_far = at(inverse_ray, t_max)
+        x = isnan(hit_point_far.x) ? Inf : hit_point_far.x
+        y = isnan(hit_point_far.y) ? Inf : hit_point_far.y
+        z = isnan(hit_point_far.z) ? Inf : hit_point_far.z
+        hit_point_far = Point(x,y,z)
+
         t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
 
         return HitRecord(cube.transformation * hit_point_near,
@@ -449,6 +468,11 @@ function ray_intersection(cube::AAB, ray::Ray)
         hit_point_near = Point(x,y,z)
 
         hit_point_far = at(inverse_ray, t_min)
+        x = isnan(hit_point_far.x) ? Inf : hit_point_far.x
+        y = isnan(hit_point_far.y) ? Inf : hit_point_far.y
+        z = isnan(hit_point_far.z) ? Inf : hit_point_far.z
+        hit_point_far = Point(x,y,z)
+
         t_hit = [norm(inverse_ray.origin-hit_point_near), norm(inverse_ray.origin-hit_point_far)]
 
         return HitRecord(cube.transformation * hit_point_near,
@@ -521,32 +545,10 @@ function ray_intersection(difference::ShapeDifference, ray::Ray)
     end
 
     ### Check if there is intersection between the two shapes along the ray direction, otherwise return nothing
-    if intersection1.t[1]<intersection2.t[2] 
-        t_shape_near = intersection1.t
-        t_shape_far = intersection2.t
-    else
-        t_shape_near = intersection1.t
-        t_shape_far = intersection2.t
-    end
-    if t_shape_near[2] < t_shape_far[1]
+    intersect = Interval(intersection1.t[1],intersection1.t[2]) ∩ Interval(intersection2.t[1], intersection2.t[2])
+    if intersect == Interval{Float32, Open, Open}(0,0) 
         return nothing
     end
-
-    t_accettable = [intersection1.t[1],intersection1.t[2],intersection2.t[1],intersection2.t[2]]
-    # if intersection2.t[1] < intersection1.t[1] < intersection2.t[2]
-    #     splice!(t_accettable, findall(x->x==intersection1.t[1], t_accettable)[1])
-    # elseif intersection2.t[1] < intersection1.t[2] < intersection2.t[2]
-    #     splice!(t_accettable, findall(x->x==intersection1.t[2], t_accettable)[1])
-    # elseif intersection1.t[1] < intersection2.t[1] < intersection1.t[2]
-    #     splice!(t_accettable, findall(x->x==intersection2.t[1], t_accettable)[1])
-    # elseif intersection1.t[1] < intersection2.t[2] < intersection1.t[2]
-    #     splice!(t_accettable, findall(x->x==intersection2.t[2], t_accettable)[1])
-    # end
-
-    # if length(t_accettable) == 0
-    #     return nothing
-    # elseif length(t_accettable) == 1
-    #     return
 
     if intersection1.t[1] < intersection2.t[1]
         return HitRecord(intersection1.world_point,
@@ -555,17 +557,14 @@ function ray_intersection(difference::ShapeDifference, ray::Ray)
                          [intersection1.t[1]],
                          ray,
                          difference.shape1)
-    elseif intersection2.t[1]<intersection1.t[1]<intersection1.t[2]<intersection2.t[2]
-        return nothing
     else
-        new_ray = Ray(inverse_ray.origin, inverse_ray.dir, intersection2.t[1]+1.10e-10, Inf, inverse_ray.depth)
+        new_ray = Ray(inverse_ray.origin, inverse_ray.dir, intersection2.t[1]+1.10e-5, Inf, inverse_ray.depth)
         new_intersection = ray_intersection(difference.shape2, new_ray)
         if new_intersection === nothing
-            println(intersection1)
-            println(intersection2)
-            println(inverse_ray)
+            # println(intersection1)
+            # println(intersection2)
+            # println(inverse_ray)
             println(new_ray)
-            println(t_accettable)
             return nothing
         end
         return HitRecord(new_intersection.world_point,
@@ -576,3 +575,57 @@ function ray_intersection(difference::ShapeDifference, ray::Ray)
                          difference.shape2)
     end
 end
+
+# function ray_intersection(difference::ShapeIntersection, ray::Ray)
+#     inverse_ray= inverse(difference.transformation) * ray
+
+#     intersection1 = ray_intersection(difference.shape1, inverse_ray)
+#     if intersection1 === nothing
+#         return nothing
+#     end
+
+#     intersection2 = ray_intersection(difference.shape2, inverse_ray)
+#     if intersection2 === nothing
+#         return nothing
+#     end
+
+#     ### Check if there is intersection between the two shapes along the ray direction, otherwise return nothing
+#     if intersection1.t[1]<intersection2.t[2] 
+#         t_shape_near = intersection1.t
+#         t_shape_far = intersection2.t
+#     else
+#         t_shape_near = intersection1.t
+#         t_shape_far = intersection2.t
+#     end
+#     if t_shape_near[2] < t_shape_far[1]
+#         return nothing
+#     end
+
+#     if intersection1.t[1] < intersection2.t[1]
+#         return HitRecord(intersection1.world_point,
+#                          intersection1.normal,
+#                          intersection1.surface_point,
+#                          [intersection1.t[1]],
+#                          ray,
+#                          difference.shape1)
+#     elseif intersection2.t[1]<intersection1.t[1]<intersection1.t[2]<intersection2.t[2]
+#         return nothing
+#     else
+#         new_ray = Ray(inverse_ray.origin, inverse_ray.dir, intersection2.t[1]+1.10e-5, Inf, inverse_ray.depth)
+#         new_intersection = ray_intersection(difference.shape2, new_ray)
+#         if new_intersection === nothing
+#             # println(intersection1)
+#             # println(intersection2)
+#             # println(inverse_ray)
+#             # println(new_ray)
+#             # println(t_accettable)
+#             return nothing
+#         end
+#         return HitRecord(new_intersection.world_point,
+#                          new_intersection.normal,
+#                          new_intersection.surface_point,
+#                          [new_intersection.t[1]],
+#                          ray,
+#                          difference.shape2)
+#     end
+# end
