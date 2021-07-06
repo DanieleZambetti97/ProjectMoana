@@ -44,8 +44,8 @@ function main()
         end
     end
 
-    write(string(fileinput, ".pfm"), out)
-    println("$(string(fileinput, ".pfm")) has been written to disk.")
+    write(string(fileinput, "_sum.pfm"), out)
+    println("$(string(fileinput, "_sum.pfm")) has been written to disk.")
 end
 
 main()

@@ -18,7 +18,7 @@ It creates a **Orthogonal Camera**.
 When not specified in the constructor, a = 1 and T = Transformation(), 
 where *a* is the aspect ratio and *T* a generic transformation.
 """
-struct OrthogonalCamera <: Camera
+mutable struct OrthogonalCamera <: Camera
     aspect_ratio::Float32
     transformation::Transformation
 
@@ -63,7 +63,7 @@ It creates a **Perspective Camera**.
 When not specified in the constructor, a = 1 and T = Transformation(), 
 where *a* is the aspect ratio and *T* a generic transformation.
 """
-struct PerspectiveCamera <: Camera
+mutable struct PerspectiveCamera <: Camera
     aspect_ratio::Float32
     transformation::Transformation
     distance::Float32
@@ -146,6 +146,8 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
         end
 
     end
+    print("\rComputed 100% of pixels [$("#"^50)]")
+
 end
 
 function fire_all_rays(im::ImageTracer, func)

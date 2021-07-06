@@ -12,7 +12,7 @@ function parse_commandline()
     s = ArgParseSettings(
         description = "This program generates an image reading a scene from a input file. Try me!",
         usage = "usage: [--help] [--scene SCENE_FILE] [--alg RENDER_ALG] [--seq S] [--pix_rays RAYS_PER_PIXEL] 
-        [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME] ",
+        [--rays NUM_OF_RAYS] [--d DEPTH] [--rr RUSSIAN_ROULETTE] [--file_out FILENAME] [--animation ANIM] ",
         epilog = "Let's try again!"
         )
 
@@ -56,8 +56,13 @@ function parse_commandline()
             help = "name of the output file (without extension)."
             required = false
             default = "demo_out" 
-            arg_type = String  
-    end
+            arg_type = String 
+        "--animation"
+            help = ""
+            required = false
+            default = 1
+            arg_type = Int 
+end
 
     return parse_args(s)
 end
@@ -95,9 +100,7 @@ function main()
 # Initialize command line args 
     params = parse_commandline()
 
-    ## AGGIUNGERE W E H!
     file_out_pfm = "$(params["file_out"]).pfm"
-    file_out_png = "$(params["file_out"]).png"
     algorithm = params["alg"]
     seq = convert(UInt64, params["seq"])
     scene_file = params["scene"]
@@ -125,6 +128,7 @@ function main()
     h = scene.float_variables["HEIGHT"]
     image = HdrImage(w, h)
     println("Generating a $w×$h image")
+#    camera = PerspectiveCamera(scene.camera.aspect_ratio, scene.camera.transformation * rotation_z(params["animation"]*pi/180.), scene.camera.distance)
     tracer = ImageTracer(image, scene.camera, samples_per_pixel)
 
 # Computing ray intersection

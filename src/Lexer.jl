@@ -65,6 +65,8 @@ end
     FLOAT = 19
     AABOX = 20
     INT = 21
+    UNION = 22
+    DIFFERENCE = 23
 end
 
 mutable struct Keyword
@@ -525,15 +527,15 @@ function parse_transformation(input_file::InputStream, scene::Scene)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_X
             expect_symbol(input_file, '(')
-            result *= rotation_x(expect_number(input_file, scene) * pi / 180.)
+            result *= rotation_x((expect_number(input_file, scene)+0.001)* pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_Y
             expect_symbol(input_file, '(')
-            result *= rotation_y(expect_number(input_file, scene) * pi / 180.)
+            result *= rotation_y((expect_number(input_file, scene)+0.001) * pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == ROTATION_Z
             expect_symbol(input_file, '(')
-            result *= rotation_z(expect_number(input_file, scene) * pi / 180.)
+            result *= rotation_z((expect_number(input_file, scene)+0.001) * pi / 180.)
             expect_symbol(input_file, ')')
         elseif transformation_kw == SCALING
             expect_symbol(input_file, '(')
@@ -597,6 +599,72 @@ function parse_aab(input_file::InputStream, scene::Scene)
     return AAB(transformation, scene.materials[material_name])
 end
 
+function parse_union(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape1 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        shape1 = parse_plane(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape1 = parse_aab(input_file, scene)
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape2 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        shape2 = parse_plane(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape2 = parse_aab(input_file, scene)
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ')')
+    return ShapeUnion(shape1,shape2,transformation)
+end
+
+function parse_difference(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape1 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape1 = parse_aab(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        throw(GrammarError("got $next_tk PLANE shapes cannot be use in DIFFERENCE, use onle AAB or SPHERE"))
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+
+    next_tk = read_token(input_file)
+    if next_tk.value.keyword == SPHERE
+        shape2 = parse_sphere(input_file, scene)
+    elseif next_tk.value.keyword == AABOX
+        shape2 = parse_aab(input_file, scene)
+    elseif next_tk.value.keyword == PLANE
+        throw(GrammarError("got $next_tk PLANE shapes cannot be use in DIFFERENCE, use onle AAB or SPHERE"))
+    else
+        throw(GrammarError("got $next_tk instead of a shape's keyword", next_tk.loc))
+    end
+
+    expect_symbol(input_file, ',')
+    transformation = parse_transformation(input_file, scene)
+    expect_symbol(input_file, ')')
+    return ShapeDifference(shape1,shape2,transformation)
+end
+
 function parse_camera(input_file::InputStream, scene::Scene, width, height)
     expect_symbol(input_file, '(')
     type_kw = expect_keywords(input_file, [PERSPECTIVE, ORTHOGONAL])
@@ -607,14 +675,10 @@ function parse_camera(input_file::InputStream, scene::Scene, width, height)
     end
     transformation = parse_transformation(input_file, scene)
 
-    aspect_ratio = 0
     next_token = read_token(input_file)
     if isa(next_token.value, Symbol) && next_token.value.symbol == ','
         aspect_ratio = expect_number(input_file, scene)
-    end
-    if aspect_ratio == 0 && nothing in [width, height]
-        throw(GrammarError("Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file", input_file.location))
-    elseif aspect_ratio == 0
+    else
         aspect_ratio = width / height
         unread_token(input_file, next_token)
     end
@@ -653,6 +717,7 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
         if isa(what.value, Keyword) == false
             throw(GrammarError("expected a keyword instead of $what", what.loc))
         end
+
         if what.value.keyword == FLOAT || what.value.keyword == INT
             variable_name = expect_identifier(input_file)
 
@@ -671,22 +736,28 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
                 scene.float_variables[variable_name] = variable_value
             end
 
+        elseif what.value.keyword == MATERIAL
+            name, material = parse_material(input_file, scene)
+            scene.materials[name] = material
+
         elseif what.value.keyword == SPHERE
             add_shape(scene.world,parse_sphere(input_file, scene))
         elseif what.value.keyword == PLANE
             add_shape(scene.world, parse_plane(input_file, scene))
         elseif what.value.keyword == AABOX
             add_shape(scene.world, parse_aab(input_file, scene))
+        elseif what.value.keyword == UNION
+            add_shape(scene.world, parse_union(input_file, scene))
+        elseif what.value.keyword == DIFFERENCE
+            add_shape(scene.world, parse_difference(input_file, scene))
+
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError("You cannot functionine more than one camera", what.location))
             end
-            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : nothing
-            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : nothing
+            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : 640
+            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : 480
             scene.camera = parse_camera(input_file, scene, width, height)
-        elseif what.value.keyword == MATERIAL
-            name, material = parse_material(input_file, scene)
-            scene.materials[name] = material
         end
     end
 

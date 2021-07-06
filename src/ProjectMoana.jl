@@ -14,7 +14,7 @@ export Vec, Point, Transformation, Normal, Vec2D,
 
 export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF, SpecularBRDF, scatter_ray
 
-export Shape, Sphere, World, Plane, AAB, HitRecord, ray_intersection, add_shape, Ray, at
+export Shape, Sphere, World, Plane, AAB, ShapeUnion, ShapeDifference, HitRecord, ray_intersection, add_shape, Ray, at
        
 export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
        fire_ray, fire_all_rays
@@ -27,7 +27,7 @@ export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, K
        FLOAT, assert_is_identifier, assert_is_keyword, assert_is_number, assert_is_string, assert_is_symbol, Scene, parse_scene
       
        
-using LinearAlgebra
+using LinearAlgebra, Intervals
 
 include("PCG.jl")
 include("Colors.jl")
