@@ -14,12 +14,12 @@ export Vec, Point, Transformation, Normal, Vec2D,
 
 export BRDF, Material, Pigment, Renderer, UniformPigment, get_color, ImagePigment, CheckeredPigment, DiffuseBRDF, SpecularBRDF, scatter_ray
 
-export Shape, Sphere, World, Plane, AAB, HitRecord, ray_intersection, add_shape, Ray, at
+export Shape, Sphere, World, Plane, AAB, LightPoint, HitRecord, ray_intersection, add_shape, Ray, at
        
 export Camera, OrthogonalCamera, PerspectiveCamera,  ImageTracer, Renderer,
        fire_ray, fire_all_rays
 
-export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, OnOff, Flat, PathTracer
+export  OnOff_Renderer, Flat_Renderer, PathTracer_Renderer, PointLight_Renderer, OnOff, Flat, PathTracer, PointLight
 
 export SourceLocation, Stop, Identifier, LiteralString, LiteralNumber, Symbol, Keyword, Token, InputStream, GrammarError, read_char, 
        unread_char, skip_whitespaces_and_comments, read_token, KeywordEnum, isdigit, NEW, MATERIAL, PLANE, SPHERE, DIFFUSE, SPECULAR, 

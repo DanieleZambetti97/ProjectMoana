@@ -1,30 +1,27 @@
-INT WIDTH (640 )
+INT WIDTH (640)
 INT HEIGHT (480)
+FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0.0, 0.4, 0.85>)),
-        UNIFORM(<0., 0., 0.>)
-)
-
-MATERIAL sun_material(
-        DIFFUSE(UNIFORM(<0.6, 0.8, 0.1>)),
-        UNIFORM(<1., 1., 1.>)
+        DIFFUSE(UNIFORM(<1., 0.2, 1.>)),
+        UNIFORM(<1., 1., 1>)
 )
 
 MATERIAL ground_material(
-        DIFFUSE(CHECKERED(<0.25, 0., 0.>,
-                         <0.9, 0.9, 1>, 4)),
+        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
+                        <0.1, 0.2, 0.5>, 4)),
         UNIFORM(<0, 0, 0>)
 )
 
-MATERIAL mirror_material(
-        SPECULAR(UNIFORM(<1., 0.7, 0.1>)),
+
+MATERIAL sphere_material(
+        DIFFUSE(UNIFORM(<1., 0.2, 0.01>)),
         UNIFORM(<0, 0, 0>)
 )
 
-MATERIAL planet_material(
-        DIFFUSE(IMAGE("./examples/texture_jupiter.pfm")),
-        UNIFORM(<0.,0.,0.>)
+MATERIAL point_material(
+    DIFFUSE(UNIFORM(<1.,1.,1.>)),
+    UNIFORM(<0.,0.,0.>)
 )
 
 MATERIAL cube_material(
@@ -32,16 +29,12 @@ MATERIAL cube_material(
         UNIFORM(<0, 0, 0>)
 )
 
-PLANE (sky_material, TRANSLATION([0, 0, 500]) * ROTATION_Y(60) )
+SPHERE(sphere_material, TRANSLATION([3.,2.,-1.]) * SCALING([1.,1.,1.]))
+PLANE (ground_material, TRANSLATION([0, 0, -2.5])* ROTATION_Y(3)* ROTATION_X(10))
+PLANE (sky_material, TRANSLATION([100.,0.,0.])* ROTATION_Y(90))
+LIGHTPOINT( point_material, [1.9,-1., 1.])
+LIGHTPOINT( point_material, [1.9,2., 10.])
+AABOX(cube_material, TRANSLATION([2.75,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(15) * ROTATION_X(45) * ROTATION_Y(45))
 
-PLANE (sun_material, TRANSLATION([-100,0.,0.]) * ROTATION_Y(90))
+CAMERA(PERSPECTIVE, 1.0, IDENTITY)
 
-PLANE (ground_material, TRANSLATION([0., 0., -1.5]) * ROTATION_Y(15) * ROTATION_X(7.5) * SCALING([1,1,1]))
-
-SPHERE(mirror_material, TRANSLATION([1.5, 2, -0.5]) * SCALING([1.,1.5,1.]))
-
-SPHERE(planet_material, TRANSLATION([6,-4,3]) * SCALING([3,3,3]))
-
-AABOX(cube_material, TRANSLATION([-0.5,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(45) * ROTATION_X(45) * ROTATION_Y(45))
-
-CAMERA(PERSPECTIVE, 1.0, TRANSLATION([-2, 0, 0]))

@@ -108,6 +108,9 @@ function toVec(point::Union{Point,Normal,Vec})
     return Vec(point.x,point.y,point.z)
 end
 
+function toPoint(vec::Vec)
+    return Point(vec.x,vec.y,vec.z)    
+end
 ## TRANSFORMATON METHODS #######################################################################################################à
 
 function Base.isapprox(M1::Transformation, M2::Transformation)

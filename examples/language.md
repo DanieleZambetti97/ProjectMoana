@@ -53,6 +53,7 @@ MATERIAL material_image(
 
 ### Shapes
 
+
 - `PLANE` defined by a `(material, transformation)`; by default the plane generated is the XY plane. To move or transform it, apply a transformation;
 - `SPHERE` defined by a `(material, transformation)`; by default the sphere is generated with center in (0,0,0) and radius 1. To move or transform it, apply a transformation;
 - `AABOX` (Axis ALigned Box) defined by `(material, transformation)`; by default the plane is generated with the rear-left vertex in (0,0,0) and the top-right vertex in (1,1,1). To move or transform it, apply a transformation.

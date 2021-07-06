@@ -65,6 +65,7 @@ end
     FLOAT = 19
     AABOX = 20
     INT = 21
+    LIGHTPOINT = 22
 end
 
 mutable struct Keyword
@@ -597,6 +598,21 @@ function parse_aab(input_file::InputStream, scene::Scene)
     return AAB(transformation, scene.materials[material_name])
 end
 
+function parse_lightpoint(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    material_name = expect_identifier(input_file)
+    if haskey(scene.materials, material_name) == false
+        # We raise the exception here because input_file is pointing to the end of the wrong identifier
+        throw(GrammarError("unknown material $material_name", input_file.location))
+    end
+    expect_symbol(input_file, ',')
+    vector = parse_vector(input_file, scene)
+    expect_symbol(input_file, ')')
+
+    return LightPoint(toPoint(vector), scene.materials[material_name])
+end
+
 function parse_camera(input_file::InputStream, scene::Scene, width, height)
     expect_symbol(input_file, '(')
     type_kw = expect_keywords(input_file, [PERSPECTIVE, ORTHOGONAL])
@@ -612,9 +628,7 @@ function parse_camera(input_file::InputStream, scene::Scene, width, height)
     if isa(next_token.value, Symbol) && next_token.value.symbol == ','
         aspect_ratio = expect_number(input_file, scene)
     end
-    if aspect_ratio == 0 && nothing in [width, height]
-        throw(GrammarError("Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file", input_file.location))
-    elseif aspect_ratio == 0
+    if aspect_ratio == 0
         aspect_ratio = width / height
         unread_token(input_file, next_token)
     end
@@ -677,12 +691,14 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world, parse_plane(input_file, scene))
         elseif what.value.keyword == AABOX
             add_shape(scene.world, parse_aab(input_file, scene))
+        elseif what.value.keyword == LIGHTPOINT
+            add_shape(scene.world, parse_lightpoint(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError("You cannot functionine more than one camera", what.location))
             end
-            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : nothing
-            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : nothing
+            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : 640
+            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : 480
             scene.camera = parse_camera(input_file, scene, width, height)
         elseif what.value.keyword == MATERIAL
             name, material = parse_material(input_file, scene)

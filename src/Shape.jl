@@ -35,6 +35,7 @@ abstract type Shape
 end
 Base.:≈(S1::Shape,S2::Shape) = S1.transformation ≈ S2.transformation && S1.material ≈ S2.material
 
+
 """
     Sphere(T)
 
@@ -43,6 +44,7 @@ It creates a **Sphere**, where T is a generic ``Transformation`` applied to the 
 struct Sphere <: Shape
     transformation::Transformation
     material::Material
+
     Sphere(transformation::Transformation = Transformation(),
            material::Material = Material()) =
            new(transformation, material)
@@ -158,6 +160,16 @@ function _cube_normal(point::Point, ray_dir::Vec)
     return Normal(result.x, result.y, result.z)
 end
 
+struct LightPoint <: Shape
+    point::Point
+    material::Material
+
+    LightPoint(point::Point=Point(0.,0.,0.),
+           material::Material = Material()) =
+           new(point, material)
+end
+Base.:≈(S1::LightPoint,S2::LightPoint) = S1.point ≈ S2.point && S1.material ≈ S2.material
+
 ## Code for HITRECORD ###########################################################################################################################
 
 """
@@ -208,8 +220,12 @@ end
 
 Evaluates the intersection between a shape (or a World) and a ray, returning a HitRecord.
 """
+struct ShapeError <: Exception
+    msg::String
+end
+
 function ray_intersection(shape::Shape, ray::Ray)
-    return nothing   #sarebbe meglio far uscire un error
+    throw(ShapeError("Ray intersection whit shape $shape are not supported"))
 end
 
 ## Overloading for ray_intersection with the struct World
@@ -304,4 +320,9 @@ function ray_intersection(cube::AAB, ray::Ray)
     else
         return nothing 
     end
+end
+
+function ray_intersection(light::LightPoint, ray::Ray)
+    return nothing
+#    return HitRecord(light.point, Normal(0.f0,0.f0,0.f0), Vec2D(Inf32, Inf32), norm(ray.dir), ray, light)
 end
