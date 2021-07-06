@@ -1,5 +1,5 @@
-INT WIDTH (75)
-INT HEIGHT (50)
+INT WIDTH (400)
+INT HEIGHT (300)
 FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
@@ -12,17 +12,22 @@ MATERIAL ground_material(
                         <0.1, 0.2, 0.5>, 4)),
         UNIFORM(<0, 0, 0>)
 )
-##############################
 
-PLANE (sky_material, TRANSLATION([0, 0, 100])* ROTATION_Y(ang_degrees))
-PLANE (ground_material, IDENTITY)
-##############################
-
-CAMERA(PERSPECTIVE, 2.0, ROTATION_Z(30)* TRANSLATION([-4, 0, 1]))
 
 MATERIAL sphere_material(
-        SPECULAR(UNIFORM(<0.5, 0.5, 0.5>)),
+        DIFFUSE(UNIFORM(<0., 0., 1.0>)),
         UNIFORM(<0, 0, 0>)
 )
 
-SPHERE(sphere_material, TRANSLATION([0, 0, 1]))
+MATERIAL point_material(
+    DIFFUSE(UNIFORM(<1.,0.,0.>)),
+    UNIFORM(<0,0.,0>)
+)
+
+SPHERE(sphere_material, TRANSLATION([2.,0.,-0.5]) * SCALING([1.,1.,1.]))
+PLANE (ground_material, TRANSLATION([2, 0, -1.0])* ROTATION_Y(-5))
+PLANE (sky_material, TRANSLATION([0.,0.,100.])* ROTATION_Y(45))
+LIGHTPOINT( point_material, [0.,0., 10.])
+
+CAMERA(PERSPECTIVE, 1.0, IDENTITY)
+

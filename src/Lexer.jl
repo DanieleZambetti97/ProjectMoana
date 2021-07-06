@@ -65,6 +65,7 @@ end
     FLOAT = 19
     AABOX = 20
     INT = 21
+    LIGHTPOINT = 22
 end
 
 mutable struct Keyword
@@ -597,6 +598,21 @@ function parse_aab(input_file::InputStream, scene::Scene)
     return AAB(transformation, scene.materials[material_name])
 end
 
+function parse_lightpoint(input_file::InputStream, scene::Scene)
+    expect_symbol(input_file, '(')
+
+    material_name = expect_identifier(input_file)
+    if haskey(scene.materials, material_name) == false
+        # We raise the exception here because input_file is pointing to the end of the wrong identifier
+        throw(GrammarError("unknown material $material_name", input_file.location))
+    end
+    expect_symbol(input_file, ',')
+    vector = parse_vector(input_file, scene)
+    expect_symbol(input_file, ')')
+
+    return LightPoint(toPoint(vector), scene.materials[material_name])
+end
+
 function parse_camera(input_file::InputStream, scene::Scene, width, height)
     expect_symbol(input_file, '(')
     type_kw = expect_keywords(input_file, [PERSPECTIVE, ORTHOGONAL])
@@ -675,6 +691,8 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             add_shape(scene.world, parse_plane(input_file, scene))
         elseif what.value.keyword == AABOX
             add_shape(scene.world, parse_aab(input_file, scene))
+        elseif what.value.keyword == LIGHTPOINT
+            add_shape(scene.world, parse_lightpoint(input_file, scene))
         elseif what.value.keyword == CAMERA
             if scene.camera != nothing
                 throw(GrammarError("You cannot functionine more than one camera", what.location))

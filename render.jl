@@ -117,12 +117,7 @@ function main()
     println("Reading $scene_file")
     input_file = open(scene_file, "r")
     scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
-    println("Observer's Camera and World objects created.")
-
-    point_color = Material(DiffuseBRDF(UniformPigment(RGB(0.8,0.,0.))), UniformPigment(RGB(1.,1.,1.)))
-    point = LightPoint(Point(100,-2.,0.1), point_color)
-    add_shape(scene.world, point)
-
+    println("Observer's Camera and World objects created.")   
 
 # Creating an ImageTracer object 
     w = scene.float_variables["WIDTH"]

@@ -114,6 +114,7 @@ function PointLight(ray::Ray, renderer::PointLight_Renderer)
     else
         hit_point=hit_record.world_point
         radiance = RGB(0.,0.,0.)
+        a = 0
         
         for i ∈ 1:length(renderer.world.shapes)
             
@@ -121,15 +122,19 @@ function PointLight(ray::Ray, renderer::PointLight_Renderer)
 
                 new_ray = Ray(hit_point, renderer.world.shapes[i].point-hit_point)
                 is_illuminated = ray_intersection(renderer.world, new_ray)
-                println(is_illuminated)
+
                 if is_illuminated === nothing
+
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
                     emitted_radiance = get_color(renderer.world.shapes[i].material.brdf.pigment, hit_record.surface_point)
                     radiance += hit_color + emitted_radiance
+
                 elseif is_illuminated.t > norm(renderer.world.shapes[i].point-hit_point)
+                    a = 10
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
                     emitted_radiance = get_color(renderer.world.shapes[i].material.brdf.pigment, hit_record.surface_point)
                     radiance += hit_color + emitted_radiance
+
                 end
             end
         

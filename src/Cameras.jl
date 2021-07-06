@@ -97,7 +97,11 @@ struct ImageTracer
     ray_per_side::Int
     pcg::PCG
 
-    ImageTracer(image::HdrImage, camera::Camera, ray_per_side::Int=1, pcg::PCG=PCG()) = new(image, camera, ray_per_side, pcg)
+    ImageTracer(image::HdrImage,
+                camera::Camera,
+                ray_per_side::Int=1,
+                pcg::PCG=PCG()) = 
+                new(image, camera, ray_per_side, pcg)
 end
 
 function fire_ray(im::ImageTracer, col, row, u_pixel=0.5f0, v_pixel=0.5f0)
@@ -133,7 +137,6 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
             for ray in rays_in_pixel
                 cum_color += func(ray, renderer)
             end
-
             im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1.f0 / im.ray_per_side^2)
         end
 
