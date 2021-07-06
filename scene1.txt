@@ -4,7 +4,7 @@ FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<0., 0., 0.>)),
-        UNIFORM(<0.5, 0.8, 1>)
+        UNIFORM(<1., 1., 1>)
 )
 
 MATERIAL ground_material(
@@ -20,14 +20,14 @@ MATERIAL sphere_material(
 )
 
 MATERIAL point_material(
-    DIFFUSE(UNIFORM(<1.,0.,0.>)),
-    UNIFORM(<0,0.,0>)
+    DIFFUSE(UNIFORM(<1.,1.,1.>)),
+    UNIFORM(<0.1,0.1,0.1>)
 )
 
-SPHERE(sphere_material, TRANSLATION([2.,0.,-0.5]) * SCALING([1.,1.,1.]))
-PLANE (ground_material, TRANSLATION([2, 0, -1.0])* ROTATION_Y(-5))
-PLANE (sky_material, TRANSLATION([0.,0.,100.])* ROTATION_Y(45))
-LIGHTPOINT( point_material, [0.,0., 10.])
+SPHERE(sphere_material, TRANSLATION([2.,0.,-1.5]) * SCALING([1.,1.,1.]))
+PLANE (ground_material, TRANSLATION([0, 0, -2.5])* ROTATION_Y(0))
+PLANE (sky_material, TRANSLATION([100.,0.,0.])* ROTATION_Y(90))
+LIGHTPOINT( point_material, [1.9,-1., 1.])
 
 CAMERA(PERSPECTIVE, 1.0, IDENTITY)
 

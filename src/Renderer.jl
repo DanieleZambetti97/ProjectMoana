@@ -107,38 +107,34 @@ struct PointLight_Renderer <: Renderer
     PointLight_Renderer(world::World, background_color::RGB=RGB(0.1f0,0.1f0,0.1f0) ) = new(world, background_color) 
 end
 
-function PointLight(ray::Ray, renderer::PointLight_Renderer)
+function PointLight(ray::Ray, renderer::PointLight_Renderer, col,row)
     hit_record = ray_intersection(renderer.world, ray)
     if hit_record === nothing
         return renderer.background_color
     else
         hit_point=hit_record.world_point
         radiance = RGB(0.,0.,0.)
-        a = 0
         
         for i ∈ 1:length(renderer.world.shapes)
             
             if isa(renderer.world.shapes[i], LightPoint)
-
                 new_ray = Ray(hit_point, renderer.world.shapes[i].point-hit_point)
                 is_illuminated = ray_intersection(renderer.world, new_ray)
 
                 if is_illuminated === nothing
-
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
-                    emitted_radiance = get_color(renderer.world.shapes[i].material.brdf.pigment, hit_record.surface_point)
+                    emitted_radiance = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point)
                     radiance += hit_color + emitted_radiance
 
-                elseif is_illuminated.t > norm(renderer.world.shapes[i].point-hit_point)
-                    a = 10
+                elseif norm(is_illuminated.world_point-new_ray.origin) > norm(renderer.world.shapes[i].point-hit_point)
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
-                    emitted_radiance = get_color(renderer.world.shapes[i].material.brdf.pigment, hit_record.surface_point)
+                    emitted_radiance = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point)
                     radiance += hit_color + emitted_radiance
-
                 end
             end
         
         end
+
         if radiance == RGB(0.,0.,0.)
             return renderer.background_color
         end
