@@ -57,7 +57,7 @@ julia render.jl [--help] [--scene SCENE_FILE] [--alg RENDER_ALG] [--seq S] [--pi
 where
 
 - `--scene` is the name of the input scene file where you can define Shapes and a Camera with their options;
-- `--alg` is the type of rendering algorithm (O for On-Off, F for Flat, PL for Path Tracer, PT for Point-Light); default value = `PL`;
+- `--alg` is the type of rendering algorithm (O for On-Off, F for Flat, PT for Path Tracer, PL for Point-Light); default value = `PT`;
 - `--seq` is the sequence number for PCG generator; default value = `54`;
 - `--pix_rays` is the number of rays per pixel for antialiasing; default value = `9`;
 - `--rays` is the number of rays fired per intersection; default value = `2`;
@@ -221,9 +221,10 @@ Et volià! These lines generate your first Moana image:
 
 ## What can Moana do? 😮
 
-This is the best image we created:
-
-<img width="500" src=https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/example1.png>
+This is the best images we created:
+Using `--alg PT` (Path Tracer)             |  Using `--alg PL` (Point-Light)
+:-------------------------:|:-------------------------:
+![](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/example1.png)  |  ![](https://github.com/DanieleZambetti97/ProjectMoana/blob/master/examples/example3.png)
 
 We challenge you to do more spectacular images! (If you can send it to us! 😉)
 
