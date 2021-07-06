@@ -612,9 +612,7 @@ function parse_camera(input_file::InputStream, scene::Scene, width, height)
     if isa(next_token.value, Symbol) && next_token.value.symbol == ','
         aspect_ratio = expect_number(input_file, scene)
     end
-    if aspect_ratio == 0 && nothing in [width, height]
-        throw(GrammarError("Can't define aspect ratio, try CAMERA(PERSPECTIVE,TRANSFORMATIO, ASPECT_RATIO) or define WIDTH and HEIGHT in scene_file", input_file.location))
-    elseif aspect_ratio == 0
+    if aspect_ratio == 0
         aspect_ratio = width / height
         unread_token(input_file, next_token)
     end
@@ -681,8 +679,8 @@ function parse_scene(input_file::InputStream, variables::Dict{String, Float32} =
             if scene.camera != nothing
                 throw(GrammarError("You cannot functionine more than one camera", what.location))
             end
-            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : nothing
-            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : nothing
+            width = haskey(scene.float_variables, "WIDTH") ? scene.float_variables["WIDTH"] : 640
+            height = haskey(scene.float_variables, "HEIGHT") ? scene.float_variables["HEIGHT"] : 480
             scene.camera = parse_camera(input_file, scene, width, height)
         elseif what.value.keyword == MATERIAL
             name, material = parse_material(input_file, scene)

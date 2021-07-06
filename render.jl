@@ -23,9 +23,9 @@ function parse_commandline()
             default = "scene1.txt"
             arg_type = String    
         "--alg"
-            help = "type of rendering algorithm (O for On-Off, F for Flat, P for Path Tracer);"
+            help = "type of rendering algorithm (O for On-Off, F for Flat, PT for Path Tracer, PL for Point-light);"
             required = false
-            default = "P" 
+            default = "PT" 
             arg_type = String  
         "--seq"
             help = "sequence number for PCG generator;"
@@ -95,7 +95,6 @@ function main()
 # Initialize command line args 
     params = parse_commandline()
 
-    ## AGGIUNGERE W E H!
     file_out_pfm = "$(params["file_out"]).pfm"
     file_out_png = "$(params["file_out"]).png"
     algorithm = params["alg"]
@@ -120,6 +119,11 @@ function main()
     scene = parse_scene(InputStream(input_file,SourceLocation(scene_file)), variables)
     println("Observer's Camera and World objects created.")
 
+    point_color = Material(DiffuseBRDF(UniformPigment(RGB(0.8,0.,0.))), UniformPigment(RGB(1.,1.,1.)))
+    point = LightPoint(Point(100,-2.,0.1), point_color)
+    add_shape(scene.world, point)
+
+
 # Creating an ImageTracer object 
     w = scene.float_variables["WIDTH"]
     h = scene.float_variables["HEIGHT"]
@@ -133,11 +137,15 @@ function main()
         println("using Flat algorithm")
         renderer = Flat_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
         fire_all_rays(tracer, Flat, renderer)
-    elseif algorithm == "P"
+    elseif algorithm == "PT"
         println("using Path Tracer algorithm")
         renderer = PathTracer_Renderer(scene.world; background_color=RGB(0.f0,0.f0,0.f0), pcg=PCG(UInt64(42), seq),
                                        num_of_rays = n_rays, max_depth = depth, russian_roulette_limit = russ_roulette)
         fire_all_rays(tracer, PathTracer, renderer)
+    elseif algorithm == "PL"
+        println("using Point-light algorithm")
+        renderer = PointLight_Renderer(scene.world, RGB(0.4f0,0.4f0,0.4f0))
+        fire_all_rays(tracer, PointLight, renderer)
     else
         println("using On/Off algorithm")
         renderer = OnOff_Renderer(scene.world)
