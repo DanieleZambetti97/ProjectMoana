@@ -96,8 +96,8 @@ Open a txt file `my_first_scene.txt` and write the following lines:
 
 # VARIABLES #####################
 
-INT WIDTH (640)    # dimension of the image!!!
-INT HEIGHT (480)   # REQUIRED!
+INT WIDTH (640)    # dimension of the image
+INT HEIGHT (480)   # if not provided, default is WIDTH(640) and HEIGHT(480)
 
 FLOAT ang_degrees(10)
 
