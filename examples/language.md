@@ -56,7 +56,7 @@ MATERIAL material_image(
 - `PLANE` defined by a `(material, transformation)`;
 - `SPHERE` defined by a `(material, transformation)`;
 - `AABOX` (Axis ALigned Box) defined by `(material, transformation)`;
-
+- `LIGHTPOINT` (Shapes represent point light source for PL algorithm) defined by `(material, vector)`
 By default, shapes are generated in the center of the image; moving them requires a transformation.
 
 **Examples:**

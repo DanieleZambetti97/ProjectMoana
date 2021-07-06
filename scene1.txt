@@ -1,9 +1,9 @@
-INT WIDTH (400)
-INT HEIGHT (300)
+INT WIDTH (640)
+INT HEIGHT (480)
 FLOAT ang_degrees(10)
 
 MATERIAL sky_material(
-        DIFFUSE(UNIFORM(<0., 0., 0.>)),
+        DIFFUSE(UNIFORM(<1., 0.2, 1.>)),
         UNIFORM(<1., 1., 1>)
 )
 
@@ -15,19 +15,26 @@ MATERIAL ground_material(
 
 
 MATERIAL sphere_material(
-        DIFFUSE(UNIFORM(<0., 0., 1.0>)),
+        DIFFUSE(UNIFORM(<1., 0.2, 0.01>)),
         UNIFORM(<0, 0, 0>)
 )
 
 MATERIAL point_material(
     DIFFUSE(UNIFORM(<1.,1.,1.>)),
-    UNIFORM(<0.1,0.1,0.1>)
+    UNIFORM(<0.,0.,0.>)
 )
 
-SPHERE(sphere_material, TRANSLATION([2.,0.,-1.5]) * SCALING([1.,1.,1.]))
-PLANE (ground_material, TRANSLATION([0, 0, -2.5])* ROTATION_Y(0))
+MATERIAL cube_material(
+        DIFFUSE(IMAGE("./examples/texture_rubiks_cube.pfm")),
+        UNIFORM(<0, 0, 0>)
+)
+
+SPHERE(sphere_material, TRANSLATION([3.,2.,-1.]) * SCALING([1.,1.,1.]))
+PLANE (ground_material, TRANSLATION([0, 0, -2.5])* ROTATION_Y(3)* ROTATION_X(10))
 PLANE (sky_material, TRANSLATION([100.,0.,0.])* ROTATION_Y(90))
 LIGHTPOINT( point_material, [1.9,-1., 1.])
+LIGHTPOINT( point_material, [1.9,2., 10.])
+AABOX(cube_material, TRANSLATION([2.75,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(15) * ROTATION_X(45) * ROTATION_Y(45))
 
 CAMERA(PERSPECTIVE, 1.0, IDENTITY)
 

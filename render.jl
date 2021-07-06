@@ -139,7 +139,7 @@ function main()
         fire_all_rays(tracer, PathTracer, renderer)
     elseif algorithm == "PL"
         println("using Point-light algorithm")
-        renderer = PointLight_Renderer(scene.world, RGB(0.1f0,0.1f0,0.5f0))
+        renderer = PointLight_Renderer(scene.world, RGB(0.05f0,0.05f0,0.05f0))
         fire_all_rays(tracer, PointLight, renderer)
     else
         println("using On/Off algorithm")
