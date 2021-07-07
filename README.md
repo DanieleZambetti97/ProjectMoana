@@ -29,7 +29,7 @@ The current stable version is 2.1.0.
 2. Exctract the file in the directory you want to use the program:
    
    ```bash
-   tar -xf v2.0.1.tar.gz -C /path/to/your/directory
+   tar -xf v2.1.0.tar.gz -C /path/to/your/directory
    ```
 
 3. Move to `path/to/your/directory/ProjectMoana-2.0.1` and from the Julia REPL import Pkg and activate the ProjectMoana package with the following commands:
