@@ -149,6 +149,7 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
         end
 
     end
+    print("\rComputed 100% of pixels [$("#"^50)]")
 end
 
 function fire_all_rays(im::ImageTracer, func)
