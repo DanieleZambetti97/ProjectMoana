@@ -1,15 +1,15 @@
 INT WIDTH (640)
 INT HEIGHT (480)
-FLOAT ang_degrees(10)
+FLOAT emission_intensity (0.75)
 
 MATERIAL sky_material(
         DIFFUSE(UNIFORM(<1., 0.2, 1.>)),
-        UNIFORM(<1., 1., 1>)
+        UNIFORM(<0., 0., 0.>)
 )
 
 MATERIAL ground_material(
-        DIFFUSE(CHECKERED(<0.3, 0.5, 0.1>,
-                        <0.1, 0.2, 0.5>, 4)),
+        DIFFUSE(CHECKERED(<0., 0., 0.>,
+                        <1., 1., 1.>, 4)),
         UNIFORM(<0, 0, 0>)
 )
 
@@ -19,9 +19,15 @@ MATERIAL sphere_material(
         UNIFORM(<0, 0, 0>)
 )
 
-MATERIAL point_material(
+MATERIAL point_material1(
     DIFFUSE(UNIFORM(<1.,1.,1.>)),
-    UNIFORM(<0.,0.,0.>)
+    UNIFORM(<1.,0.,0.>),
+    emission_intensity
+)
+MATERIAL point_material2(
+    DIFFUSE(UNIFORM(<1.,1.,1.>)),
+    UNIFORM(<0.,1.,0.>),
+    0.15
 )
 
 MATERIAL cube_material(
@@ -32,8 +38,8 @@ MATERIAL cube_material(
 SPHERE(sphere_material, TRANSLATION([3.,2.,-1.]) * SCALING([1.,1.,1.]))
 PLANE (ground_material, TRANSLATION([0, 0, -2.5])* ROTATION_Y(3)* ROTATION_X(10))
 PLANE (sky_material, TRANSLATION([100.,0.,0.])* ROTATION_Y(90))
-LIGHTPOINT( point_material, [1.9,-1., 1.])
-LIGHTPOINT( point_material, [1.9,2., 10.])
+LIGHTPOINT( point_material1, [1.9,-1., 1.])
+LIGHTPOINT( point_material2, [1.9,2., 10.])
 AABOX(cube_material, TRANSLATION([2.75,-1.7,-1.1]) * SCALING([1.,1.,1.]) * ROTATION_Z(15) * ROTATION_X(45) * ROTATION_Y(45))
 
 CAMERA(PERSPECTIVE, 1.0, IDENTITY)

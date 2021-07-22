@@ -500,8 +500,16 @@ function parse_material(input_file::InputStream, scene::Scene)
     brdf = parse_brdf(input_file, scene)
     expect_symbol(input_file, ',')
     emitted_radiance = parse_pigment(input_file, scene)
-    expect_symbol(input_file, ')')
-    return name, Material(brdf, emitted_radiance)
+    next_token = read_token(input_file)
+    if isa(next_token.value, Symbol) && next_token.value.symbol == ')'
+        return name, Material(brdf, emitted_radiance, 1.f0)
+    else
+        unread_token(input_file, next_token)
+        expect_symbol(input_file, ',')
+        emitted_intensity = expect_number(input_file, scene)
+        expect_symbol(input_file, ')')
+        return name, Material(brdf, emitted_radiance, emitted_intensity)
+    end
 end
 
 

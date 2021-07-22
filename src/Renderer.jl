@@ -67,7 +67,7 @@ function PathTracer(ray::Ray, rend::PathTracer_Renderer)
     hit_material = hit_record.shape.material
     hit_color = get_color(hit_material.brdf.pigment, hit_record.surface_point)
     if hit_material.is_light_source == true
-        emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point)
+        emitted_radiance = get_color(hit_material.emitted_radiance, hit_record.surface_point) * hit_material.emission_intensity
     else 
         emitted_radiance = RGB(0.f0, 0.f0, 0.f0)
     end
@@ -114,29 +114,34 @@ function PointLight(ray::Ray, renderer::PointLight_Renderer, col,row)
     else
         hit_point=hit_record.world_point
         radiance = RGB(0.,0.,0.)
+        min_luminosity= typemax(Float32)
         
-        for i ∈ 1:length(renderer.world.shapes)
+            for i ∈ 1:length(renderer.world.shapes)
             
             if isa(renderer.world.shapes[i], LightPoint)
                 new_ray = Ray(hit_point, renderer.world.shapes[i].point-hit_point)
                 is_illuminated = ray_intersection(renderer.world, new_ray)
-
+                min_luminosity = min(min_luminosity, renderer.world.shapes[i].material.emission_intensity)
                 if is_illuminated === nothing
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
-                    emitted_radiance = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point)
-                    radiance += hit_color + emitted_radiance
+                    emitted_radiance = get_color(hit_record.shape.material.emitted_radiance, hit_record.surface_point)
+                    illumination = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point) * renderer.world.shapes[i].material.emission_intensity
+                    radiance += (hit_color + emitted_radiance + illumination) * 0.33
 
                 elseif norm(is_illuminated.world_point-new_ray.origin) > norm(renderer.world.shapes[i].point-hit_point)
                     hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
-                    emitted_radiance = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point)
-                    radiance += hit_color + emitted_radiance
+                    emitted_radiance = get_color(hit_record.shape.material.emitted_radiance, hit_record.surface_point)
+                    illumination = get_color(renderer.world.shapes[i].material.emitted_radiance, hit_record.surface_point) * renderer.world.shapes[i].material.emission_intensity
+                    radiance += (hit_color + emitted_radiance + illumination) * 0.33
                 end
             end
         
         end
 
         if radiance == RGB(0.,0.,0.)
-            return renderer.background_color
+            hit_color = get_color(hit_record.shape.material.brdf.pigment, hit_record.surface_point)
+            emitted_radiance = get_color(hit_record.shape.material.emitted_radiance, hit_record.surface_point)
+            radiance += (hit_color + emitted_radiance) *  min_luminosity * 0.25
         end
         return radiance
     end

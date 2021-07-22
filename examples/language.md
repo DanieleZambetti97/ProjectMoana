@@ -19,9 +19,10 @@ INT WIDTH(1280)
 ### Materials & Pigments
 
 - `MATERIAL`: defines a new material, fundamental for creating shapes;
-- a `MATERIAL` has two components:
+- a `MATERIAL` has two mandatory components:
   - a **diffusive** one that contains a *BRDF* `DIFFUSE` (for a diffuse effect) or `SPECULAR` (for a specular effect);
   - a **emissive** one that can only be `UNIFORM`.
+- the emissive component can be modulated by adding an optional argument: a number that represent the intensity of the emission. If not specified the default value is 1.
 - both of the components are defined by a **pigment** that can be:
   - `UNIFORM` for a uniform color;
   - `CHECKERED` for a checkered combination of two colors;
@@ -36,7 +37,8 @@ MATERIAL material1(
 
 MATERIAL material2(
         SPECULAR(UNIFORM(<1., 0., .5>)),   
-        UNIFORM(<0.5, 0.5, 0.5>)            
+        UNIFORM(<0.5, 0.5, 0.5>),
+        0.7            
 )
 
 MATERIAL material_check(

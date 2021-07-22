@@ -154,7 +154,7 @@ end
 
 ## Code for MATERIAL and its sons #####################################################
 
-function LightSource(x::RGB)
+function _LightSource(x::RGB)
     if x == RGB()
         return false
     else
@@ -173,12 +173,14 @@ If not defined:
 struct Material
     brdf::BRDF
     emitted_radiance::Pigment
+    emission_intensity::Float32
     is_light_source:: Bool
 
     Material(brdf::BRDF = DiffuseBRDF(),
              emitted_radiance::Pigment = UniformPigment(RGB(0.f0,0.f0,0.f0)),
-             is_light_source::Bool = LightSource(emitted_radiance.color) ) =
-             new(brdf, emitted_radiance, is_light_source)
+             emission_intensity::Float32 = 1.f0,
+             is_light_source::Bool = _LightSource(emitted_radiance.color) ) =
+             new(brdf, emitted_radiance, emission_intensity, is_light_source)
 end 
 
 Base.:≈(M1::Material,M2::Material) = M1.brdf ≈ M2.brdf && M1.emitted_radiance ≈ M2.emitted_radiance

@@ -35,7 +35,6 @@ abstract type Shape
 end
 Base.:≈(S1::Shape,S2::Shape) = S1.transformation ≈ S2.transformation && S1.material ≈ S2.material
 
-
 """
     Sphere(T)
 
@@ -103,7 +102,6 @@ function _plane_normal(point::Point, ray_dir::Vec)
     return result
 end
 
-
 """
     AAB(T,M)
 
@@ -159,6 +157,13 @@ function _cube_normal(point::Point, ray_dir::Vec)
     result * ray_dir < 0.f0 ? nothing : result = result * -1.f0
     return Normal(result.x, result.y, result.z)
 end
+
+"""
+    LightPoint(P,M)
+
+It creates a **point light source** in the ``Position`` P. M is the ``Material`` of the object, the only important fild is the ``emettide_radiance``.
+By default the source is placed in (0.,0.,0.) and has an ``emettide_radiance`` RGB(1.,1,.1.).
+"""
 
 struct LightPoint <: Shape
     point::Point
@@ -324,5 +329,4 @@ end
 
 function ray_intersection(light::LightPoint, ray::Ray)
     return nothing
-#    return HitRecord(light.point, Normal(0.f0,0.f0,0.f0), Vec2D(Inf32, Inf32), norm(ray.dir), ray, light)
 end
