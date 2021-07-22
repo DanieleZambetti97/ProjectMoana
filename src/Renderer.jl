@@ -107,7 +107,7 @@ struct PointLight_Renderer <: Renderer
     PointLight_Renderer(world::World, background_color::RGB=RGB(0.1f0,0.1f0,0.1f0) ) = new(world, background_color) 
 end
 
-function PointLight(ray::Ray, renderer::PointLight_Renderer, col,row)
+function PointLight(ray::Ray, renderer::PointLight_Renderer)
     hit_record = ray_intersection(renderer.world, ray)
     if hit_record === nothing
         return renderer.background_color

@@ -135,7 +135,7 @@ function fire_all_rays(im::ImageTracer, func, renderer::Renderer)
             rays_in_pixel= fire_ray(im, col, row)
 
             for ray in rays_in_pixel
-                cum_color += func(ray, renderer, col, row)
+                cum_color += func(ray, renderer)
             end
             im.image.pixels[get_pixel(im.image, col, row)] = cum_color * (1.f0 / im.ray_per_side^2)
         end
